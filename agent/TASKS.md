@@ -40,7 +40,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T112 | Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
 
 | T113 | DONE — API cấu hình booking_defaults/company_profile/SLA, version/audit/snapshot | T105,T107,T109 | Q19/Q20: validation, quyền, version/cache và không thay đơn cũ |
-| T114 | Admin forms cài đặt đặt tour/thông tin công ty | T102,T113 | Save/reload/preview, nhãn demo, lỗi field và stale version |
+| T114 | DONE — Admin forms cài đặt đặt tour/thông tin công ty | T102,T113 | Save/reload/preview, nhãn demo, lỗi field và stale version |
 
 ## M2 — Nội dung và khám phá tour
 
