@@ -97,3 +97,7 @@ Người dùng yêu cầu Agent dùng skill `ponytail` khi xây dựng để ti�
 ### 22/11/2026 — M0 T003/T004
 
 Người dùng cho phép dữ liệu thiếu dùng giả định sửa ở Admin. Inventory demo và page-map wireframe đã lập; poster giữ nguyên, thông tin thiếu có nguồn/trạng thái rõ. Đã hợp nhất nhánh tài liệu và frontend vào develop local, resolve bằng cách giữ cả quyết định poster/Admin lẫn GSAP/ponytail. Nhánh thực thi hiện tại feature/platform. M0 hoàn tất ở mức đầu vào/wireframe; UI/CRUD thực thi vẫn ở task sau. Docker Desktop khởi động được bằng CLI; Go sẽ chạy trong container.
+
+### 22/11/2026 — T102 Admin scaffold
+
+React/Vite/TypeScript Admin có route login có nhãn, giữ dữ liệu khi sai mật khẩu; 4 scripts CI và lockfile. npm install, lint/typecheck/test:ci (2 pass)/build đạt local. Chưa có widget Turnstile công khai, đang local mock; tích hợp UI auth ở T110.

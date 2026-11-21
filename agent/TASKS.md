@@ -26,7 +26,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
 | T101 | DONE 22/11/2026 — Scaffold Next.js + TypeScript, lockfile và 4 scripts CI; cài GSAP + @gsap/react | — | npm ci, lint, typecheck, test:ci, build chạy; smoke test GSAP timeline thật |
-| T102 | Scaffold React/Vite admin và 4 scripts CI | — | Cài sạch/build; test render route login |
+| T102 | DONE — Scaffold React/Vite admin và 4 scripts CI | — | Cài sạch/build; test render route login |
 | T103 | Scaffold Go/Gin, config loader, log redaction, health/ready | — | go vet/test/build; env thiếu và DB lỗi trả đúng lỗi, secret không log |
 | T104 | DB pool, migration runner, test harness PostgreSQL tách dữ liệu | T103 | Up DB sạch, chạy lại không lặp; rollback/restore thử trong DB test |
 | T105 | Migration identity/RBAC/guest/audit, seed quyền, bootstrap admin | T104 | FK/unique đúng; seed hai lần không trùng; không có password mặc định |
