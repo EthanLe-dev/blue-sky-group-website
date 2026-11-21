@@ -74,4 +74,4 @@ Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools
 
 ## Quyết định người dùng 22/11/2026
 
-Được giả định giá/đặt chỗ và thông tin công ty cho demo, bắt buộc sửa được trong Admin, có validation/audit/version/snapshot, không đổi ngược đơn đã đặt. Tour có poster do team thiết kế, kèm dữ liệu có cấu trúc. Đã chọn Render Free + Neon Free trong quota, không tự nâng gói mất phí. Không deadline bắt buộc. Ảnh poster mẫu chưa nhận; không khẳng định đã xem ảnh. Chi tiết bổ sung trong PLAN/schema/API thay thế các giả định cũ chờ BA cho demo.
+Được giả định giá/đặt chỗ và thông tin công ty cho demo, bắt buộc sửa được trong Admin, có validation/audit/version/snapshot, không đổi ngược đơn đã đặt. Tour có poster do team thiết kế, kèm dữ liệu có cấu trúc. Đã chọn Render Free + Neon Free trong quota, không tự nâng gói mất phí. Không deadline bắt buộc. Ảnh poster mẫu đã nhận và được ghi trong `docs/poster-reference.md`; dùng đúng nguồn, không suy diễn giá/lịch/đối tượng chưa có trên ảnh. Chi tiết bổ sung trong PLAN/schema/API thay thế các giả định cũ chờ BA cho demo.

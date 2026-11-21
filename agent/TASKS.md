@@ -17,6 +17,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | --- | --- | --- | --- |
 | T001 | DONE — Người dùng cho phép giả định và yêu cầu sửa qua Admin (22/11/2026). Ghi quyết định BA: tuổi, cọc, chỗ em bé, hạn trả dư, huỷ/hoàn, SLA vào PLAN | — | Có quyết định/người xác nhận; không đánh dấu đề xuất là đã duyệt |
 | T002 | DONE — Chốt Render Free + Neon Free trong quota, cập nhật nguồn (22/11/2026). Chốt host demo và sửa sai lệch Cloudflare/D1 trong tài liệu nguồn | — | Architecture/MVP/PLAN thống nhất và ghi phương án miễn phí/hạn mức được chọn |
+| T003a | DONE — Lưu và phân tích poster mẫu Ninh Chữ | — | File gốc1051×1497; docs/poster-reference.md, phân biệt dữ liệu ảnh với thông tin đã xác minh |
 | T003 | Lập danh mục asset/nội dung thật: logo, ảnh, tour, giấy phép, liên hệ, policy | — | Mỗi asset có nguồn/quyền dùng/trạng thái; thiếu gì được liệt kê |
 | T004 | Page map và wireframe home/list/detail/checkout/admin theo design-style | T003 hoặc fixture có nhãn | Review luồng mobile, CTA, nội dung cần thiết; chưa gọi là UI đã nghiệm thu |
 
@@ -119,7 +120,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T706 | UAT với khách 30+, trường/doanh nghiệp và admin | T702,T703,T704,T605 | 11 tiêu chí mục8 MVP có evidence; ghi lỗi và sửa trước duyệt |
 | T707 | Runbook setup/seed/deploy/backup demo và bàn giao | T706,T705 | Người khác làm theo trên môi trường sạch, ghi remaining production gaps |
 
-T208–T214 nghĩa toàn bộ các ID trong khoảng. T001/T002 đã hoàn tất quyết định demo. T003 còn thiếu poster mẫu/nội dung thật; không chặn scaffold bằng fixture. Bán thật cần thay và duyệt các thông tin demo.
+T208–T214 nghĩa toàn bộ các ID trong khoảng. T001/T002 đã hoàn tất quyết định demo. T003 đã có poster tham chiếu qua T003a, còn thiếu nội dung đầy đủ/quyền ảnh; không chặn scaffold bằng fixture. Bán thật cần thay và duyệt các thông tin demo.
 
 ## Sau MVP
 

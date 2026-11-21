@@ -142,3 +142,7 @@ Người dùng cho phép giả định giá/đặt chỗ và thông tin công ty
 
 
 Nguồn kiểm tra ngày22/11/2026: [Render Free](https://render.com/docs/free) (750 giờ/workspace/tháng, ngủ sau15 phút) và [Neon Free](https://neon.com/pricing) (100 CU-giờ/project/tháng,1GB storage). Khi deploy kiểm tra lại gói/quota và giới hạn chi tiêu; không cam kết miễn phí vô hạn.
+
+### Cập nhật poster mẫu — 22/11/2026
+
+Đã nhận poster Ninh Chữ1051×1497px từ người dùng, lưu [tham chiếu](../docs/poster-reference.md). T003a hoàn tất thu nhận/phân tích ảnh; T003 vẫn cần nội dung tour đầy đủ và hồ sơ quyền ảnh. Ghi chú “chưa nhận ảnh” trước đó là trạng thái lịch sử, không còn là blocker. Giá/liên hệ chép từ ảnh chưa tự áp dụng làm dữ liệu hiện hành.
