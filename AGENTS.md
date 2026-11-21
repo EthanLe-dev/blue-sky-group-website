@@ -70,3 +70,7 @@ docker compose down         # giữ dữ liệu volume; không thêm -v nếu ch
 ```
 
 Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools`. Chạy ứng dụng trên host sau milestone M1. Khi có Dockerfile, bổ sung app/Nginx vào Compose cùng kiểm tra health và build, không để tham chiếu file chưa tồn tại.
+
+## Animation bằng GSAP
+
+Người dùng yêu cầu dùng GSAP cho animation của website. `frontend/` cài `gsap` và `@gsap/react` trong package/lockfile; dùng cho hero entrance, timeline nhiều phần và gallery/moment có mục đích theo `docs/design-style.md`. Đọc skill `gsap-web` khi triển khai, cùng taste-skill cho giao diện. Trong React dùng `useGSAP()`/`gsap.context()` và cleanup khi unmount; đăng ký plugin trước khi dùng. Chỉ import trong client component, không truy cập `window` khi SSR. Tôn trọng `prefers-reduced-motion`, đảm bảo nội dung hiện sẵn khi JS không chạy, ưu tiên transform/opacity. Không thêm smooth-scroll/pin chỉ để trang trí; checkout/admin giữ thao tác rõ ràng.

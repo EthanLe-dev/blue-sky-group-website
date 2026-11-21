@@ -41,7 +41,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 
 ### M1 — Nền tảng ứng dụng và bảo mật (3–5 ngày công)
 
-- [ ] Scaffold `frontend/`, `admin/`, `backend/` đúng architecture; pin công cụ/dependencies, lockfiles, npm scripts theo AGENTS.
+- [ ] Scaffold `frontend/`, `admin/`, `backend/` đúng architecture; frontend Next.js/GSAP T101 đã hoàn tất, admin/backend còn mở.
 - [ ] Config loader validate env; structured logs có request ID; `/healthz`, `/readyz`; kết nối DB có timeout/pool.
 - [ ] Migration runner + seed idempotent; tài khoản admin bootstrap từ secret một lần, không mật khẩu hardcode. Dữ liệu test độc lập.
 - [ ] Auth JWT access + refresh rotation/revocation, cookie/CSRF/CORS, RBAC 5 vai trò, audit logs, rate limit và Turnstile adapter.
@@ -129,3 +129,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 | Privacy và bảo mật | Minimise dữ liệu, audit RBAC, signed URL, retention do công ty/pháp chế chốt; không coi tài liệu này là kết luận pháp lý. |
 | Tài khoản tích hợp | Cần quyền repo/host/DB/R2/Turnstile/GA4/Search Console khi triển khai; chỉ lưu credential trong secret manager. |
 | Ngân sách/nhân sự/deadline | Chưa được cung cấp; ước lượng M0–M7 khoảng 29–45 ngày công, có thể điều chỉnh sau scaffold và duyệt giao diện. |
+
+### GSAP và frontend scaffold — 22/11/2026
+
+Người dùng yêu cầu cài GSAP cho animation. T101 scaffold Next.js App Router + TypeScript và cài `gsap`/`@gsap/react` trên nhánh `feature/public-ui` từ develop. Các trang marketing sẽ dùng GSAP có mục đích, reduced motion và cleanup; checkout/admin ưu tiên rõ ràng. Chưa gọi T208/T703 DONE chỉ vì có thư viện.

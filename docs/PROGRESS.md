@@ -71,3 +71,9 @@ Cập nhật lần cuối: 22/11/2026
 - [ ] Xây dựng Database Migration scripts cho PostgreSQL.
 - [ ] Xây dựng khung Backend Go + Gin với kiến trúc Modular Monolith.
 - [ ] Dựng giao diện Frontend Next.js (Khách hàng) và React (Admin).
+
+### 22/11/2026 — T101: Next.js scaffold và GSAP
+
+Người dùng yêu cầu cài GSAP và bắt buộc Agent dùng cho animation. Trên nhánh `feature/public-ui` từ develop, đã scaffold `frontend/` Next.js App Router + TypeScript, cài `gsap` và `@gsap/react`, thêm scripts CI và smoke test timeline. Cập nhật AGENTS/design/TASKS/PLAN. Chưa dựng website hoặc xác nhận UI/taste gate. Kết quả lệnh lint/typecheck/test/build/CI sẽ ghi sau khi hoàn tất. Lưu ý nhánh docs/admin-settings-and-posters chứa quyết định poster/Admin riêng, chưa merge vào develop khi bắt đầu nhánh này.
+
+T101 verification: Node24.16/npm11.13 local, `npm ci`, `npm run lint`, `npm run typecheck`, `npm run test:ci` (1 pass), `npm run build` đều exit0 sau sửa test sang ESM. Next16.4.6, GSAP3.15.1. UI mới là scaffold “Hello world”, chưa triển khai animation thật/taste gate; T208/T703 mở. Commit/push feature/public-ui.
