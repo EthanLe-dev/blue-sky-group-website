@@ -93,3 +93,7 @@ T101 verification: Node24.16/npm11.13 local, `npm ci`, `npm run lint`, `npm run 
 ### 22/11/2026 — Quy tắc dùng ponytail
 
 Người dùng yêu cầu Agent dùng skill `ponytail` khi xây dựng để tiết kiệm token. Đã thêm quy tắc vào AGENTS.md: mức full mặc định, chọn thay đổi nhỏ nhất đủ yêu cầu, tái dùng code và không bỏ các kiểm tra quan trọng. Đây là cập nhật hướng dẫn; chưa có code ứng dụng mới. Kiểm tra `git diff --check`, commit/push trên nhánh feature/public-ui.
+
+### 22/11/2026 — M0 T003/T004
+
+Người dùng cho phép dữ liệu thiếu dùng giả định sửa ở Admin. Inventory demo và page-map wireframe đã lập; poster giữ nguyên, thông tin thiếu có nguồn/trạng thái rõ. Đã hợp nhất nhánh tài liệu và frontend vào develop local, resolve bằng cách giữ cả quyết định poster/Admin lẫn GSAP/ponytail. Nhánh thực thi hiện tại feature/platform. M0 hoàn tất ở mức đầu vào/wireframe; UI/CRUD thực thi vẫn ở task sau. Docker Desktop khởi động được bằng CLI; Go sẽ chạy trong container.

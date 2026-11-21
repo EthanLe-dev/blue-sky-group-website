@@ -18,8 +18,8 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T001 | DONE — Người dùng cho phép giả định và yêu cầu sửa qua Admin (22/11/2026). Ghi quyết định BA: tuổi, cọc, chỗ em bé, hạn trả dư, huỷ/hoàn, SLA vào PLAN | — | Có quyết định/người xác nhận; không đánh dấu đề xuất là đã duyệt |
 | T002 | DONE — Chốt Render Free + Neon Free trong quota, cập nhật nguồn (22/11/2026). Chốt host demo và sửa sai lệch Cloudflare/D1 trong tài liệu nguồn | — | Architecture/MVP/PLAN thống nhất và ghi phương án miễn phí/hạn mức được chọn |
 | T003a | DONE — Lưu và phân tích poster mẫu Ninh Chữ | — | File gốc1051×1497; docs/poster-reference.md, phân biệt dữ liệu ảnh với thông tin đã xác minh |
-| T003 | Lập danh mục asset/nội dung thật: logo, ảnh, tour, giấy phép, liên hệ, policy | — | Mỗi asset có nguồn/quyền dùng/trạng thái; thiếu gì được liệt kê |
-| T004 | Page map và wireframe home/list/detail/checkout/admin theo design-style | T003 hoặc fixture có nhãn | Review luồng mobile, CTA, nội dung cần thiết; chưa gọi là UI đã nghiệm thu |
+| T003 | DONE — inventory demo docs/content-inventory.md; Lập danh mục asset/nội dung thật: logo, ảnh, tour, giấy phép, liên hệ, policy | — | Mỗi asset có nguồn/quyền dùng/trạng thái; thiếu gì được liệt kê |
+| T004 | DONE — page map/wireframe docs/page-map.md; Page map và wireframe home/list/detail/checkout/admin theo design-style | T003 hoặc fixture có nhãn | Review luồng mobile, CTA, nội dung cần thiết; chưa gọi là UI đã nghiệm thu |
 
 ## M1 — Nền tảng
 
