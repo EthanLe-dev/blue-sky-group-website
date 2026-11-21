@@ -37,7 +37,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T109 | DONE — Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
 | T110 | DONE — Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
 | T111 | DONE — Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
-| T112 | Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
+| T112 | DOING — Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
 
 | T113 | DONE — API cấu hình booking_defaults/company_profile/SLA, version/audit/snapshot | T105,T107,T109 | Q19/Q20: validation, quyền, version/cache và không thay đơn cũ |
 | T114 | DONE — Admin forms cài đặt đặt tour/thông tin công ty | T102,T113 | Save/reload/preview, nhãn demo, lỗi field và stale version |
@@ -74,7 +74,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
 | T303 | Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
 | T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |
-| T305 | Creator read và guest lookup read-only che PII | T303,T108 | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
+| T305 | Creator read và guest lookup read-only che PII | T303,T108b | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
 | T306 | Admin tạo/sửa/notes/cancel/complete dùng chung service | T303,T304,T107 | Manual+web tranh cùng kho; cancel hai lần; completed không nhả chỗ |
 | T307 | Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
 | T308 | Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |

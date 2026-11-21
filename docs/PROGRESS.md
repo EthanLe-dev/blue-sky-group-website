@@ -2,12 +2,12 @@
 
 ## Bàn giao nhanh — 22/11/2026
 
-- Giai đoạn hiện tại: hoàn thiện tài liệu trước triển khai; chưa có frontend/admin/backend, migration hoặc Dockerfile ứng dụng.
-- Repository: https://github.com/EthanLe-dev/blue-sky-group-website, nhánh mặc định `main` tại `f80a064`; nhánh code chính `develop` đã tạo và push. Tài liệu TASKS/design/testing được commit `65d0708` trên `develop`.
-- Đọc theo thứ tự: AGENTS → MVP/final/architecture → PLAN → TASKS → schema/API → design/testing → phần nhật ký mới nhất trong file này. Không bắt đầu từ mục “tiếp theo” cũ mà bỏ qua bàn giao hiện tại.
-- Task có thể bắt đầu ngay: T101/T102/T103 (scaffold); trước UI cần T003/T004, T201 và đọc taste-skill. T001/T002 đã chốt hướng demo, có thể scaffold với fixture có nhãn.
-- Đã chốt dùng giá trị giả định sửa được qua Admin; Render Free + Neon Free trong quota; không deadline. Đã nhận poster mẫu Ninh Chữ; còn thiếu nội dung tour đầy đủ và tài khoản dịch vụ khi deploy.
-- Chưa có URL website hoặc kết quả test ứng dụng. T001/T002 DONE về quyết định demo; chưa có task code ứng dụng DONE. Không có secret ứng dụng được cấp trong các file tài liệu.
+- Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
+- Nhánh hiện tại `feature/platform`, base là develop local đã hợp nhất docs/admin-settings-and-posters và feature/public-ui; remote develop/main chưa nhận code M1 cho tới khi PR/CI đạt. Không thay đổi main.
+- Chạy theo README: .env đã được tạo local bằng secret ngẫu nhiên, không commit; Docker/PostgreSQL/API/Next/Admin đang chạy, admin http://localhost:5173, API http://localhost:8080, public http://localhost:3000 (scaffold). Credential bootstrap nằm trong .env.
+- Đã kiểm: backend vet/race/integration/OpenAPI, Admin4 unit tests+lint/types/build, frontend smoke/lint/types/build, Docker build/health, hai browser E2E, local backup/restore DB test. CI remote đang được kích hoạt/kiểm tiếp ở T112.
+- T108b lookup token cần FK booking nên chuyển sang M3 sau T301; T108a guest hoàn tất. T113 default snapshot vào đơn sẽ kiểm ở T302. Công ty upload giấy phép chọn media chờ T215. Turnstile real adapter có, local dùng mock; chưa nghiệm thu siteverify với tài khoản thật.
+- Tiếp theo sau M1: T201/T202 và T203 catalog; dùng poster Ninh Chữ + inventory demo, mọi dữ liệu thiếu chỉnh ở Admin theo kế hoạch. Đọc TASKS/PLAN/API/schema/design/testing trước sửa.
 
 ## Lịch sử thực hiện
 

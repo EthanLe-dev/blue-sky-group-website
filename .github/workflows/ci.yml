@@ -33,7 +33,9 @@ jobs:
           done
           test ! -e agent/AGENT.md
       - name: Validate Compose including optional services
-        run: docker compose --env-file .env.example --profile production-tools config --quiet
+        run: |
+          python3 scripts/init_local.py
+          docker compose --profile production-tools --profile app config --quiet
       - name: Reject tracked environment secrets
         shell: bash
         run: |
@@ -173,10 +175,43 @@ jobs:
       - name: Verify module files remain unchanged
         run: git diff --exit-code -- go.mod go.sum
 
+  containers:
+    name: Container and browser smoke
+    needs: foundation
+    if: needs.foundation.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - run: python3 scripts/init_local.py
+      - run: docker compose --profile app up -d --build --wait
+      - run: docker compose --profile app run --rm backend bootstrap
+      - run: npm ci
+        working-directory: admin
+      - run: npx playwright install --with-deps chromium
+        working-directory: admin
+      - run: npm run test:e2e
+        working-directory: admin
+      - name: Collect failure traces
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-failure
+          path: admin/test-results/
+          retention-days: 7
+      - name: Stop containers and preserve no CI data
+        if: always()
+        run: docker compose --profile app down
+
   ci:
     name: CI result
     if: always()
-    needs: [foundation, frontend, admin, backend]
+    needs: [foundation, frontend, admin, backend, containers]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     env:
@@ -184,13 +219,14 @@ jobs:
       FRONTEND_RESULT: ${{ needs.frontend.result }}
       ADMIN_RESULT: ${{ needs.admin.result }}
       BACKEND_RESULT: ${{ needs.backend.result }}
+      CONTAINER_RESULT: ${{ needs.containers.result }}
     steps:
       - name: Require every applicable check to pass
         shell: bash
         run: |
           set -euo pipefail
           test "$FOUNDATION_RESULT" = success
-          for result in "$FRONTEND_RESULT" "$ADMIN_RESULT" "$BACKEND_RESULT"; do
+          for result in "$FRONTEND_RESULT" "$ADMIN_RESULT" "$BACKEND_RESULT" "$CONTAINER_RESULT"; do
             case "$result" in
               success|skipped) ;;
               *) exit 1 ;;

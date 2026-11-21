@@ -59,7 +59,7 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 
 ## 6. Lệnh hiện có
 
-Repository ban đầu chỉ có tài liệu, chưa có ứng dụng/Dockerfile/migration. Không khẳng định lệnh build/test app chạy được trước khi scaffold.
+Đã có khung frontend/admin/backend, migration identity/settings và Dockerfiles M1. Chưa có module catalog/booking/payment đầy đủ. Xem README để chạy ứng dụng.
 
 ```powershell
 Copy-Item .env.example .env  # chỉ khi chưa có .env
@@ -69,7 +69,7 @@ docker compose ps
 docker compose down         # giữ dữ liệu volume; không thêm -v nếu chưa được phép xoá
 ```
 
-Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools`. Chạy ứng dụng trên host sau milestone M1. Khi có Dockerfile, bổ sung app/Nginx vào Compose cùng kiểm tra health và build, không để tham chiếu file chưa tồn tại.
+Compose mặc định cấp PostgreSQL; profile `app` chạy migration/backend/frontend/admin/Nginx, Redis chỉ qua `production-tools`. Tạo `.env` an toàn bằng `python scripts/init_local.py`, chạy `docker compose --profile app up -d --build`, bootstrap riêng. TEST_DATABASE_URL chỉ dùng DB hậu tố `_test`; mỗi suite tạo schema cô lập.
 
 
 ## Quyết định người dùng 22/11/2026
