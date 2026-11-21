@@ -92,3 +92,9 @@ Easing mặc định `cubic-bezier(.22,1,.36,1)`, exit `cubic-bezier(.4,0,1,1)`.
 Giọng văn rõ, lịch sự, thân thiện: “Chọn ngày khởi hành”, “Còn 3 chỗ” khi DB thật, “Giữ chỗ đến 14:20”. Không khẩn cấp giả, khen thương hiệu bằng số liệu bịa. Lỗi có hướng xử lý/hotline; tính năng hoãn disabled với giải thích.
 
 Trước DONE UI: build rồi chạy checker/consistency/layout/copy/perf/gate theo skill trên trang local thực; lưu dòng GATE thật, waiver, FAIL còn mở và screenshot. Không sửa kit để qua check. Kiểm mắt và tương tác ở1440,1024,820,768,390 và stress320; keyboard/zoom/reduced motion theo [testing-strategy](testing-strategy.md). Gate chưa chạy hoặc ERROR không đồng nghĩa PASS. Hiện tài liệu này chưa có browser evidence vì chưa có ứng dụng.
+
+## Poster tour và màn hình cấu hình Admin
+
+Team thiết kế cung cấp poster từng tour; ảnh mẫu chưa có trong phiên hiện tại nên chưa chốt aspect ratio. Hiển thị poster bằng `object-fit: contain`, không crop mất chữ/giá/QR; có mở ảnh lớn/zoom, giữ ảnh bìa riêng cho card. Trên mobile vẫn có tên tour/giá/lịch/itinerary dạng HTML dễ đọc, không bắt khách zoom poster để đặt tour. Không chép chữ trên poster thành alt quá dài; alt mô tả ngắn và nội dung quan trọng có bản text cạnh tour.
+
+Admin có các mục “Cài đặt đặt tour”, “Thông tin công ty”, “Poster tour”. Form group rõ, đơn vị phút/%/ngày, giải thích phạm vi áp dụng; preview, lỗi field, version conflict và xác nhận lưu. Hiển thị “Chỉ áp dụng mặc định cho nội dung/đơn mới; đơn đã đặt giữ nguyên chính sách”. Khi thay poster có preview đầy đủ, nguồn/quyền dùng, revision và bước xác nhận khớp giá/lịch. Thông tin giả định có nhãn Demo; phone/Zalo chưa nhập không thành link thật.

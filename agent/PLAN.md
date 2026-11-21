@@ -34,8 +34,8 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 
 - [x] Đọc yêu cầu, soạn AGENTS, PLAN, schema, API, CI và cấu hình local ban đầu.
 - [x] Chia backlog trong `agent/TASKS.md`, quy định UI/UX dùng taste-skill trong `docs/design-style.md`, tiêu chuẩn kiểm thử trong `docs/testing-strategy.md` và nhật ký bàn giao trong `docs/PROGRESS.md` (22/11/2026; hoàn tất tài liệu, chưa triển khai ứng dụng).
-- [ ] BA xác nhận cọc, tuổi, số chỗ em bé, ngày đến hạn, chính sách huỷ/hoàn và SLA gọi lại/báo giá.
-- [ ] Chốt host demo, điều chỉnh tiêu chí deploy Cloudflare trong nguồn, xác nhận quota và điều kiện sử dụng.
+- [x] Người dùng cho phép giả định cho demo; bắt buộc sửa các giá trị qua Admin (22/11/2026).
+- [x] Chốt Render Free + Neon Free trong quota cho demo; cập nhật nguồn. Kiểm quota tài khoản và smoke test thực tế ở T704 trước deploy.
 - [ ] Nhận nhận diện, danh sách tour/giá/lịch khởi hành, nội dung pháp lý, media có quyền dùng; chốt page map và mẫu UI mobile.
 - Đầu ra: quyết định nghiệp vụ được ghi, không còn giả định chặn bán tour thật. Có thể scaffold/demo bằng dữ liệu mẫu trước khi hoàn tất nội dung thật.
 
@@ -129,3 +129,16 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 | Privacy và bảo mật | Minimise dữ liệu, audit RBAC, signed URL, retention do công ty/pháp chế chốt; không coi tài liệu này là kết luận pháp lý. |
 | Tài khoản tích hợp | Cần quyền repo/host/DB/R2/Turnstile/GA4/Search Console khi triển khai; chỉ lưu credential trong secret manager. |
 | Ngân sách/nhân sự/deadline | Chưa được cung cấp; ước lượng M0–M7 khoảng 29–45 ngày công, có thể điều chỉnh sau scaffold và duyệt giao diện. |
+
+## Quyết định bổ sung ngày 22/11/2026 — Admin và poster
+
+Người dùng cho phép giả định giá/đặt chỗ và thông tin công ty để triển khai demo, với điều kiện **đều sửa được ở Admin**. Quyết định này thay thế các mục đang chờ BA về giá trị ban đầu trong tài liệu; chưa phải duyệt chính sách bán thật. Không có deadline bắt buộc, vẫn thực hiện theo dependency và quality gates.
+
+- Mặc định demo: giữ chỗ20 phút, cọc30%, trả dư trước ngày đi7 ngày, adult≥12/child2–<12/infant<2; adult/child1 chỗ, infant0; tối đa20 khách/đơn. Policy huỷ demo: nhân viên xét duyệt theo chính sách hiển thị, không tự hoàn tiền. SLA demo: phản hồi trong1 ngày làm việc. Tất cả hiển thị nhãn demo khi chưa được thay bằng dữ liệu thật.
+- Admin quản lý mặc định đặt chỗ, giá/tuổi/chỗ/cọc/hạn trả theo lịch khởi hành, policy huỷ theo tour, thông tin doanh nghiệp/liên hệ/giấy phép/tài liệu/SLA. Thông tin chưa có dùng placeholder rõ ràng, không bịa giấy phép hay số điện thoại thật; link gọi/Zalo chưa cấu hình phải disabled.
+- Thay đổi cấu hình có validation, version, audit; chỉ tác động đơn mới. Quote đang hiệu lực dùng snapshot cấu hình đã chốt; booking cũ giữ nguyên giá/policy/hạn, không cập nhật ngược. Sửa giá/tuổi/chỗ/cọc của departure tăng price_version và yêu cầu báo giá lại.
+- Tour do team thiết kế poster. Admin upload/thay poster và nhập dữ liệu tour có cấu trúc; poster không thay trường giá/lịch/itinerary dùng tìm kiếm, SEO và checkout. Chưa nhận được ảnh mẫu trong chat hoặc workspace (chỉ có logo), cần bổ sung để chốt bố cục/tỉ lệ poster.
+- Chọn Render Free cho Go API và Neon Free cho PostgreSQL để demo nhỏ, trong quota miễn phí; không tự nâng gói trả tiền. Cần smoke test thực tế, nhất là cold start và PDF, trước khi xác nhận đủ năng lực. Cloudflare vẫn cho Turnstile/R2, không làm Go host/DB. Miễn phí backend/DB không đồng nghĩa đã xác nhận chi phí toàn hệ thống.
+
+
+Nguồn kiểm tra ngày22/11/2026: [Render Free](https://render.com/docs/free) (750 giờ/workspace/tháng, ngủ sau15 phút) và [Neon Free](https://neon.com/pricing) (100 CU-giờ/project/tháng,1GB storage). Khi deploy kiểm tra lại gói/quota và giới hạn chi tiêu; không cam kết miễn phí vô hạn.
