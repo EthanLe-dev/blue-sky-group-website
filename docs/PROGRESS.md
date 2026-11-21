@@ -111,3 +111,7 @@ Go1.26/Gin/pgx, config validation và log chỉ request ID/method/status (không
 T108 được tách T108a (guest) đã làm và T108b (lookup token) sang M3 vì phụ thuộc FK booking T301; không đánh dấu lookup hoàn tất giả. T113 xử lý default settings; áp dụng snapshot lên quote/booking sẽ kiểm lại ở T302. T114 đang form theo trường; file giấy phép đính kèm chờ media T215.
 
 T104 restore drill: `python scripts/test_database_restore.py` PASS. Tạo hai DB test tên ngẫu nhiên, áp dụng migrations, sửa setting, pg_dump/pg_restore, đối chiếu5 roles và version2 rồi dọn đúng hai DB test. Không đụng volume/database ứng dụng. Đây là diễn tập local, không chứng minh RPO/RTO production.
+
+### 22/11/2026 — T110 client/proxy và T114 Admin settings
+
+Client giữ access token trong memory, refresh dedupe/retry401 một lần, restore/logout có CSRF; Next server proxy và Vite/Nginx same-origin. Form Admin sửa hold/cọc/tuổi/chỗ/hạn trả, policy, công ty/liên hệ/SLA với version. Hai E2E trên Docker/PostgreSQL đã PASS: login→save→reload→logout và public proxy cookie/CSRF. Lỗi đã sửa: GET cùng origin thiếu Origin được xác minh qua Referer+Sec-Fetch-Site; Nginx DNS cache cũ gây502 sau recreate được đổi sang resolver Docker. Thư viện media/tài liệu giấy phép đợi T215, không giả upload hoàn tất.

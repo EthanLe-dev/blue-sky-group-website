@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, expect, test, vi } from 'vitest'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
+vi.mock('./lib/session',()=>({restore:async()=>null,login:async()=>{throw new Error('Đăng nhập thất bại')},logout:async()=>{}}))
 import App from './App'
 afterEach(() => { cleanup(); vi.unstubAllGlobals() })
 test('login route exposes labelled accessible fields', () => {

@@ -35,7 +35,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T108a | DONE — Guest session storage/cookie/CSRF | T105,T107 | Token hash, reuse/TTL/origin, session isolation qua API |
 | T108b | Lookup token storage/FK booking (chuyển M3) | T301 | Token hash/TTL/read-only và không cấp quyền thanh toán |
 | T109 | DONE — Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
-| T110 | Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
+| T110 | DONE — Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
 | T111 | Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
 | T112 | Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
 
