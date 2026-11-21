@@ -31,6 +31,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 ### M0 — Chốt cơ sở thiết kế (2–3 ngày công)
 
 - [x] Đọc yêu cầu, soạn AGENTS, PLAN, schema, API, CI và cấu hình local ban đầu.
+- [x] Chia backlog trong `agent/TASKS.md`, quy định UI/UX dùng taste-skill trong `docs/design-style.md`, tiêu chuẩn kiểm thử trong `docs/testing-strategy.md` và nhật ký bàn giao trong `docs/PROGRESS.md` (22/11/2026; hoàn tất tài liệu, chưa triển khai ứng dụng).
 - [ ] BA xác nhận cọc, tuổi, số chỗ em bé, ngày đến hạn, chính sách huỷ/hoàn và SLA gọi lại/báo giá.
 - [ ] Chốt host demo, điều chỉnh tiêu chí deploy Cloudflare trong nguồn, xác nhận quota và điều kiện sử dụng.
 - [ ] Nhận nhận diện, danh sách tour/giá/lịch khởi hành, nội dung pháp lý, media có quyền dùng; chốt page map và mẫu UI mobile.
@@ -112,7 +113,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 - `docker-compose.yml` hiện chỉ chạy PostgreSQL; Redis optional, chưa cần MVP. Không khai báo app build khi chưa có Dockerfile. `.env.example` là hợp đồng cấu hình **dự kiến** cho M1, Compose chỉ đọc biến PostgreSQL/cổng Redis.
 - Tạo `.env` từ mẫu, chạy `docker compose --env-file .env config --quiet`, `docker compose up -d postgres`. Không commit `.env`; `down` giữ volume, `down -v` xoá dữ liệu.
 - Backend trên host dùng `127.0.0.1`; khi container hoá đổi host thành service `postgres`. Migration dùng DB owner riêng ở production; app dùng role tối thiểu. Không tự chạy migration đồng thời trong mỗi replica.
-- CI chạy kiểm tra tài liệu/Compose ngay. Khi có manifest, không skip các script chất lượng; service PostgreSQL riêng cho integration. Chưa có pipeline deploy hoặc secret production.
+- CI chạy kiểm tra tài liệu/Compose ngay. Khi có manifest, không skip các script chất lượng; service PostgreSQL riêng cho integration. Có workflow hook deploy demo, chưa có deployment ứng dụng hoặc secret production.
 - CD demo dùng `.github/workflows/deploy.yml`: chỉ chạy sau CI thành công của push lên `main`, với đúng SHA đã kiểm tra. Khi cả ba app và backend Dockerfile tồn tại, workflow đòi ba deploy hook trong GitHub environment `demo` (`RENDER_DEPLOY_HOOK_URL`, `VERCEL_PUBLIC_DEPLOY_HOOK_URL`, `VERCEL_ADMIN_DEPLOY_HOOK_URL`), gọi Render trước rồi Vercel. Hiện thiếu app nên ghi skip có chủ đích; chưa deploy. Hook chỉ xác nhận đã nhận yêu cầu, không chứng minh ứng dụng đã healthy. Cần tạo project Render/Vercel, Neon, cấu hình env và migration/health check trước khi bật deploy thật.
 - Khi scaffold phải thêm kiểm tra migration up trên DB sạch, rollback có kiểm soát, OpenAPI contract, build Docker và E2E trước M7; CI ban đầu không tuyên bố đã có các check này.
 
