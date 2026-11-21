@@ -117,3 +117,7 @@ T104 restore drill: `python scripts/test_database_restore.py` PASS. Tạo hai DB
 Client giữ access token trong memory, refresh dedupe/retry401 một lần, restore/logout có CSRF; Next server proxy và Vite/Nginx same-origin. Form Admin sửa hold/cọc/tuổi/chỗ/hạn trả, policy, công ty/liên hệ/SLA với version. Hai E2E trên Docker/PostgreSQL đã PASS: login→save→reload→logout và public proxy cookie/CSRF. Lỗi đã sửa: GET cùng origin thiếu Origin được xác minh qua Referer+Sec-Fetch-Site; Nginx DNS cache cũ gây502 sau recreate được đổi sang resolver Docker. Thư viện media/tài liệu giấy phép đợi T215, không giả upload hoàn tất.
 
 T114: form settings có test save optimistic version và giữ input khi conflict; admin lint/typecheck và4 unit tests PASS. E2E thao tác hold20→21→20/save/reload/logout PASS. Các nhóm cấu hình sửa bằng field label, không bắt người dùng nhập JSON.
+
+### 22/11/2026 — T111 container và local runbook
+
+Dockerfile backend nonroot/distroless, Next standalone nonroot, Admin Nginx unprivileged; profile app có migration riêng trước backend health, public/admin/gateway. `docker compose build`, `up -d --wait`, bootstrap và HTTP readiness/openapi/public/admin đều PASS. init_local tạo secret ngẫu nhiên trong .env ignored, không ghi đè file cũ. Test browser real đã kiểm token/cookie qua proxy. Nginx dùng Docker resolver tránh IP cũ sau recreate. README/runbook ghi lệnh chạy, migration/rollback và giới hạn local/demo. Chưa deploy Render/Neon.
