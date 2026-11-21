@@ -2,6 +2,8 @@
 
 Ngày: 22/11/2026. Trạng thái: **thiết kế trước triển khai**. Phạm vi hiện tại là MVP; chưa có mã ứng dụng, migration hay Dockerfile. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
 
+Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `develop` là nhánh tích hợp code chính. Mỗi module lớn có nhánh `feature/<module>` từ `develop`; task DONE được commit rõ ID và push ngay, module qua CI thì PR vào `develop`, đợt phát hành qua UAT mới PR vào `main`. CI cùng cấu hình cho push/PR hai nhánh; CD demo chỉ chạy trên push `main`. Xem [AGENTS](../AGENTS.md).
+
 ## 1. Nguồn và quyết định thiết kế
 
 Nguồn: [MVP](../docs/mvp-requirements.md), [Final](../docs/final-requirements.md), [Architecture](../docs/architecture.md), [Database](../docs/database-schema.md), [API](../docs/api-spec.md), [AGENTS](../AGENTS.md).

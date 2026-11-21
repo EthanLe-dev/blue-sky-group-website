@@ -9,6 +9,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 - Đọc đầu vào, chốt phạm vi, triển khai đầu ra, chạy kiểm chứng ở hàng tương ứng. DONE cần đường dẫn artifact, lệnh/kết quả hoặc bằng chứng browser trong PROGRESS; không dùng “đã viết code” làm bằng chứng.
 - Nếu thiếu tài khoản/nội dung, ghi BLOCKED cùng điều kiện gỡ; chọn task không phụ thuộc. Dùng fixture giả có nhãn cho UI, không coi fixture là tích hợp hoàn tất.
 - Test transaction dùng PostgreSQL. Khi sửa hợp đồng, cập nhật API/schema và fixture cùng task. Xem quality gate trong testing-strategy trước khi đóng task.
+- Với module lớn, tạo `feature/<module>` từ `develop` trước task đầu; mỗi task DONE có commit riêng chứa ID Txxx và được push ngay lên nhánh module. Module hoàn tất/CI xanh thì PR vào `develop`; đợt phát hành nghiệm thu mới PR `develop` vào `main`. CI hai nhánh chung một workflow. Xem quy tắc chi tiết trong [AGENTS](../AGENTS.md).
 
 ## M0 — Cơ sở dự án
 
@@ -120,5 +121,5 @@ Chỉ tách thành task thực thi khi giai đoạn được giao: P1 real payme
 
 ## Mẫu đóng task
 
-`ID — DONE | ngày | commit hoặc working tree | file thay đổi | lệnh và kết quả | evidence UI nếu có | hạn chế | task tiếp theo`.
+`ID — DONE | ngày | nhánh | commit đã push | file thay đổi | lệnh và kết quả | evidence UI nếu có | hạn chế | task tiếp theo`.
 Ghi bản đầy đủ trong PROGRESS; nếu test fail, task vẫn DOING/BLOCKED. Không sửa lịch sử cũ để che kết quả fail.

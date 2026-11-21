@@ -3,8 +3,7 @@
 ## Bàn giao nhanh — 22/11/2026
 
 - Giai đoạn hiện tại: hoàn thiện tài liệu trước triển khai; chưa có frontend/admin/backend, migration hoặc Dockerfile ứng dụng.
-- Repository: https://github.com/EthanLe-dev/blue-sky-group-website, nhánh mặc định `main`. Commit đã push gần nhất được xác minh trong phiên trước: `f80a064`.
-- Phiên hiện tại bổ sung TASKS/design/testing và nhật ký này ở working tree; chưa commit/push các thay đổi tài liệu mới.
+- Repository: https://github.com/EthanLe-dev/blue-sky-group-website, nhánh mặc định `main` tại `f80a064`; nhánh code chính `develop` đã tạo và push. Tài liệu TASKS/design/testing được commit `65d0708` trên `develop`.
 - Đọc theo thứ tự: AGENTS → MVP/final/architecture → PLAN → TASKS → schema/API → design/testing → phần nhật ký mới nhất trong file này. Không bắt đầu từ mục “tiếp theo” cũ mà bỏ qua bàn giao hiện tại.
 - Task có thể bắt đầu ngay: T101/T102/T103 (scaffold); trước UI cần T003/T004, T201 và đọc taste-skill. T001/T002 cần chốt nghiệp vụ/host, có thể scaffold với fixture demo có nhãn trong lúc chờ.
 - Cần xác nhận: cọc/tuổi/chỗ em bé/hạn dư nợ/huỷ hoàn/SLA; nội dung và quyền ảnh; host demo và tiêu chí Cloudflare trong tài liệu nguồn. Render+Neon vẫn là đề xuất.
@@ -30,7 +29,14 @@ CD chỉ gọi hook Render/Vercel khi có đủ app, cần secrets trong environ
 - Design: typography tiếng Việt, tokens đề xuất, layout public/admin/checkout, motion timing/reduced motion, quy trình taste và ngoại lệ theo yêu cầu dự án.
 - Testing: unit/integration/contract/E2E, case tiền/chỗ/race/RBAC/PII, quality gates demo/production, accessibility/browser/performance/restore và evidence.
 - Kiểm chứng của phiên: rà liên kết nội bộ, dependency task, Markdown fences và git diff whitespace; kết quả được xác nhận khi hoàn tất lượt sửa này. Không chạy build/test app hoặc taste gate vì chưa có trang ứng dụng.
-- Bước tiếp: đọc backlog, chọn T101 hoặc T103; ghi task DOING trước thay đổi, cập nhật PLAN/PROGRESS khi đóng task. Chưa yêu cầu thực thi scaffold trong phiên tài liệu này.
+- Bước tiếp: đọc backlog, chọn T101 hoặc T103; tạo nhánh module từ `develop`, ghi task DOING trước thay đổi, cập nhật PLAN/PROGRESS khi đóng task. Chưa yêu cầu thực thi scaffold trong phiên tài liệu này.
+
+### 22/11/2026 — Thiết lập nhánh develop và quy trình Git
+
+- Người dùng yêu cầu `develop` là nhánh code chính; `main` chỉ nhận code đã chạy tốt. CI trên develop và main phải giống nhau. Mỗi module lớn có nhánh riêng; xong task nào commit/push task đó để rollback rõ.
+- Từ `main` đã tạo và push `develop`. Năm file tài liệu hoàn tất từ lượt trước được commit `65d0708 docs: define implementation tasks and quality standards` và push trên `develop`.
+- Đã bổ sung quy tắc nhánh/PR/commit/push vào AGENTS, TASKS, PLAN và PROGRESS. CI hiện có trigger push `main, develop` và `pull_request` chung jobs; deploy workflow chỉ theo push `main` sau CI.
+- Cần xác nhận sau khi push commit quy trình: remote develop HEAD, CI run develop. Branch protection/required checks trên GitHub chưa được cấu hình, nên điều kiện review/merge hiện là quy trình ghi trong tài liệu, chưa phải ràng buộc server.
 
 ## Quy tắc cập nhật cho phiên sau
 
@@ -42,7 +48,7 @@ Mẫu entry:
 Ngày/giờ Việt Nam — task ID — trạng thái
 Mục tiêu và phạm vi:
 Đầu vào / quyết định mới:
-File đã thay đổi / commit hoặc working tree:
+File đã thay đổi / nhánh / commit đã push hoặc working tree:
 Lệnh kiểm tra + kết quả thật + môi trường:
 Evidence (CI/artifact/screenshot):
 Phần chưa kiểm chứng / lỗi còn mở:

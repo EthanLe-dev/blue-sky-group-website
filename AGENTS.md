@@ -41,13 +41,21 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 
 ## 5. Quy trình mỗi thay đổi
 
-1. Kiểm tra trạng thái checkout và các hướng dẫn con, đọc code liên quan trước khi sửa. Không khởi tạo Git hoặc worktree khi không cần cho yêu cầu.
+1. Kiểm tra trạng thái checkout, nhánh hiện tại và các hướng dẫn con, đọc code liên quan trước khi sửa. Giữ thay đổi đang có của người dùng; không tự reset/force-push.
 2. Xác định FR/NFR và phạm vi; cập nhật PLAN khi bắt đầu/kết thúc công việc. Không đánh dấu hoàn thành chỉ vì đã có thiết kế.
 3. Giữ diff tập trung. Không thêm dependency khi thư viện sẵn có đủ; dùng lockfile và phiên bản công cụ đã chốt khi scaffold.
 4. Thay dữ liệu phải có migration có thứ tự, backfill/rollback hoặc kế hoạch phục hồi. Không sửa migration đã áp dụng. Cập nhật schema và API cùng thay đổi code.
 5. Kiểm tra phù hợp: lint/typecheck/build frontend, `go vet`, `go test -race`, integration PostgreSQL cho logic booking/payment. Không thay integration bằng SQLite. Test phải kiểm tra hành vi, nhất là lỗi, quyền và concurrency.
 6. Khi có ứng dụng, mỗi `frontend/` và `admin/` phải có npm scripts `lint`, `typecheck`, `test:ci`, `build` và `package-lock.json`; backend có `go.mod`, `go.sum`, test đọc `TEST_DATABASE_URL`. Mọi skip CI phải có lý do thấy rõ; không dùng `--if-present` để che thiếu check.
-7. Báo lại file thay đổi, kết quả kiểm tra thật, phần chưa chạy và giới hạn. Ghi tiến độ có bằng chứng trong PLAN; khi bắt đầu code mới tạo `docs/PROGRESS.md` nếu cần nhật ký dài.
+7. Báo lại file thay đổi, kết quả kiểm tra thật, phần chưa chạy và giới hạn. Ghi tiến độ có bằng chứng trong PLAN và `docs/PROGRESS.md`.
+
+### Git và bàn giao task
+
+- `main` là nhánh mặc định, chỉ nhận code đã chạy tốt sau khi qua CI, review và nghiệm thu liên quan. `develop` là nhánh tích hợp code chính; CI push/PR trên `develop` dùng đúng workflow và jobs như `main`. CD demo chỉ chạy sau CI của push vào `main`.
+- Trước **mỗi module lớn**, tạo nhánh mới từ `develop` đã cập nhật: `feature/<module>` (ví dụ `feature/catalog`, `feature/booking`, `feature/payment`, `feature/admin`, `feature/public-ui`, `feature/reporting`). Module kéo dài nhiều task thì dùng chung nhánh module; module khác tạo nhánh khác. Sửa tài liệu/quy trình độc lập dùng `docs/<topic>` hoặc `chore/<topic>` nếu cần PR riêng.
+- Mỗi task Txxx hoàn tất: chạy kiểm chứng trong TASKS/testing-strategy, cập nhật trạng thái và evidence trong PROGRESS, commit riêng cho task và **push ngay nhánh đó lên remote**. Message rõ, dạng `feat(booking): T303 prevent overselling on concurrent holds` hoặc `test(payment): T402 cover expiry race`; dùng `docs`, `fix`, `chore` khi phù hợp. Không gộp nhiều task chưa hoàn tất vào một commit; không ghi DONE trước test. Nếu task cần nhiều commit, mỗi commit nói rõ phần làm và ID, commit cuối đóng task; push sau khi task xong.
+- Mở PR `feature/<module>` → `develop` sau khi module đủ task và CI xanh; xử lý review/CI, merge, cập nhật local `develop`. PR `develop` → `main` sau khi các task của đợt phát hành qua integration/UAT và CI xanh. Không push code module thẳng vào `main`; không dùng force-push trên nhánh chung.
+- Task block/gián đoạn: ghi PROGRESS và giữ working tree, không commit nửa vời với nhãn DONE. Nếu cần chia sẻ WIP, commit có tiền tố `wip(<module>): Txxx ...`, push và ghi rõ chưa đạt gate; không merge WIP. Quy tắc quyền branch protection trên GitHub phải được cấu hình riêng; tài liệu không tự thực thi bảo vệ nhánh.
 
 ## 6. Lệnh hiện có
 
