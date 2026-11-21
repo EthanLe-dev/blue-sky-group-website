@@ -349,7 +349,7 @@ Toàn bộ chi tiết về Tech Stack, Phong cách thiết kế kiến trúc (Mo
 
 | Nội dung chính                                                                                                                                                                                                                                                                                                        |
 | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Toàn bộ giao diện như bản final. Deploy đơn giản: Vercel (frontend) + Cloudflare free (backend + DB + R2). Thanh toán giả lập (QR mẫu). Email/SMS giả lập (hiển thị trên giao diện). Xuất Excel/PDF. Bản đồ. Analytics GA4. Chưa cần: tên miền, staging, SSL riêng, CDN riêng, thanh toán thật, SMS/Zalo thật, Redis. |
+| Toàn bộ giao diện như bản final. Deploy đơn giản: Vercel (frontend) + Cloudflare free (backend + DB; R2 lưu media riêng). Thanh toán giả lập (QR mẫu). Email/SMS giả lập (hiển thị trên giao diện). Xuất Excel/PDF. Bản đồ. Analytics GA4. Chưa cần: tên miền, staging, SSL riêng, CDN riêng, thanh toán thật, SMS/Zalo thật, Redis. |
 
 ### Giai đoạn 1 – Lõi bán tour (Production)
 
@@ -383,7 +383,7 @@ Toàn bộ chi tiết về Tech Stack, Phong cách thiết kế kiến trúc (Mo
 4. Xuất **Excel** và **PDF** hoạt động đúng.
 5. **Bản đồ** và **Google Analytics** hoạt động.
 6. Trang quản trị admin CRUD được tour, đơn hàng, nội dung.
-7. Deploy thành công trên Vercel + Cloudflare và truy cập được.
+7. Deploy thành công trên Vercel + Render + Neon và truy cập được.
 
 ### 12.2 Nghiệm thu Production (Giai đoạn 1+)
 
@@ -436,3 +436,13 @@ Toàn bộ chi tiết về Tech Stack, Phong cách thiết kế kiến trúc (Mo
 | **RPO / RTO**                               | Lượng dữ liệu tối đa có thể mất / thời gian tối đa để khôi phục sau sự cố            |
 | **OWASP Top 10**                            | Danh sách 10 rủi ro bảo mật ứng dụng web phổ biến nhất                               |
 | **Modular Monolith**                        | Ứng dụng triển khai một khối nhưng chia thành các module nghiệp vụ tách biệt rõ ràng |
+
+## Quyết định bổ sung ngày 22/11/2026 — Admin và poster
+
+Người dùng cho phép giả định giá/đặt chỗ và thông tin công ty để triển khai demo, với điều kiện **đều sửa được ở Admin**. Quyết định này thay thế các mục đang chờ BA về giá trị ban đầu trong tài liệu; chưa phải duyệt chính sách bán thật. Không có deadline bắt buộc, vẫn thực hiện theo dependency và quality gates.
+
+- Mặc định demo: giữ chỗ20 phút, cọc30%, trả dư trước ngày đi7 ngày, adult≥12/child2–<12/infant<2; adult/child1 chỗ, infant0; tối đa20 khách/đơn. Policy huỷ demo: nhân viên xét duyệt theo chính sách hiển thị, không tự hoàn tiền. SLA demo: phản hồi trong1 ngày làm việc. Tất cả hiển thị nhãn demo khi chưa được thay bằng dữ liệu thật.
+- Admin quản lý mặc định đặt chỗ, giá/tuổi/chỗ/cọc/hạn trả theo lịch khởi hành, policy huỷ theo tour, thông tin doanh nghiệp/liên hệ/giấy phép/tài liệu/SLA. Thông tin chưa có dùng placeholder rõ ràng, không bịa giấy phép hay số điện thoại thật; link gọi/Zalo chưa cấu hình phải disabled.
+- Thay đổi cấu hình có validation, version, audit; chỉ tác động đơn mới. Quote đang hiệu lực dùng snapshot cấu hình đã chốt; booking cũ giữ nguyên giá/policy/hạn, không cập nhật ngược. Sửa giá/tuổi/chỗ/cọc của departure tăng price_version và yêu cầu báo giá lại.
+- Tour do team thiết kế poster. Admin upload/thay poster và nhập dữ liệu tour có cấu trúc; poster không thay trường giá/lịch/itinerary dùng tìm kiếm, SEO và checkout. Chưa nhận được ảnh mẫu trong chat hoặc workspace (chỉ có logo), cần bổ sung để chốt bố cục/tỉ lệ poster.
+- Chọn Render Free cho Go API và Neon Free cho PostgreSQL để demo nhỏ, trong quota miễn phí; không tự nâng gói trả tiền. Cần smoke test thực tế, nhất là cold start và PDF, trước khi xác nhận đủ năng lực. Cloudflare vẫn cho Turnstile/R2, không làm Go host/DB. Miễn phí backend/DB không đồng nghĩa đã xác nhận chi phí toàn hệ thống.

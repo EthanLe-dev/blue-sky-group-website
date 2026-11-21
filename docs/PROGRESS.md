@@ -5,9 +5,9 @@
 - Giai đoạn hiện tại: hoàn thiện tài liệu trước triển khai; chưa có frontend/admin/backend, migration hoặc Dockerfile ứng dụng.
 - Repository: https://github.com/EthanLe-dev/blue-sky-group-website, nhánh mặc định `main` tại `f80a064`; nhánh code chính `develop` đã tạo và push. Tài liệu TASKS/design/testing được commit `65d0708` trên `develop`.
 - Đọc theo thứ tự: AGENTS → MVP/final/architecture → PLAN → TASKS → schema/API → design/testing → phần nhật ký mới nhất trong file này. Không bắt đầu từ mục “tiếp theo” cũ mà bỏ qua bàn giao hiện tại.
-- Task có thể bắt đầu ngay: T101/T102/T103 (scaffold); trước UI cần T003/T004, T201 và đọc taste-skill. T001/T002 cần chốt nghiệp vụ/host, có thể scaffold với fixture demo có nhãn trong lúc chờ.
-- Cần xác nhận: cọc/tuổi/chỗ em bé/hạn dư nợ/huỷ hoàn/SLA; nội dung và quyền ảnh; host demo và tiêu chí Cloudflare trong tài liệu nguồn. Render+Neon vẫn là đề xuất.
-- Chưa có URL website hoặc kết quả test ứng dụng. Không có task triển khai Txxx nào DONE. Không có secret ứng dụng được cấp trong các file tài liệu.
+- Task có thể bắt đầu ngay: T101/T102/T103 (scaffold); trước UI cần T003/T004, T201 và đọc taste-skill. T001/T002 đã chốt hướng demo, có thể scaffold với fixture có nhãn.
+- Đã chốt dùng giá trị giả định sửa được qua Admin; Render Free + Neon Free trong quota; không deadline. Đã nhận poster mẫu Ninh Chữ; còn thiếu nội dung tour đầy đủ và tài khoản dịch vụ khi deploy.
+- Chưa có URL website hoặc kết quả test ứng dụng. T001/T002 DONE về quyết định demo; chưa có task code ứng dụng DONE. Không có secret ứng dụng được cấp trong các file tài liệu.
 
 ## Lịch sử thực hiện
 
@@ -71,3 +71,15 @@ Cập nhật lần cuối: 22/11/2026
 - [ ] Xây dựng Database Migration scripts cho PostgreSQL.
 - [ ] Xây dựng khung Backend Go + Gin với kiến trúc Modular Monolith.
 - [ ] Dựng giao diện Frontend Next.js (Khách hàng) và React (Admin).
+
+### 22/11/2026 — T001/T002: Chốt demo, Admin settings và poster
+
+Người dùng cho phép giả định giá/đặt chỗ/thông tin công ty, bắt buộc sửa ở Admin; tour có poster từ team thiết kế; chọn Render+Neon nếu miễn phí đủ demo; không deadline. Đã cập nhật PLAN, requirements, architecture, schema/API, design/testing, AGENTS; thêm T113/T114 cho cấu hình và T217/T218 cho poster (tổng66 task). Kiểm tra nguồn chính thức gói miễn phí; năng lực demo vẫn cần T704 smoke test.
+
+Ảnh poster chưa có trong chat/tool/workspace; workspace chỉ có logo. Không khẳng định đã phân tích ảnh mẫu. Cần người dùng đính kèm lại, chưa chặn scaffold. Nhánh `docs/admin-settings-and-posters` từ develop; task tài liệu T001/T002 có commit riêng cho quyết định Admin và hạ tầng, chưa có code/Admin thật. Kiểm links/fences/IDs và git diff --check trước push; chưa build/test app. Bước tiếp: T101/T103; settings và poster triển khai theo dependency, không hardcode chính sách demo.
+
+### 22/11/2026 — T003a: Nhận poster mẫu
+
+Đã xem ảnh người dùng gửi, lưu nguyên bản vào docs/assets/ninh-chu-poster-reference.png (1051×1497px). Ghi thông tin đọc từ poster và giới hạn xác minh trong docs/poster-reference.md; cập nhật design-style/PLAN/AGENTS/TASKS. T003a DONE, T003 chưa DONE vì ảnh không có giá theo đối tượng/ngày khởi hành/chỗ/chính sách đầy đủ. Thông tin liên hệ trên ảnh chưa xác nhận hiện hành, không tự seed thành dữ liệu thật.
+
+Kiểm chứng: dimensions qua Pillow, bản sao SHA-256 bằng file đính kèm, Markdown links và git diff --check. Chưa có UI để chạy browser/gate. Commit/push trên nhánh docs/admin-settings-and-posters; chưa merge develop. Bước tiếp: scaffold T101/T103, dùng poster làm tham chiếu và fixture có nhãn theo nhu cầu.

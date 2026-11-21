@@ -62,40 +62,15 @@ Hệ thống backend được xây dựng theo mô hình **Modular Monolith** k�
 ### 3.1 Môi trường MVP Demo (Tối ưu chi phí & Triển khai nhanh)
 Phục vụ mục tiêu nghiệm thu giao diện, trải nghiệm người dùng thực tế và luồng nghiệp vụ không phát sinh chi phí hạ tầng.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                                 INTERNET                                    │
-└──────────────┬───────────────────────────────────────────────┬──────────────┘
-               │                                               │
-        ┌──────▼──────┐                               ┌────────▼────────┐
-        │   Vercel    │                               │   Cloudflare    │
-        │ (Free Tier) │                               │  (Free / Edge)  │
-        │             │                               │                 │
-        │ ┌─────────┐ │          HTTPS / JSON         │ ┌─────────────┐ │
-        │ │ Next.js │ │ ─────────────────────────────►│ │   Go + Gin  │ │
-        │ │ Public  │ │                               │ │   Backend   │ │
-        │ └─────────┘ │                               │ └──────┬──────┘ │
-        │             │                               │        │        │
-        │ ┌─────────┐ │                               │ ┌──────▼──────┐ │
-        │ │  React  │ │                               │ │ PostgreSQL  │ │
-        │ │  Admin  │ │                               │ │ (Neon/D1/VM)│ │
-        │ └─────────┘ │                               │ └─────────────┘ │
-        └─────────────┘                               │                 │
-                                                      │ ┌─────────────┐ │
-                                                      │ │ Cloudflare  │ │
-                                                      │ │  R2 Storage │ │
-                                                      │ └─────────────┘ │
-                                                      │                 │
-                                                      │ ┌─────────────┐ │
-                                                      │ │  Turnstile  │ │
-                                                      │ │  (Anti-spam)│ │
-                                                      │ └─────────────┘ │
-                                                      └─────────────────┘
+```text
+Browser → Vercel public/admin → Render Free (Go/Gin) → Neon Free (PostgreSQL)
+                                        ├→ Cloudflare R2 (media)
+                                        └→ Cloudflare Turnstile (form verification)
 ```
 
 - **Frontend:** Next.js (Public) và React (Admin) deploy trực tiếp trên **Vercel** thông qua Git integration, tự động build và có sẵn CDN/SSL.
-- **Backend API:** Container Go-Gin deploy trên môi trường Cloudflare / Cloud compute free tier.
-- **Database:** PostgreSQL (Cloud instance như Neon/Supabase free tier hoặc Cloudflare D1 compatibility).
+- **Backend API:** Go-Gin deploy trên Render Free; ngủ khi không có truy cập, không lưu file bền trên filesystem local.
+- **Database:** PostgreSQL trên Neon Free; không dùng D1/SQLite. TLS cho kết nối, pooled URL cho app và direct URL cho migration.
 - **Static Assets & Media:** Lưu trữ tại **Cloudflare R2** bucket kết hợp đường dẫn CDN.
 - **Bảo mật Form:** Tích hợp widget Cloudflare Turnstile miễn phí chống bot submit form.
 

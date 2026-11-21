@@ -83,3 +83,10 @@ Production kiểm backup hằng ngày, restore sang DB riêng, RPO≤24h/RTO≤4
 CI hiện có app jobs tự bật theo manifest. T112/T702 cần bổ sung E2E/contract/migration checks khi triển khai; không coi các bước chưa tồn tại là đã chạy. Deploy workflow hiện chỉ gửi hook, chưa bảo đảm host deploy đúng SHA hoặc hoàn tất. T705 phải pin revision/kiểm revision, chờ provider readiness và smoke trước đánh dấu deployment thành công; checkout SHA trong Actions tự nó không pin được deploy hook.
 
 Khi có test artifact, lưu report JUnit/coverage/Playwright trace/screenshot/log redacted vào CI artifacts, đề xuất14ngày (30ngày cho release evidence); không commit PII/video quá lớn. PROGRESS ghi ID task, commit, môi trường/tool versions, lệnh, exit/result, URL/path evidence, failures/waivers và phần chưa chạy. Kết quả tài liệu và kết quả ứng dụng luôn phân biệt rõ.
+
+## Case bổ sung quyết định Admin/poster
+
+- Q19: admin sửa default cọc/hold/max khách/tuổi, giá trị ngoài phạm vi và role không quyền bị từ chối; stale version409, audit/cache cập nhật. Tạo departure mới dùng default mới, departure cũ không đổi; quote còn hạn/booking cũ giữ snapshot. Test đổi default trong lúc checkout, policy/ledger không bị cập nhật ngược.
+- Q20: sửa contact/license/SLA, reload public thấy đúng giá trị; placeholder không thành thông tin công ty thật, input XSS bị chặn. Không public secret/audit.
+- Q21: upload/thay poster sai MIME/quá lớn bị reject; ảnh dọc/ngang/mobile không mất chữ. Đổi giá/lịch làm poster mất xác nhận; xác nhận revision cũ409; poster chưa xác nhận không public. Tính tiền không phụ thuộc chữ trong ảnh.
+- Render/Neon demo: kiểm cold start, restart không mất dữ liệu, tạo PDF với giới hạn tài nguyên; kiểm dashboard quota và thiết lập tránh vượt chi phí. Nếu gói miễn phí không đủ, báo kết quả và chọn giải pháp trước khi nâng gói.

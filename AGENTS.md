@@ -18,7 +18,7 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 - Giữ module theo architecture; handler xử lý HTTP, service giữ luật nghiệp vụ/transaction, repository truy cập DB. Dùng interface ở ranh giới tích hợp cần thay mock/real; tránh kiến trúc nhiều lớp không cần thiết.
 - REST `/api/v1`, contract trong api-spec. Không cho frontend truy cập DB/R2 bằng secret. Backend quyết định giá, số chỗ, quyền và trạng thái đơn.
 - MVP: thanh toán, email, SMS giả lập có nhãn rõ; tài khoản chỉ dành cho nhân viên. Redis, thanh toán thật, tài khoản khách, mã giảm giá, self-service huỷ/đổi thuộc giai đoạn sau.
-- Không thay PostgreSQL bằng D1/SQLite. Phương án demo đề xuất: Render Free cho Go, Neon Free cho PostgreSQL; hạn mức và ngủ máy được ghi trong PLAN. Chưa chốt/triển khai dịch vụ chỉ bằng việc ghi vào tài liệu.
+- Không thay PostgreSQL bằng D1/SQLite. Phương án demo đã chọn trong hạn mức miễn phí: Render Free cho Go, Neon Free cho PostgreSQL; hạn mức và ngủ máy được ghi trong PLAN. Chưa chốt/triển khai dịch vụ chỉ bằng việc ghi vào tài liệu.
 
 ## 3. Quy tắc không được bỏ qua
 
@@ -70,3 +70,8 @@ docker compose down         # giữ dữ liệu volume; không thêm -v nếu ch
 ```
 
 Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools`. Chạy ứng dụng trên host sau milestone M1. Khi có Dockerfile, bổ sung app/Nginx vào Compose cùng kiểm tra health và build, không để tham chiếu file chưa tồn tại.
+
+
+## Quyết định người dùng 22/11/2026
+
+Được giả định giá/đặt chỗ và thông tin công ty cho demo, bắt buộc sửa được trong Admin, có validation/audit/version/snapshot, không đổi ngược đơn đã đặt. Tour có poster do team thiết kế, kèm dữ liệu có cấu trúc. Đã chọn Render Free + Neon Free trong quota, không tự nâng gói mất phí. Không deadline bắt buộc. Ảnh poster mẫu đã nhận và được ghi trong `docs/poster-reference.md`; dùng đúng nguồn, không suy diễn giá/lịch/đối tượng chưa có trên ảnh. Chi tiết bổ sung trong PLAN/schema/API thay thế các giả định cũ chờ BA cho demo.

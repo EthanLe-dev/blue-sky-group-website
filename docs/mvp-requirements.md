@@ -15,7 +15,7 @@
 
 - **Show được toàn bộ giao diện** như bản final (trang chủ, danh mục, chi tiết tour, đặt tour, thanh toán, quản trị, v.v.).
 - Cho khách hàng **trải nghiệm thực tế** các luồng chính: duyệt tour → đặt tour → thanh toán (giả lập) → xác nhận.
-- **Deploy đơn giản** trên Vercel + Cloudflare free để demo, chưa cần hạ tầng production.
+- **Deploy đơn giản** trên Vercel + Render Free + Neon Free để demo, chưa cần hạ tầng production.
 - Các chức năng nghiệp vụ nặng (thanh toán thật, SMS, tên miền riêng...) sẽ bổ sung ở bản final.
 
 ---
@@ -64,7 +64,7 @@ Toàn bộ thông tin về Tech Stack, Mô hình kiến trúc, Cấu trúc modul
 | Hạng mục                          | Lý do hoãn                                                     | Tham chiếu bản final       |
 | --------------------------------- | -------------------------------------------------------------- | --------------------------- |
 | **Tên miền riêng**                | Chưa cần, dùng domain Vercel/Cloudflare mặc định               | —                           |
-| **Máy chủ production**            | Dùng free tier Vercel + Cloudflare để demo                      | NFR-10 → NFR-15             |
+| **Máy chủ production**            | Dùng free tier Vercel + Render Free + Neon Free để demo                      | NFR-10 → NFR-15             |
 | **Môi trường staging**            | Chỉ có 1 môi trường demo                                       | NFR-14                      |
 | **SSL riêng**                     | Vercel & Cloudflare tự cấp SSL mặc định                        | NFR-20                      |
 | **CDN riêng**                     | Vercel Edge + Cloudflare đã có CDN tích hợp                    | NFR-05                      |
@@ -168,7 +168,7 @@ Toàn bộ thông tin về Tech Stack, Mô hình kiến trúc, Cấu trúc modul
 8. **Google Analytics** ghi nhận được sự kiện xem trang và sự kiện tuỳ chỉnh.
 9. **Trang quản trị admin** CRUD được tour, đơn hàng, nội dung; phân quyền cơ bản.
 10. **Chống spam** Cloudflare Turnstile hoạt động trên các form.
-11. **Deploy thành công** trên Vercel (frontend) + Cloudflare (backend) và truy cập được qua URL demo.
+11. **Deploy thành công** trên Vercel (frontend) + Render Free (backend) + Neon Free (database) và truy cập được qua URL demo.
 
 ---
 
@@ -258,3 +258,13 @@ Toàn bộ thông tin về Tech Stack, Mô hình kiến trúc, Cấu trúc modul
 | INT-09           | Hoá đơn điện tử              | C             | ❌   |                                  |
 
 **Chú thích:** ✅ = Vào MVP, ❌ = Hoãn, ⚠️ = Giao diện có nhưng chức năng chưa đầy đủ.
+
+## Quyết định bổ sung ngày 22/11/2026 — Admin và poster
+
+Người dùng cho phép giả định giá/đặt chỗ và thông tin công ty để triển khai demo, với điều kiện **đều sửa được ở Admin**. Quyết định này thay thế các mục đang chờ BA về giá trị ban đầu trong tài liệu; chưa phải duyệt chính sách bán thật. Không có deadline bắt buộc, vẫn thực hiện theo dependency và quality gates.
+
+- Mặc định demo: giữ chỗ20 phút, cọc30%, trả dư trước ngày đi7 ngày, adult≥12/child2–<12/infant<2; adult/child1 chỗ, infant0; tối đa20 khách/đơn. Policy huỷ demo: nhân viên xét duyệt theo chính sách hiển thị, không tự hoàn tiền. SLA demo: phản hồi trong1 ngày làm việc. Tất cả hiển thị nhãn demo khi chưa được thay bằng dữ liệu thật.
+- Admin quản lý mặc định đặt chỗ, giá/tuổi/chỗ/cọc/hạn trả theo lịch khởi hành, policy huỷ theo tour, thông tin doanh nghiệp/liên hệ/giấy phép/tài liệu/SLA. Thông tin chưa có dùng placeholder rõ ràng, không bịa giấy phép hay số điện thoại thật; link gọi/Zalo chưa cấu hình phải disabled.
+- Thay đổi cấu hình có validation, version, audit; chỉ tác động đơn mới. Quote đang hiệu lực dùng snapshot cấu hình đã chốt; booking cũ giữ nguyên giá/policy/hạn, không cập nhật ngược. Sửa giá/tuổi/chỗ/cọc của departure tăng price_version và yêu cầu báo giá lại.
+- Tour do team thiết kế poster. Admin upload/thay poster và nhập dữ liệu tour có cấu trúc; poster không thay trường giá/lịch/itinerary dùng tìm kiếm, SEO và checkout. Chưa nhận được ảnh mẫu trong chat hoặc workspace (chỉ có logo), cần bổ sung để chốt bố cục/tỉ lệ poster.
+- Chọn Render Free cho Go API và Neon Free cho PostgreSQL để demo nhỏ, trong quota miễn phí; không tự nâng gói trả tiền. Cần smoke test thực tế, nhất là cold start và PDF, trước khi xác nhận đủ năng lực. Cloudflare vẫn cho Turnstile/R2, không làm Go host/DB. Miễn phí backend/DB không đồng nghĩa đã xác nhận chi phí toàn hệ thống.

@@ -283,3 +283,14 @@ Contract tests bắt buộc ở M1–M7: envelope/status; money/date/enum; pagin
 ## 10. Sau MVP — chưa mount endpoint
 
 Customer signup/login/OTP/OAuth, coupon validation, newsletter subscribe, saved passengers, review submission, self-service cancel/change, provider webhooks, electronic invoice, roster upload và contract signing sẽ có contract riêng khi triển khai. Webhook thật phải xác minh chữ ký/raw body + amount/currency/reference, dedupe event ID, xử lý muộn bằng reconciliation. Không sử dụng `/mock-confirm` làm cổng thanh toán thật.
+
+## Bổ sung hợp đồng Admin settings và poster (22/11/2026)
+
+Các giá trị giữ chỗ20 phút/cọc30%/giới hạn20 khách ở trên là seed demo. Runtime đọc cấu hình/snapshot theo database-schema.
+
+- `GET /admin/site-settings/{key}` trả `{key,value,version,updated_at}`. `PUT /admin/site-settings/{key}` body `{value,expected_version}` →200 cùng DTO, stale409 VERSION_CONFLICT. Chỉ admin; allowlist/schema/validation theo database-schema, ghi audit. Thêm key `booking_defaults`, `company_profile`; `response_sla` gồm business_days/message. Không nhận secret qua settings.
+- Public `GET /site-settings` chỉ trả dữ liệu công ty/liên hệ/SLA đã cấu hình và `is_demo`; không trả nội bộ/audit. Trường liên hệ trống =>null. Admin form có preview và nhãn đang dùng dữ liệu mẫu.
+- `GET /booking-defaults` public trả `{max_travellers,hold_minutes,is_demo}` để dựng form; giá và tuổi chính thức lấy departure/quote. Quote trả thêm `settings_version,hold_minutes,max_travellers`; booking giữ snapshot dù Admin đổi default giữa checkout.
+- Giá, cọc, hạn trả, tuổi/chỗ theo departure vẫn do catalog.write sửa; settings global chỉ admin. Policy huỷ chỉnh qua tour editor. Refund tiếp tục nhân viên xét duyệt theo snapshot, chưa có self-service.
+- TourWrite thêm `poster_media_id?`; TourDetail thêm `poster: Media|null,poster_revision`. `POST /admin/tours/{id}/poster-verification` body `{expected_poster_revision,confirmed:true}` cần catalog.write, ghi người/thời gian kiểm. Server kiểm revision và cập nhật xác nhận trong lock tour; mutation giá/lịch phải invalidate xác nhận trong cùng thứ tự lock đã quy định. Không gửi poster chưa xác nhận ra public.
+- Admin được cảnh báo “Kiểm tra poster khi thay đổi giá/lịch”; phải xem preview trước xác nhận. Dữ liệu có cấu trúc là nguồn tính tiền; không OCR tự ghi giá từ poster trong MVP. File giới hạn/validation dùng media upload hiện có, không endpoint upload riêng.
