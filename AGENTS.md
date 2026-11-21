@@ -75,3 +75,11 @@ Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools
 ## Quyết định người dùng 22/11/2026
 
 Được giả định giá/đặt chỗ và thông tin công ty cho demo, bắt buộc sửa được trong Admin, có validation/audit/version/snapshot, không đổi ngược đơn đã đặt. Tour có poster do team thiết kế, kèm dữ liệu có cấu trúc. Đã chọn Render Free + Neon Free trong quota, không tự nâng gói mất phí. Không deadline bắt buộc. Ảnh poster mẫu đã nhận và được ghi trong `docs/poster-reference.md`; dùng đúng nguồn, không suy diễn giá/lịch/đối tượng chưa có trên ảnh. Chi tiết bổ sung trong PLAN/schema/API thay thế các giả định cũ chờ BA cho demo.
+
+## Animation bằng GSAP
+
+Người dùng yêu cầu dùng GSAP cho animation của website. `frontend/` cài `gsap` và `@gsap/react` trong package/lockfile; dùng cho hero entrance, timeline nhiều phần và gallery/moment có mục đích theo `docs/design-style.md`. Đọc skill `gsap-web` khi triển khai, cùng taste-skill cho giao diện. Trong React dùng `useGSAP()`/`gsap.context()` và cleanup khi unmount; đăng ký plugin trước khi dùng. Chỉ import trong client component, không truy cập `window` khi SSR. Tôn trọng `prefers-reduced-motion`, đảm bảo nội dung hiện sẵn khi JS không chạy, ưu tiên transform/opacity. Không thêm smooth-scroll/pin chỉ để trang trí; checkout/admin giữ thao tác rõ ràng.
+
+## Tiết kiệm công sức bằng ponytail
+
+Người dùng yêu cầu Agent áp dụng skill `ponytail` khi xây dựng. Trước mỗi task code/review, đọc skill hiện có trong catalog và dùng mức `full` mặc định: hiểu toàn bộ nơi thay đổi tác động, chọn cách nhỏ nhất giải quyết đủ yêu cầu, tái dùng code/thư viện đang có, tránh thêm abstraction hoặc dependency không cần thiết. Chỉ viết test có ý nghĩa cho logic mới; không bỏ validation, bảo mật, accessibility, concurrency hoặc kiểm tra bắt buộc để tiết kiệm token. Câu trả lời gọn, nêu kết quả kiểm chứng thật và rủi ro còn lại. User có thể đổi mức hoặc yêu cầu dừng skill ở phiên sau.
