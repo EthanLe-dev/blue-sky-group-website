@@ -24,7 +24,10 @@ func testApp(t *testing.T) *App {
 	t.Helper()
 	url := os.Getenv("TEST_DATABASE_URL")
 	if url == "" {
-		if os.Getenv("CI")=="true"{t.Fatal("CI requires TEST_DATABASE_URL")};t.Skip("TEST_DATABASE_URL unset: integration not run")
+		if os.Getenv("CI") == "true" {
+			t.Fatal("CI requires TEST_DATABASE_URL")
+		}
+		t.Skip("TEST_DATABASE_URL unset: integration not run")
 	}
 	parsed, err := pgxpool.ParseConfig(url)
 	if err != nil || !strings.HasSuffix(parsed.ConnConfig.Database, "_test") {
@@ -281,5 +284,25 @@ func TestMigrationRollbackAndForeignKeys(t *testing.T) {
 	a.DB.QueryRow(ctx, "SELECT to_regclass('rollback_probe') IS NOT NULL").Scan(&exists)
 	if exists {
 		t.Fatal("DDL rollback failed")
+	}
+}
+
+func TestSessionCSRFSameOriginBrowserGET(t *testing.T) {
+	a := testApp(t)
+	req := httptest.NewRequest("GET", "/api/v1/admin/auth/session-csrf", nil)
+	req.Header.Set("Referer", "http://localhost:5173/")
+	req.Header.Set("Sec-Fetch-Site", "same-origin")
+	req.AddCookie(&http.Cookie{Name: "staff_refresh", Value: "test-only-token"})
+	w := httptest.NewRecorder()
+	a.Router().ServeHTTP(w, req)
+	if w.Code != 200 {
+		t.Fatal(w.Body)
+	}
+	req = httptest.NewRequest("GET", "/api/v1/admin/auth/session-csrf", nil)
+	req.AddCookie(&http.Cookie{Name: "staff_refresh", Value: "test-only-token"})
+	w = httptest.NewRecorder()
+	a.Router().ServeHTTP(w, req)
+	if w.Code != 403 {
+		t.Fatal("unverified GET accepted")
 	}
 }

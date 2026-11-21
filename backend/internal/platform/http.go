@@ -69,7 +69,7 @@ func (a *App) Router() *gin.Engine {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 		defer cancel()
 		var ready bool
-		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000001_identity.sql')").Scan(&ready)
+		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000002_settings.sql')").Scan(&ready)
 		if e != nil || !ready {
 			c.JSON(503, gin.H{"status": "not_ready"})
 			return
@@ -121,6 +121,18 @@ func (a *App) cors(c *gin.Context) {
 	c.Next()
 }
 func (a *App) origin(c *gin.Context) {
+	if c.Request.Method == http.MethodGet && c.GetHeader("Origin") == "" && c.GetHeader("Sec-Fetch-Site") == "same-origin" {
+		ref, e := url.Parse(c.GetHeader("Referer"))
+		if e == nil {
+			for _, o := range a.Config.Origins {
+				if ref.Scheme+"://"+ref.Host == o {
+					c.Next()
+					return
+				}
+			}
+		}
+	}
+
 	for _, o := range a.Config.Origins {
 		if o == c.GetHeader("Origin") {
 			c.Next()

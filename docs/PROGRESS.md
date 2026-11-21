@@ -121,3 +121,5 @@ T114: form settings có test save optimistic version và giữ input khi conflic
 ### 22/11/2026 — T111 container và local runbook
 
 Dockerfile backend nonroot/distroless, Next standalone nonroot, Admin Nginx unprivileged; profile app có migration riêng trước backend health, public/admin/gateway. `docker compose build`, `up -d --wait`, bootstrap và HTTP readiness/openapi/public/admin đều PASS. init_local tạo secret ngẫu nhiên trong .env ignored, không ghi đè file cũ. Test browser real đã kiểm token/cookie qua proxy. Nginx dùng Docker resolver tránh IP cũ sau recreate. README/runbook ghi lệnh chạy, migration/rollback và giới hạn local/demo. Chưa deploy Render/Neon.
+
+T107 hồi quy browser: GET session-csrf cùng nguồn thiếu Origin giờ yêu cầu Referer allowlist + Sec-Fetch-Site=same-origin; request không xác minh bị403. T103 ready kiểm migration settings mới nhất. Bộ go vet/test-race/build chạy lại PASS; test schema/SQL/restore không dùng DB ứng dụng.
