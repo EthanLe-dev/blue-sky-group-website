@@ -1,0 +1,74 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+service-account*.json
+
+# JavaScript / TypeScript generated files (keep package-lock.json)
+node_modules/
+.next/
+out/
+dist/
+.turbo/
+.vite/
+*.tsbuildinfo
+next-env.d.ts
+.npm/
+.pnpm-store/
+
+# Go build output (keep go.mod and go.sum)
+/backend/bin/
+/backend/tmp/
+/backend/server
+/backend/server.exe
+*.test
+*.test.exe
+coverage.out
+
+# Test / analysis / logs
+coverage/
+playwright-report/
+test-results/
+.nyc_output/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local storage, exports, DB backups (do not ignore source PDFs/media globally)
+/storage/
+/backend/storage/
+/uploads/
+/exports/
+/backups/
+/data/
+*.dump
+*.sql.gz
+*.sqlite
+*.sqlite3
+
+# Deployment caches and local state
+.vercel/
+.wrangler/
+.docker-data/
+
+# OS / editor local files
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+*.swp
+*.swo
+*~
+__pycache__/
+.pytest_cache/
+.venv/

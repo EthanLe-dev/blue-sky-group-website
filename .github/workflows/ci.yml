@@ -1,0 +1,199 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  foundation:
+    name: Documents and local configuration
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      frontend: ${{ steps.detect.outputs.frontend }}
+      admin: ${{ steps.detect.outputs.admin }}
+      backend: ${{ steps.detect.outputs.backend }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check required documents are populated
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in AGENTS.md agent/PLAN.md docs/final-requirements.md docs/mvp-requirements.md docs/architecture.md docs/database-schema.md docs/api-spec.md .env.example .gitignore docker-compose.yml; do
+            test -s "$file" || { echo "Missing or empty: $file"; exit 1; }
+          done
+          test ! -e agent/AGENT.md
+      - name: Validate Compose including optional services
+        run: docker compose --env-file .env.example --profile production-tools config --quiet
+      - name: Reject tracked environment secrets
+        shell: bash
+        run: |
+          set -euo pipefail
+          leaked=$(git ls-files | grep -E '(^|/)\.env($|\.)' | grep -vE '(^|/)\.env(\.[^/]+)?\.example$' || true)
+          if [ -n "$leaked" ]; then
+            echo "Environment files must not be tracked:"
+            echo "$leaked"
+            exit 1
+          fi
+      - name: Detect scaffolded applications
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          for app in frontend admin; do
+            if [ -f "$app/package.json" ]; then
+              echo "$app=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "$app=false" >> "$GITHUB_OUTPUT"
+              echo "### $app: not scaffolded; application checks skipped" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done
+          if [ -f backend/go.mod ]; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+            echo "### backend: not scaffolded; Go checks skipped" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+  frontend:
+    name: Public frontend quality
+    needs: foundation
+    if: needs.foundation.outputs.frontend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: frontend
+    env:
+      NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_API_BASE_URL: /api/v1
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      NEXT_PUBLIC_ANALYTICS_ENABLED: "false"
+      NEXT_PUBLIC_DEMO_MODE: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:ci
+      # Static generation must use a test fixture/API mock, never a live production API.
+      - run: npm run build
+
+  admin:
+    name: Admin frontend quality
+    needs: foundation
+    if: needs.foundation.outputs.admin == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: admin
+    env:
+      VITE_API_BASE_URL: /api/v1
+      VITE_DEMO_MODE: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: admin/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:ci
+      - run: npm run build
+
+  backend:
+    name: Go quality and PostgreSQL tests
+    needs: foundation
+    if: needs.foundation.outputs.backend == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: backend
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: blue_sky_test
+          POSTGRES_USER: blue_sky_test
+          POSTGRES_PASSWORD: ci-test-only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U blue_sky_test -d blue_sky_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      APP_ENV: test
+      TEST_DATABASE_URL: postgresql://blue_sky_test:ci-test-only@localhost:5432/blue_sky_test?sslmode=disable
+      PAYMENT_PROVIDER: mock
+      EMAIL_PROVIDER: mock
+      SMS_PROVIDER: mock
+      TURNSTILE_MODE: mock
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache-dependency-path: backend/go.sum
+      - name: Check formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          unformatted=$(gofmt -l .)
+          if [ -n "$unformatted" ]; then
+            echo "$unformatted"
+            exit 1
+          fi
+      - run: go mod download
+      - run: go mod verify
+      - run: go vet ./...
+      # Test harness must apply migrations and isolate data using TEST_DATABASE_URL.
+      # Integration tests are ordinary Go tests, not behind an optional build tag.
+      - run: go test -race -count=1 -coverprofile=coverage.out ./...
+      - run: go build ./...
+      - name: Verify module files remain unchanged
+        run: git diff --exit-code -- go.mod go.sum
+
+  ci:
+    name: CI result
+    if: always()
+    needs: [foundation, frontend, admin, backend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      FOUNDATION_RESULT: ${{ needs.foundation.result }}
+      FRONTEND_RESULT: ${{ needs.frontend.result }}
+      ADMIN_RESULT: ${{ needs.admin.result }}
+      BACKEND_RESULT: ${{ needs.backend.result }}
+    steps:
+      - name: Require every applicable check to pass
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$FOUNDATION_RESULT" = success
+          for result in "$FRONTEND_RESULT" "$ADMIN_RESULT" "$BACKEND_RESULT"; do
+            case "$result" in
+              success|skipped) ;;
+              *) exit 1 ;;
+            esac
+          done
+          echo "Required checks passed. Unscaffolded apps are explicitly skipped in the foundation summary." >> "$GITHUB_STEP_SUMMARY"
