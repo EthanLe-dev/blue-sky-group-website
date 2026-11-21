@@ -27,18 +27,19 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | --- | --- | --- | --- |
 | T101 | DONE 22/11/2026 — Scaffold Next.js + TypeScript, lockfile và 4 scripts CI; cài GSAP + @gsap/react | — | npm ci, lint, typecheck, test:ci, build chạy; smoke test GSAP timeline thật |
 | T102 | DONE — Scaffold React/Vite admin và 4 scripts CI | — | Cài sạch/build; test render route login |
-| T103 | Scaffold Go/Gin, config loader, log redaction, health/ready | — | go vet/test/build; env thiếu và DB lỗi trả đúng lỗi, secret không log |
-| T104 | DB pool, migration runner, test harness PostgreSQL tách dữ liệu | T103 | Up DB sạch, chạy lại không lặp; rollback/restore thử trong DB test |
-| T105 | Migration identity/RBAC/guest/audit, seed quyền, bootstrap admin | T104 | FK/unique đúng; seed hai lần không trùng; không có password mặc định |
-| T106 | Login/logout/refresh rotation/reset password mock | T105 | Sai mật khẩu, expired, refresh reuse, revoke session đều có test |
-| T107 | Middleware RBAC, CSRF, Origin/CORS, rate limit, Turnstile adapter | T106 | Ma trận 401/403, reset/restart limiter, captcha fail; production chặn mock |
-| T108 | Guest session + lookup token storage, cookie và CSRF | T105,T107 | Session khác không chia dữ liệu; token hash; TTL và revoke đúng |
-| T109 | Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
-| T110 | Public/admin API clients và same-origin proxy | T101,T102,T108 | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
+| T103 | DONE — Scaffold Go/Gin, config loader, log redaction, health/ready | — | go vet/test/build; env thiếu và DB lỗi trả đúng lỗi, secret không log |
+| T104 | DONE — DB pool, migration runner, test harness PostgreSQL tách dữ liệu | T103 | Up DB sạch, chạy lại không lặp; rollback/restore thử trong DB test |
+| T105 | DONE — Migration identity/RBAC/guest/audit, seed quyền, bootstrap admin | T104 | FK/unique đúng; seed hai lần không trùng; không có password mặc định |
+| T106 | DONE — Login/logout/refresh rotation/reset password mock | T105 | Sai mật khẩu, expired, refresh reuse, revoke session đều có test |
+| T107 | DONE — Middleware RBAC, CSRF, Origin/CORS, rate limit, Turnstile adapter | T106 | Ma trận 401/403, reset/restart limiter, captcha fail; production chặn mock |
+| T108a | DONE — Guest session storage/cookie/CSRF | T105,T107 | Token hash, reuse/TTL/origin, session isolation qua API |
+| T108b | Lookup token storage/FK booking (chuyển M3) | T301 | Token hash/TTL/read-only và không cấp quyền thanh toán |
+| T109 | DONE — Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
+| T110 | Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
 | T111 | Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
 | T112 | Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
 
-| T113 | API cấu hình booking_defaults/company_profile/SLA, version/audit/snapshot | T105,T107,T109 | Q19/Q20: validation, quyền, version/cache và không thay đơn cũ |
+| T113 | DONE — API cấu hình booking_defaults/company_profile/SLA, version/audit/snapshot | T105,T107,T109 | Q19/Q20: validation, quyền, version/cache và không thay đơn cũ |
 | T114 | Admin forms cài đặt đặt tour/thông tin công ty | T102,T113 | Save/reload/preview, nhãn demo, lỗi field và stale version |
 
 ## M2 — Nội dung và khám phá tour
@@ -69,7 +70,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108 | Unique quote/code, FK, constraints; migrations trên DB sạch |
+| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
 | T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
 | T303 | Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
 | T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |

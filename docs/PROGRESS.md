@@ -101,3 +101,11 @@ Người dùng cho phép dữ liệu thiếu dùng giả định sửa ở Admin
 ### 22/11/2026 — T102 Admin scaffold
 
 React/Vite/TypeScript Admin có route login có nhãn, giữ dữ liệu khi sai mật khẩu; 4 scripts CI và lockfile. npm install, lint/typecheck/test:ci (2 pass)/build đạt local. Chưa có widget Turnstile công khai, đang local mock; tích hợp UI auth ở T110.
+
+### 22/11/2026 — Nền tảng Go M1 T103–T109, T113
+
+Go1.26/Gin/pgx, config validation và log chỉ request ID/method/status (không headers/body), health/ready; runner migration transaction/advisory lock, identity/RBAC/guest/settings seed, bootstrap idempotent không default password; access JWT/session rotation/reuse/logout/reset, CSRF/Origin/rate-limit DB/Turnstile real adapter, settings version/audit. Mock reset preview AES-GCM, quyền admin và audit; không gửi thật. OpenAPI nền tảng và response validation dùng kin-openapi. Các module chưa có giữ Markdown contract; chưa tạo bảng booking trước M3.
+
+`go vet`, `go test -race -count=1`, `go build` đạt trong container Go với PostgreSQL17; tests tạo schema riêng trong blue_sky_test, từ chối DB không hậu tố_test. Case: giá trị cấu hình ngoài giới hạn, stale409/audit, role403, unknown fields, origin/csrf sai, token reuse/revoke/expiry, reset một lần, limiter qua restart, migration chạy lại/FK và rollback DDL, response OpenAPI. Không có test ledger/booking vì chưa triển khai M3/M4. Các phần core liên kết chặt được kiểm chứng cùng một snapshot nền tảng; task UI/client/container có commit riêng tiếp theo.
+
+T108 được tách T108a (guest) đã làm và T108b (lookup token) sang M3 vì phụ thuộc FK booking T301; không đánh dấu lookup hoàn tất giả. T113 xử lý default settings; áp dụng snapshot lên quote/booking sẽ kiểm lại ở T302. T114 đang form theo trường; file giấy phép đính kèm chờ media T215.

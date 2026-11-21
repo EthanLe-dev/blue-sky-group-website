@@ -294,3 +294,11 @@ Các giá trị giữ chỗ20 phút/cọc30%/giới hạn20 khách ở trên là
 - Giá, cọc, hạn trả, tuổi/chỗ theo departure vẫn do catalog.write sửa; settings global chỉ admin. Policy huỷ chỉnh qua tour editor. Refund tiếp tục nhân viên xét duyệt theo snapshot, chưa có self-service.
 - TourWrite thêm `poster_media_id?`; TourDetail thêm `poster: Media|null,poster_revision`. `POST /admin/tours/{id}/poster-verification` body `{expected_poster_revision,confirmed:true}` cần catalog.write, ghi người/thời gian kiểm. Server kiểm revision và cập nhật xác nhận trong lock tour; mutation giá/lịch phải invalidate xác nhận trong cùng thứ tự lock đã quy định. Không gửi poster chưa xác nhận ra public.
 - Admin được cảnh báo “Kiểm tra poster khi thay đổi giá/lịch”; phải xem preview trước xác nhận. Dữ liệu có cấu trúc là nguồn tính tiền; không OCR tự ghi giá từ poster trong MVP. File giới hạn/validation dùng media upload hiện có, không endpoint upload riêng.
+
+## Trạng thái triển khai M1 (22/11/2026)
+
+OpenAPI máy đọc cho endpoint nền tảng ở `backend/internal/platform/openapi.json`, phục vụ qua GET `/openapi.json`; các module chưa triển khai tiếp tục theo đặc tả Markdown, sẽ bổ sung schema cùng code. GET `/admin/auth/session-csrf` có kiểm Origin, đọc cookie refresh và trả csrf_token để phục hồi phiên qua refresh sau reload; không trả raw refresh token. Backend hiện dùng TTL mặc định15 phút/7 ngày/24 giờ/15 phút reset; biến TTL trong env là định hướng cho các phiên bản sau, không giả vờ đã cấu hình được.
+
+Company profile hiện trả `{company_profile,response_sla}` từ GET `/site-settings`, DTO canonical để frontend tiêu thụ; media document IDs chưa thể thêm trước T215 nên validation yêu cầu mảng rỗng. Email/password dùng bcrypt, password12..72 bytes (giới hạn bcrypt), thay cho128 ký tự trong bản đề xuất trước. Reset preview mock mã hoá trong DB, endpoint `/admin/auth/mock-reset-deliveries` chỉ staff.write và non-production, đọc có audit. Logout/reuse/reset thu hồi phiên. GET `/admin/audit-logs` nền tảng giới hạn100 bản ghi; pagination ở module quản trị sau.
+
+Các limit hiện tại bảo vệ theo IP, lưu counter DB; chưa phối hợp limiter tại reverse proxy. API không tin X-Forwarded-For từ client; topology proxy hiện chỉ local một hop, demo phải bổ sung trust-proxy allowlist và test theo host trước triển khai công khai.
