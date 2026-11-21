@@ -5,7 +5,7 @@
 - Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
 - Nhánh hiện tại `feature/platform`, base là develop local đã hợp nhất docs/admin-settings-and-posters và feature/public-ui; remote develop/main chưa nhận code M1 cho tới khi PR/CI đạt. Không thay đổi main.
 - Chạy theo README: .env đã được tạo local bằng secret ngẫu nhiên, không commit; Docker/PostgreSQL/API/Next/Admin đang chạy, admin http://localhost:5173, API http://localhost:8080, public http://localhost:3000 (scaffold). Credential bootstrap nằm trong .env.
-- Đã kiểm: backend vet/race/integration/OpenAPI, Admin4 unit tests+lint/types/build, frontend smoke/lint/types/build, Docker build/health, hai browser E2E, local backup/restore DB test. CI remote đang được kích hoạt/kiểm tiếp ở T112.
+- Đã kiểm: backend vet/race/integration/OpenAPI, Admin4 unit tests+lint/types/build, frontend smoke/lint/types/build, Docker build/health, hai browser E2E, local backup/restore DB test. Pipeline T112 đã triển khai; trạng thái remote và merge gate xem PR #1.
 - T108b lookup token cần FK booking nên chuyển sang M3 sau T301; T108a guest hoàn tất. T113 default snapshot vào đơn sẽ kiểm ở T302. Công ty upload giấy phép chọn media chờ T215. Turnstile real adapter có, local dùng mock; chưa nghiệm thu siteverify với tài khoản thật.
 - Tiếp theo sau M1: T201/T202 và T203 catalog; dùng poster Ninh Chữ + inventory demo, mọi dữ liệu thiếu chỉnh ở Admin theo kế hoạch. Đọc TASKS/PLAN/API/schema/design/testing trước sửa.
 
@@ -125,3 +125,9 @@ Dockerfile backend nonroot/distroless, Next standalone nonroot, Admin Nginx unpr
 T107 hồi quy browser: GET session-csrf cùng nguồn thiếu Origin giờ yêu cầu Referer allowlist + Sec-Fetch-Site=same-origin; request không xác minh bị403. T103 ready kiểm migration settings mới nhất. Bộ go vet/test-race/build chạy lại PASS; test schema/SQL/restore không dùng DB ứng dụng.
 
 T112 CI lượt đầu44952940828 phát hiện frontend clean-checkout typecheck thiếu global LayoutProps (local đã có .next nên chưa lộ). Sửa layout dùng ReactNode tường minh; thêm typecheck trước Docker build để kiểm môi trường sạch. Admin và foundation đã pass; chưa ghi CI tổng PASS trước khi rerun đạt.
+
+### 22/11/2026 — T112 bàn giao và kiểm tra remote
+
+PR: https://github.com/EthanLe-dev/blue-sky-group-website/pull/1 (feature/platform → develop). Pipeline có foundation, frontend, admin, Go/PostgreSQL, container/browser và aggregate CI result. Đã thấy CI bắt lỗi LayoutProps ở checkout sạch, sửa bằng ReactNode và thêm Docker typecheck trước build. Các lần fail/cancel giữ trong GitHub history, không coi là pass. Commit tài liệu này ghi trạng thái triển khai; merge chỉ sau run của HEAD được GitHub xác nhận success. Xem PR cho kết quả cập nhật, không suy ra từ kết quả local.
+
+Nền tảng local hiện đã chạy được: Admin/login/settings, refresh/revoke/CSRF/RBAC, DB migrations/bootstrap, API proxy, health, Docker. Frontend public còn scaffold, không có tour search/booking; bắt đầu M2 ở T201/T203 tiếp theo. T108b được chuyển M3 do FK booking, company media picker chờ T215; không có deploy thật, không gửi email/SMS/thanh toán thật. Toàn bộ credentials local nằm trong .env ignored. Test Go dùng DB blue_sky_test và schema riêng; restore drill chỉ tạo/dọn hai DB test có tên ngẫu nhiên.
