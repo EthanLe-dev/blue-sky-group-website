@@ -44,6 +44,7 @@ export default async function Home() {
     <div className="home-shell" id="home-top" tabIndex={-1}>
       <Header home contact={contact} />
       <noscript><style>{`
+        .home-shell .home-header { position: relative; }
         .home-shell .home-header > .wrap { flex-wrap: wrap; }
         .home-shell .home-header > .wrap > nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
         .home-shell .home-header .menu-toggle { display: none; }
@@ -121,8 +122,9 @@ export default async function Home() {
         <section className="wrap home-block home-about" aria-labelledby="about-heading">
           <div>
             <h2 id="about-heading">Về Blue Sky Group</h2>
-            {homeCopy?.body ? <div className="prose" dangerouslySetInnerHTML={{ __html: homeCopy.body }} /> : (
-              <p>Blue Sky Group tổ chức tour du lịch và các chuyến đi theo yêu cầu cho gia đình, trường học và doanh nghiệp.</p>
+            <p>Blue Sky Group tổ chức tour du lịch và các chuyến đi theo yêu cầu cho gia đình, trường học và doanh nghiệp.</p>
+            {homeCopy?.body && (
+              <div className="prose home-about-note" dangerouslySetInnerHTML={{ __html: homeCopy.body }} />
             )}
             <Link className="btn home-button" prefetch={false} href="/about">Tìm hiểu về Blue Sky Group <span aria-hidden="true">↗</span></Link>
           </div>

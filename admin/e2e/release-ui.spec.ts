@@ -120,3 +120,19 @@ test("homepage links use existing filters and group quote routes", async ({ page
   await expect(page.locator(".home-header")).toHaveCount(0);
   await expect(page.getByRole("banner")).toHaveCount(1);
 });
+
+test("mobile homepage keeps search and navigation available without JavaScript", async ({ browser }) => {
+  const page = await browser.newPage({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  try {
+    await page.goto("http://localhost:3000/");
+    await expect(page.getByRole("banner").getByRole("navigation", { name: "Điều hướng chính" })).toBeVisible();
+    await expect(page.getByRole("banner").getByRole("button", { name: "Menu" })).toBeHidden();
+    await expect(page.getByRole("form", { name: "Tìm tour" })).toBeVisible();
+    await page.getByLabel("Từ khóa", { exact: true }).fill("Ninh Chữ");
+    await page.getByRole("form", { name: "Tìm tour" }).getByRole("button", { name: "Tìm tour" }).click();
+    await expect(page).toHaveURL(/\/tours\?q=/);
+    await expect(page.getByRole("main").getByRole("heading", { name: "Khám phá tour", exact: true })).toBeVisible();
+  } finally {
+    await page.close();
+  }
+});

@@ -296,6 +296,8 @@ body:has(.home-shell) {
   gap: clamp(18px, 4vw, 56px);
 }
 
+.home-about-note { margin-block: 0 18px; }
+
 .home-about-photo {
   border-radius: 18px;
   overflow: hidden;

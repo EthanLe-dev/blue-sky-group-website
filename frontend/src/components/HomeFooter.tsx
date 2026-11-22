@@ -48,6 +48,9 @@ export function HomeFooter({ company, contact }: {
           <span>© {new Date().getFullYear()} Blue Sky Group</span>
           <Link href="/credits" prefetch={false}>Nguồn ảnh và quyền sử dụng</Link>
         </div>
+        {process.env.APP_ENV !== "production" && (
+          <p className="home-demo-note">Bản demo · Vui lòng xác nhận giá và lịch khởi hành trước khi đặt.</p>
+        )}
       </div>
     </footer>
   );
