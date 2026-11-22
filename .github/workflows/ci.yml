@@ -200,11 +200,6 @@ jobs:
         working-directory: admin
       - run: npm run test:e2e
         working-directory: admin
-      - name: Smoke test Firefox and WebKit
-        working-directory: admin
-        run: |
-          RELEASE_BROWSER=firefox npm run test:e2e -- --output=test-results-firefox
-          RELEASE_BROWSER=webkit npm run test:e2e -- --output=test-results-webkit
       - name: Rehearse PostgreSQL backup and restore into a separate database
         shell: bash
         run: |
@@ -218,6 +213,11 @@ jobs:
           test -n "$original"
           test "$original" = "$restored"
           rm -f "$RUNNER_TEMP/demo.dump"
+      - name: Smoke test Firefox and WebKit
+        working-directory: admin
+        run: |
+          RELEASE_BROWSER=firefox npm run test:e2e -- --output=test-results-firefox
+          RELEASE_BROWSER=webkit npm run test:e2e -- --output=test-results-webkit
       - name: Save public responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4
