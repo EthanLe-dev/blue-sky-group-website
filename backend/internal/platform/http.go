@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/catalog"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
@@ -32,7 +33,7 @@ func ok(c *gin.Context, status int, data any) {
 	c.JSON(status, gin.H{"success": true, "data": data, "error": nil, "message": nil})
 }
 func fail(c *gin.Context, status int, code string) {
-	c.AbortWithStatusJSON(status, gin.H{"success": false, "data": nil, "error": gin.H{"code": code, "fields": gin.H{}}, "message": "KhÃ´ng thá»ƒ thá»±c hiá»‡n yÃªu cáº§u. Vui lÃ²ng kiá»ƒm tra vÃ  thá»­ láº¡i."})
+	c.AbortWithStatusJSON(status, gin.H{"success": false, "data": nil, "error": gin.H{"code": code, "fields": gin.H{}}, "message": "Không thể thực hiện yêu cầu. Vui lòng kiểm tra và thử lại."})
 }
 func body(c *gin.Context, v any) bool {
 	c.Request.Body = http.MaxBytesReader(c.Writer, c.Request.Body, 256*1024)
@@ -100,6 +101,8 @@ func (a *App) Router() *gin.Engine {
 	admin.PUT("/site-settings/:key", a.permission("settings.write"), a.putSetting)
 	admin.GET("/audit-logs", a.permission("audit.read"), a.audit)
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
+	catalogServer := &catalog.Server{DB: a.DB, UserID: func(c *gin.Context) string { return c.MustGet("user").(User).ID }, Media: catalog.NewMediaStore(a.Config.CSRFSecret)}
+	catalogServer.Register(v, admin, a.permission("catalog.write"), a.permission("content.write"), a.permission("media.write"), a.permission("media.private.write"))
 	r.NoRoute(func(c *gin.Context) { fail(c, 404, "NOT_FOUND") })
 	return r
 }

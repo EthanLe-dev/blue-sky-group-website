@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	demoassets "github.com/EthanLe-dev/blue-sky-group-website/backend/demo-assets"
+	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/catalog"
 	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/platform"
 	"log/slog"
 	"net/http"
@@ -52,6 +54,13 @@ func main() {
 	if len(os.Args) > 1 && os.Args[1] == "bootstrap" {
 		if e = platform.Bootstrap(ctx, p, os.Getenv("BOOTSTRAP_ADMIN_EMAIL"), os.Getenv("BOOTSTRAP_ADMIN_PASSWORD")); e != nil {
 			slog.Error("bootstrap failed", "reason", e.Error())
+			os.Exit(1)
+		}
+		return
+	}
+	if len(os.Args) > 1 && os.Args[1] == "seed-demo" {
+		if e = catalog.Seed(context.Background(), p, catalog.NewMediaStore(c.CSRFSecret), demoassets.Files); e != nil {
+			slog.Error("demo seed failed", "reason", e.Error())
 			os.Exit(1)
 		}
 		return

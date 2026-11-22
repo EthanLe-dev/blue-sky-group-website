@@ -158,3 +158,9 @@ Người dùng yêu cầu lệnh mở/tắt app. Đã thêm scripts/bluesky.cmd 
 Người dùng chỉ định blue-sky-group-logo.jpg và cho phép chạy local để kiểm thử rồi dừng khi xong đợt này. Nhánh feature/catalog từ develop có giữ lệnh bluesky. T203 DOING trước, tiếp theo API/catalog/Admin/public và booking trên nhánh riêng. Không đổi mật khẩu Admin hoặc reset volume.
 
 T203: migration000003_catalog tạo media/tours/destinations/categories/departures/prices/quotes/CMS với FK/unique/check tiền/chỗ/ngày. PostgreSQL integration/race/vet PASS, gồm thử capacity âm, ngày kết thúc sai, giữ quá capacity, giá âm đều bị từ chối. Không migration DB ứng dụng trong bước này; test dùng blue_sky_test/schema riêng.
+
+### M2 — API catalog/media, 22/11/2026
+- Người dùng cho phép chạy local để kiểm thử rồi dừng; PostgreSQL dùng database test và schema cô lập.
+- CRUD/clone/publish tour, bulk departure rollback, price version, bộ lọc cùng departure, CMS sanitize, media magic bytes/private signed URL, poster revision và seed idempotent đã có integration tests.
+- `go vet ./...` và `go test -race -count=1 ./...`: PASS (platform 36.348s, catalog PASS).
+- M2 đang thực hiện; UI, OpenAPI, kiểm thử trình duyệt còn tiếp tục. Chưa đánh dấu toàn module DONE.
