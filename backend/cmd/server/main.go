@@ -38,7 +38,7 @@ func main() {
 	defer cancel()
 	p, e := platform.Connect(ctx, c.DatabaseURL)
 	if e != nil {
-		slog.Error("database unavailable")
+		slog.Error("database connection failed", "reason", e.Error())
 		os.Exit(1)
 	}
 	defer p.Close()

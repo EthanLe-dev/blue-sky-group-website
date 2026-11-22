@@ -3,7 +3,9 @@ package platform
 import (
 	"context"
 	"embed"
+	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"strings"
 )
@@ -24,9 +26,18 @@ func Connect(ctx context.Context, url string) (*pgxpool.Pool, error) {
 	}
 	if e = p.Ping(ctx); e != nil {
 		p.Close()
-		return nil, fmt.Errorf("database unavailable")
+		return nil, connectionError(e)
 	}
 	return p, nil
+}
+
+// Return useful diagnostics without including a connection URL or credentials.
+func connectionError(err error) error {
+	var databaseError *pgconn.PgError
+	if errors.As(err, &databaseError) && databaseError.Code == "28P01" {
+		return errors.New("database authentication failed: check .env against credentials stored in the existing PostgreSQL volume; POSTGRES_PASSWORD does not reset an initialized database")
+	}
+	return errors.New("database unavailable: check PostgreSQL readiness and network connectivity")
 }
 func Migrate(ctx context.Context, p *pgxpool.Pool) error {
 	tx, e := p.Begin(ctx)

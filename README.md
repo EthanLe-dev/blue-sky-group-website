@@ -34,6 +34,18 @@ Tài khoản bootstrap nằm trong `.env` đã gitignore (`BOOTSTRAP_ADMIN_EMAIL
 
 Migration là service riêng chạy trước API, runner có advisory lock và version table; không migration trong mỗi replica. Production dùng migration role/direct connection, API role hạn chế. Sau đổi `.env`, recreate service liên quan. Default chỉ tạo PostgreSQL; profile app mới chạy ứng dụng. `docker compose down` giữ volume; không dùng `-v` cho dữ liệu cần giữ.
 
+### Nếu migrate báo database authentication failed
+
+`POSTGRES_PASSWORD` chỉ đặt mật khẩu lúc volume được khởi tạo lần đầu. Sửa biến này trong `.env` không đổi mật khẩu role đã lưu trong PostgreSQL. Xem `docker compose logs migrate postgres` để phân biệt lỗi đăng nhập với lỗi migration SQL. Không xoá volume để xử lý lỗi mật khẩu.
+
+Đồng bộ `.env` với mật khẩu database cũ, hoặc khi PostgreSQL đã chạy, mở psql qua Unix socket và đặt mật khẩu role theo giá trị trong `.env`:
+
+```powershell
+docker compose exec postgres psql -U blue_sky -d postgres
+```
+
+Trong psql chạy `\password blue_sky`, nhập mật khẩu khớp `.env`, rồi `\q`. Thay `blue_sky` bằng POSTGRES_USER thực tế nếu đã đổi user. Không dán mật khẩu vào câu lệnh Git hoặc chat. Sau đó tự chạy lại `docker compose --profile app up -d --build`. Healthcheck PostgreSQL kiểm tra đăng nhập TCP thật để báo sai mật khẩu sớm.
+
 ## Kiểm tra
 
 ```powershell
