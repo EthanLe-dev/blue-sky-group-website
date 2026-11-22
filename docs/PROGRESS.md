@@ -240,3 +240,9 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 
 - Form báo giá trên trang trường học và doanh nghiệp, form gọi lại trên trang liên hệ, có lối vào từ trang tour. Biên nhận hiển thị mã và thời gian phản hồi lấy từ Cài đặt Admin. Biểu mẫu giữ nội dung khi gửi lỗi và giữ cùng khóa khi thử lại dữ liệu cũ.
 - Lint frontend qua với một cảnh báo stylesheet có sẵn, TypeScript và unit test đạt. Test Playwright được thêm vào luồng CI hiện có để kiểm tra captcha lỗi, giữ nội dung, bấm gửi hai lần và biên nhận.
+
+### T503 — Hàng chờ Sales và báo giá đoàn
+
+- Admin có hàng chờ báo giá và gọi lại, bộ lọc trạng thái/người phụ trách, hạn theo dõi theo giờ Việt Nam, ghi chú nội bộ và thông báo quá hạn trong danh sách.
+- Nhân viên có thể tạo và sửa bản nháp, phát hành, tạo phiên bản từ báo giá cũ và ghi nhận kết quả trao đổi ngoại tuyến. Tệp đính kèm riêng tư dùng lưu trữ media hiện có và liên kết có hạn.
+- Admin lint, TypeScript, 4 unit test và build đạt. Playwright đã nhận diện kịch bản phân công, phát hành, chốt báo giá và kiểm tra tải tệp; chạy kịch bản trên CI.
