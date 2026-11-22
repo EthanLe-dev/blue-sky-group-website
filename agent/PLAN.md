@@ -169,3 +169,7 @@ Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0
 - Local cuối: frontend/admin lint/typecheck/unit/build PASS (1 warning stylesheet vendor); Go vet/test-race/build PASS, platform80.297s; browser6/6 PASS13.6s; nginx-t và redaction signed query PASS. Docker Compose đã down, ps rỗng, không -v; dữ liệu/mật khẩu Admin giữ nguyên.
 - Nghiệm thu UI/T703 còn mở: taste OPEN19 từ vòng3, có bổ sung chức năng sau đó nên cần review UI tiếp ở M7. Chi tiết/waiver/perf trong docs/ui-qa-m2-m3.md; không gọi là UAT hoặc hoàn tất thẩm mỹ.
 - Tiếp theo là M4 payment/notification giả lập, sau khi người dùng giao tiếp. M3 hiện chỉ tạo pending hold; không có xác nhận thu tiền hoặc gửi email/SMS. M5 form báo giá, M6 export/PDF và M7 deploy/UAT vẫn chưa triển khai.
+
+### M4 — Đang triển khai
+
+T401–T406 sẽ dùng chung transaction và thứ tự khóa của booking. Thanh toán, hoàn tiền và bản xem trước email/SMS chỉ chạy với cấu hình giả lập. CI kiểm tra PostgreSQL và trình duyệt.
