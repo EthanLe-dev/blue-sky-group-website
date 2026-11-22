@@ -36,6 +36,18 @@ func main() {
 		slog.Error("configuration rejected", "reason", e.Error())
 		os.Exit(1)
 	}
+	if c.Env == "demo" {
+		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+		e = platform.MigrateURL(ctx, os.Getenv("DATABASE_MIGRATION_URL"))
+		cancel()
+		if e != nil {
+			slog.Error("demo migration failed")
+			os.Exit(1)
+		}
+		if len(os.Args) > 1 && os.Args[1] == "migrate" {
+			return
+		}
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	p, e := platform.Connect(ctx, c.DatabaseURL)

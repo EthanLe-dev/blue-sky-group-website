@@ -22,13 +22,12 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-	"strings"
 	"time"
 )
 
 type MediaStore struct {
-	Root, Key, PublicBucket, PrivateBucket, PublicBase string
-	S3                                                 *s3.Client
+	Root, Key, PublicBucket, PrivateBucket string
+	S3                                     *s3.Client
 }
 
 func NewMediaStore(key string) *MediaStore {
@@ -36,7 +35,7 @@ func NewMediaStore(key string) *MediaStore {
 	if root == "" {
 		root = "./storage"
 	}
-	m := &MediaStore{Root: root, Key: key, PublicBucket: os.Getenv("R2_PUBLIC_BUCKET"), PrivateBucket: os.Getenv("R2_PRIVATE_BUCKET"), PublicBase: strings.TrimSuffix(os.Getenv("R2_PUBLIC_BASE_URL"), "/")}
+	m := &MediaStore{Root: root, Key: key, PublicBucket: os.Getenv("R2_PUBLIC_BUCKET"), PrivateBucket: os.Getenv("R2_PRIVATE_BUCKET")}
 	if os.Getenv("STORAGE_PROVIDER") == "r2" {
 		endpoint := os.Getenv("R2_ENDPOINT")
 		m.S3 = s3.NewFromConfig(aws.Config{Region: "auto", Credentials: credentials.NewStaticCredentialsProvider(os.Getenv("R2_ACCESS_KEY_ID"), os.Getenv("R2_SECRET_ACCESS_KEY"), ""), RequestChecksumCalculation: aws.RequestChecksumCalculationWhenRequired}, func(o *s3.Options) { o.BaseEndpoint = &endpoint; o.UsePathStyle = true })
@@ -214,10 +213,6 @@ func (s *Server) serveMedia(c *gin.Context) {
 		c.Header("Content-Disposition", `attachment; filename="document.pdf"`)
 	}
 	if s.Media.S3 != nil {
-		if visibility == "public" && strings.HasPrefix(s.Media.PublicBase, "https://") {
-			c.Redirect(307, s.Media.PublicBase+"/"+key)
-			return
-		}
 		out, e := s.Media.S3.GetObject(c.Request.Context(), &s3.GetObjectInput{Bucket: aws.String(s.Media.bucket(visibility)), Key: aws.String(key)})
 		if e != nil {
 			httpx.Error(c, 404, "NOT_FOUND")
