@@ -4,6 +4,23 @@ Nền tảng demo: Next.js public, React Admin, Go/Gin API, PostgreSQL17. Chức
 
 ## Chạy local bằng Docker
 
+Người dùng tự chạy app; Agent chỉ khởi động local khi được yêu cầu rõ. Mở Docker Desktop, rồi mở PowerShell tại thư mục repository. Với máy hiện tại đã có `.env`, Admin và dữ liệu, chỉ cần:
+
+```powershell
+docker compose --profile app up -d --build
+```
+
+Xem trạng thái/log và dừng app:
+
+```powershell
+docker compose --profile app ps
+docker compose --profile app logs -f backend
+# Ctrl+C thoát xem log, không dừng app.
+docker compose --profile app --profile production-tools down
+```
+
+Lệnh down giữ dữ liệu volume. Không thêm `-v`. Chỉ dùng các lệnh sau cho lần setup đầu tiên trên máy chưa có `.env`/Admin:
+
 ```powershell
 python scripts/init_local.py
 # Không chạy lại để ghi đè .env; script sẽ từ chối nếu file đã có.

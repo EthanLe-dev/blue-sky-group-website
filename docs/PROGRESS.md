@@ -2,6 +2,7 @@
 
 ## Bàn giao nhanh — 22/11/2026
 
+- Cập nhật mới nhất: người dùng yêu cầu tự chạy app. Đã dừng toàn bộ Compose của dự án bằng down (không -v); dữ liệu volume giữ nguyên. Agent không tự khởi động lại app/Docker/service local nếu chưa được yêu cầu rõ. Hướng dẫn chạy trong README.
 - Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
 - Nhánh hiện tại `develop`. PR #1 đã qua CI và merge tại ce0bbb9; chứa cả tài liệu quyết định, frontend/GSAP/ponytail và nền tảng M0/M1. Main giữ nguyên f80a064.
 - Chạy theo README: .env đã được tạo local bằng secret ngẫu nhiên, không commit; Docker/PostgreSQL/API/Next/Admin đang chạy, admin http://localhost:5173, API http://localhost:8080, public http://localhost:3000 (scaffold). Credential bootstrap nằm trong .env.
@@ -137,3 +138,7 @@ Nền tảng local hiện đã chạy được: Admin/login/settings, refresh/re
 HEAD13cfcbf của PR #1 đã được GitHub xác nhận success: https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/44953203198. Tất cả jobs foundation, public, admin, Go/PostgreSQL, container/browser và aggregate đều PASS. Đã merge PR #1 vào develop tại ce0bbb9672fa493da4a3a368c73fe70411cbdf96; local develop đồng bộ. Main vẫn f80a064. Bản cập nhật nhật ký sau merge chỉ đổi tài liệu, không đổi source đã kiểm.
 
 Có thể tiếp tục M2: T201/T202 UI tokens/layout, T203 catalog. T108b chỉ thực hiện sau T301. Local Docker vẫn chạy; không cần tạo lại .env hoặc xoá volume. Mở Admin5173 và lấy credential từ .env nếu cần kiểm tra; public3000 hiện là scaffold. Không có deploy demo thật trong phiên này.
+
+### Người dùng yêu cầu dừng app và tự chạy local
+
+Đã chạy `docker compose --profile app --profile production-tools down` không kèm `-v`; `compose ps` không còn service chạy. Không dừng ứng dụng/container khác ngoài dự án. Cập nhật AGENTS để không tự khởi động app/Docker/service local; kiểm thử cần service phải xin phép trước. README có hướng dẫn chạy lại bằng up, xem logs và down; .env/Admin/dữ liệu đã có không cần bootstrap lại. Các ghi chú “Docker vẫn chạy” ở mục lịch sử phía trên là trạng thái cũ.

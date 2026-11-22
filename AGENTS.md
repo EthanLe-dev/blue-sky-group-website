@@ -59,6 +59,8 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 
 ## 6. Lệnh hiện có
 
+**Quyền chạy app:** người dùng tự chạy local. Agent không tự khởi động app, dev server, Docker Desktop hoặc các service/container local nếu chưa được người dùng yêu cầu rõ trong phiên đó. Nếu kiểm thử cần khởi động service, giải thích và xin phép trước; có thể tiếp tục kiểm tra tĩnh/build không khởi động app. Workflow CI vẫn chạy trong môi trường CI theo cấu hình đã có. Chỉ dẫn này ưu tiên hơn các lệnh chạy/test tự động khác trong tài liệu dự án.
+
 Đã có khung frontend/admin/backend, migration identity/settings và Dockerfiles M1. Chưa có module catalog/booking/payment đầy đủ. Xem README để chạy ứng dụng.
 
 ```powershell
