@@ -29,6 +29,23 @@ test("catalog, poster, favourites, checkout, private lookup and admin cancellati
   await expect(page.locator(".tour-card")).not.toHaveCount(0);
   await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
   await expect(page.locator("main h1")).toContainText("Ninh Chữ");
+  await page.route("https://tile.openstreetmap.org/**", (route) =>
+    route.fulfill({
+      contentType: "image/png",
+      body: Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jNioAAAAASUVORK5CYII=",
+        "base64",
+      ),
+    }),
+  );
+  await page
+    .getByRole("button", { name: "Mở bản đồ điểm đến", exact: true })
+    .click();
+  await expect(page.locator(".leaflet-marker-icon").first()).toBeVisible();
+  await page
+    .getByRole("combobox", { name: "Chọn điểm trên bản đồ", exact: true })
+    .selectOption("1");
+  await page.getByRole("button", { name: "Ẩn bản đồ", exact: true }).click();
   await page.getByRole("button", { name: "♡ Lưu tour" }).click();
   await expect(
     page.getByRole("button", { name: "♥ Đã lưu tour" }),
@@ -95,6 +112,9 @@ test("admin tour editor persists edits and verifies poster", async ({
     await page
       .getByRole("button", { name: "Lưu nội dung", exact: true })
       .click();
+    await expect(
+      page.getByRole("button", { name: "Lưu nội dung", exact: true }),
+    ).toBeEnabled();
     await expect(page.getByRole("status").first()).toContainText(
       "Đã lưu nội dung",
     );
@@ -110,6 +130,9 @@ test("admin tour editor persists edits and verifies poster", async ({
     await page
       .getByRole("button", { name: "Lưu nội dung", exact: true })
       .click();
+    await expect(
+      page.getByRole("button", { name: "Lưu nội dung", exact: true }),
+    ).toBeEnabled();
     await expect(page.getByRole("status").first()).toContainText(
       "Đã lưu nội dung",
     );
@@ -160,4 +183,28 @@ test("responsive menu and public content pages", async ({ page }) => {
   }
   const r = await page.goto("http://localhost:3000/tours/not-existing");
   expect(r?.status()).toBe(404);
+});
+
+test("home search, blog facets and media filters", async ({ page }) => {
+  await page.goto("http://localhost:3000/");
+  await page.getByLabel("Bạn muốn đi đâu?", { exact: true }).fill("Ninh Chữ");
+  await page.locator(".hero").getByRole("button", { name: "Tìm tour" }).click();
+  await expect(page).toHaveURL(/q=/);
+  await expect(page.locator(".tour-card").first()).toBeVisible();
+  await page.getByText("Bộ lọc nâng cao", { exact: true }).click();
+  await expect(
+    page.getByRole("combobox", { name: "Danh mục tour", exact: true }),
+  ).toBeVisible();
+  await page.goto("http://localhost:3000/blog");
+  await expect(
+    page.getByRole("combobox", { name: "Danh mục", exact: true }),
+  ).toBeVisible();
+  await page.getByRole("button", { name: "Lọc bài viết" }).click();
+  await expect(page.locator("main .content-list a").first()).toBeVisible();
+  await page.goto("http://localhost:3000/gallery?kind=video");
+  await expect(
+    page.getByText("Chưa có media phù hợp bộ lọc.", { exact: true }),
+  ).toBeVisible();
+  await page.goto("http://localhost:3000/gallery?kind=image");
+  await expect(page.locator(".gallery-grid img").first()).toBeVisible();
 });

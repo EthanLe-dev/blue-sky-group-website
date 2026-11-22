@@ -260,6 +260,7 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
     if (!record) return;
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       const data: Row = {};
       for (const field of cfg.fields) {
@@ -529,6 +530,7 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
               {current === "tours" && (
                 <>
                   <Poster
+                    busy={busy}
                     record={record}
                     refresh={async () =>
                       setRecord(
@@ -552,7 +554,9 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
 function Poster({
   record,
   refresh,
+  busy,
 }: {
+  busy: boolean;
   record: Row;
   refresh: () => Promise<void>;
 }) {
@@ -580,7 +584,7 @@ function Poster({
         <p>Chưa chọn poster. Tải ảnh ở Media rồi điền ID poster và lưu tour.</p>
       )}
       <button
-        disabled={!record.poster_media_id}
+        disabled={busy || !record.poster_media_id}
         onClick={async () => {
           try {
             await authorized(
