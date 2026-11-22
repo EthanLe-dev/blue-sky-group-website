@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import HeroVideo from "./HeroVideo";
 gsap.registerPlugin(useGSAP);
 export default function Hero({ destinations }: { destinations: { slug: string; name: string }[] }) {
   const scope = useRef<HTMLElement>(null);
@@ -10,14 +11,13 @@ export default function Hero({ destinations }: { destinations: { slug: string; n
     () => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.timeline({ defaults: { ease: "power3.out" } })
-          .from(".hero-photo", { scale: 1.045, duration: 1.1 })
-          .from("[data-enter-text]", {
-            y: 14,
-            opacity: 0.25,
-            duration: 0.58,
-            stagger: 0.11,
-          }, 0);
+        gsap.from("[data-enter-text]", {
+          y: 14,
+          opacity: 0.25,
+          duration: 0.58,
+          stagger: 0.11,
+          ease: "power3.out",
+        });
       });
       return () => mm.revert();
     },
@@ -36,6 +36,7 @@ export default function Hero({ destinations }: { destinations: { slug: string; n
           fetchPriority="high"
           loading="eager"
         />
+        <HeroVideo />
         <div className="wrap home-hero-copy">
           <h1 id="hero-title" data-enter-text="">Kiến tạo hành trình</h1>
           <p data-enter-text="">Khám phá Việt Nam cùng Blue Sky Group và tìm chuyến đi dành cho bạn.</p>

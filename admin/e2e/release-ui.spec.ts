@@ -9,6 +9,7 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await page.goto("http://localhost:3000/");
     const hero = page.locator(".hero");
     await expect(hero.getByRole("heading", { name: "Kiến tạo hành trình" })).toBeVisible();
+    await expect(hero.locator("video")).toHaveCount(0);
     await expect(page.getByRole("banner")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toHaveCount(1);
     await expect(hero).not.toContainText(/Ninh Chữ|Vĩnh Hy|ngày.*đêm/i);
@@ -144,4 +145,29 @@ test("mobile homepage keeps search and navigation available without JavaScript",
   } finally {
     await page.close();
   }
+});
+
+test("homepage plays the muted video and keeps it paused when requested", async ({ page, browserName }) => {
+  test.skip(browserName !== "chromium", "Live playback is verified in Chromium; other CI engines check reduced motion");
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.goto("http://localhost:3000/");
+  const video = page.locator(".home-hero-video");
+  await expect(video).toHaveAttribute("data-frame", "true");
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.loop && el.playsInline)).toBe(true);
+  await page.getByRole("button", { name: "Tạm dừng video nền" }).click();
+  await expect(page.getByRole("button", { name: "Phát video nền" })).toBeVisible();
+  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await page.getByRole("button", { name: "Phát video nền" }).click();
+  await expect(page.getByRole("button", { name: "Tạm dừng video nền" })).toBeVisible();
+  await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(video).toHaveCount(0);
+  await page.route("**/images/home-coast.*", route => route.abort());
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.reload();
+  await expect(page.locator(".home-video-toggle")).toHaveCount(0);
+  await expect(video).toHaveAttribute("data-frame", "false");
+  await expect(page.locator(".hero-photo")).toBeVisible();
 });
