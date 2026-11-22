@@ -2,6 +2,7 @@
 
 ## Bàn giao nhanh — 22/11/2026
 
+- Khắc phục gần nhất: lỗi migrate exit1 do password database trong volume khác `.env`. Đã đồng bộ role theo `.env` và kiểm SELECT1 qua TCP trên PostgreSQL đang chạy; không khởi động app hoặc container mới. Nhánh fix/database-auth-diagnostics bổ sung healthcheck đăng nhập thật và thông báo an toàn, user tự chạy lại.
 - Cập nhật mới nhất: người dùng yêu cầu tự chạy app. Đã dừng toàn bộ Compose của dự án bằng down (không -v); dữ liệu volume giữ nguyên. Agent không tự khởi động lại app/Docker/service local nếu chưa được yêu cầu rõ. Hướng dẫn chạy trong README.
 - Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
 - Nhánh hiện tại `develop`. PR #1 đã qua CI và merge tại ce0bbb9; chứa cả tài liệu quyết định, frontend/GSAP/ponytail và nền tảng M0/M1. Main giữ nguyên f80a064.
@@ -142,3 +143,9 @@ Có thể tiếp tục M2: T201/T202 UI tokens/layout, T203 catalog. T108b chỉ
 ### Người dùng yêu cầu dừng app và tự chạy local
 
 Đã chạy `docker compose --profile app --profile production-tools down` không kèm `-v`; `compose ps` không còn service chạy. Không dừng ứng dụng/container khác ngoài dự án. Cập nhật AGENTS để không tự khởi động app/Docker/service local; kiểm thử cần service phải xin phép trước. README có hướng dẫn chạy lại bằng up, xem logs và down; .env/Admin/dữ liệu đã có không cần bootstrap lại. Các ghi chú “Docker vẫn chạy” ở mục lịch sử phía trên là trạng thái cũ.
+
+### Lỗi migrate khi người dùng tự chạy lại
+
+Log migrate: database unavailable; log PostgreSQL: authentication failed (28P01). URL Compose dùng đúng POSTGRES_PASSWORD hiện tại nhưng volume cũ giữ mật khẩu khác. Đã ALTER ROLE theo `.env` qua Unix socket, không ghi mật khẩu vào output/file tracked; kiểm SELECT1 đăng nhập TCP bằng password container thành công. Dữ liệu giữ nguyên. Không chạy up/start/restart/run hoặc khởi động app trong lượt sửa này.
+
+Code bổ sung diagnostic 28P01 không lộ connection string và healthcheck psql TCP thay pg_isready (pg_isready không xác nhận password). Test unit phân loại lỗi và không lộ credential được thêm; local chỉ validate Compose/diff, không chạy container test mới do yêu cầu người dùng. CI remote kiểm theo PR, không suy ra local app đã khởi động lại.
