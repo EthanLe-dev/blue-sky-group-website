@@ -152,3 +152,9 @@ Người dùng yêu cầu lệnh mở/tắt app. Đã thêm scripts/bluesky.cmd 
 ### Đặt lại mật khẩu Admin local theo yêu cầu người dùng
 
 Đã đổi hash mật khẩu tài khoản bootstrap hiện có theo giá trị tạm người dùng yêu cầu; thu hồi các phiên/token reset cũ và ghi audit. Giá trị chỉ lưu tham chiếu trong .env ignored, không ghi vào Git. Kiểm login qua Admin5173 và API8080 đều200, logout các phiên kiểm tra. Không khởi động/restart app; thao tác trên PostgreSQL và API đã chạy sẵn. Chính sách mật khẩu tối thiểu12bytes của bootstrap/reset API giữ nguyên; tài khoản local hiện tại đã đổi trực tiếp, không chạy lại bootstrap với mật khẩu tạm ngắn.
+
+### Bắt đầu M2/M3 — dùng logo công ty
+
+Người dùng chỉ định blue-sky-group-logo.jpg và cho phép chạy local để kiểm thử rồi dừng khi xong đợt này. Nhánh feature/catalog từ develop có giữ lệnh bluesky. T203 DOING trước, tiếp theo API/catalog/Admin/public và booking trên nhánh riêng. Không đổi mật khẩu Admin hoặc reset volume.
+
+T203: migration000003_catalog tạo media/tours/destinations/categories/departures/prices/quotes/CMS với FK/unique/check tiền/chỗ/ngày. PostgreSQL integration/race/vet PASS, gồm thử capacity âm, ngày kết thúc sai, giữ quá capacity, giá âm đều bị từ chối. Không migration DB ứng dụng trong bước này; test dùng blue_sky_test/schema riêng.
