@@ -25,7 +25,7 @@ func Seed(ctx context.Context, db *pgxpool.Pool, store *MediaStore, files fs.FS)
 	if e := db.QueryRow(ctx, "SELECT u.id FROM staff_users u JOIN staff_roles sr ON sr.staff_id=u.id JOIN roles r ON r.id=sr.role_id WHERE r.code='admin' ORDER BY u.created_at LIMIT 1").Scan(&staff); e != nil {
 		return errors.New("bootstrap an admin before seeding")
 	}
-	for _, asset := range []struct{ name, alt, collection, source string }{{"ninh-chu.jpg", "Bãi biển Ninh Chữ", "destination", "Phương Huy — Wikimedia Commons, Public domain"}, {"vinh-hy.jpg", "Vịnh Vĩnh Hy", "destination", "Phương Huy — Wikimedia Commons, Public domain"}, {"ninh-chu-poster.png", "Poster Ninh Chữ 2 ngày 1 đêm", "poster", "Người dùng cung cấp"}} {
+	for _, asset := range []struct{ name, alt, collection, source string }{{"ninh-chu.jpg", "Bãi biển Ninh Chữ", "destination", "Phương Huy — Wikimedia Commons, Public domain"}, {"vinh-hy.jpg", "Vịnh Vĩnh Hy", "destination", "Phương Huy — Wikimedia Commons, Public domain"}, {"ninh-chu-poster.png", "Poster Ninh Chữ 2 ngày 1 đêm", "poster", "Người dùng cung cấp"}, {"singapore.jpg", "Đường chân trời Singapore nhìn từ Marina Bay", "destination", "Kistara — Wikimedia Commons, CC0 1.0"}} {
 		id := DemoID(asset.name)
 		var exists bool
 		db.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM media_assets WHERE id=$1)", id).Scan(&exists)

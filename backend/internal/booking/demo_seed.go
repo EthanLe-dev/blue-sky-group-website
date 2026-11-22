@@ -35,6 +35,13 @@ func (s *Server) SeedDemoStates(ctx context.Context) error {
 	if err = s.seedInternational(ctx); err != nil {
 		return err
 	}
+	if _, err = s.DB.Exec(ctx, `UPDATE site_settings SET
+		value=jsonb_set(value,'{office_coordinates}','{"latitude":10.828,"longitude":106.658}'),
+		version=version+1,updated_at=clock_timestamp()
+		WHERE key='company_profile' AND version=1 AND value->'office_coordinates'='null'::jsonb
+			AND value->'is_demo'='true'::jsonb`); err != nil {
+		return err
+	}
 
 	for i, example := range []struct {
 		label   string
@@ -151,11 +158,11 @@ func (s *Server) seedInternational(ctx context.Context) error {
 	start := time.Now().UTC().Truncate(24*time.Hour).AddDate(0, 0, 45).Add(2 * time.Hour)
 	_, err := s.DB.Exec(ctx, `WITH new_tour AS (
 		INSERT INTO tours(id,slug,code,title,summary,description,region,audience,duration_days,duration_nights,
-			origin_name,transport,status,is_demo,published_at)
+			origin_name,transport,status,is_demo,published_at,cover_media_id)
 		VALUES($1,'singapore-minh-hoa','DEMO-SG','Singapore · Hành trình minh họa',
 			'Chương trình mẫu ba ngày để thử bộ lọc tour quốc tế.',
 			'<p>Lịch trình và giá giả định cho bản demo.</p>','international','general',3,2,
-			'TP. Hồ Chí Minh','Máy bay','published',true,clock_timestamp())
+			'TP. Hồ Chí Minh','Máy bay','published',true,clock_timestamp(),$7)
 		ON CONFLICT DO NOTHING RETURNING id
 	), itinerary AS (
 		INSERT INTO tour_days(tour_id,day_number,title,body)
@@ -170,6 +177,6 @@ func (s *Server) seedInternational(ctx context.Context) error {
 	INSERT INTO departure_prices(departure_id,passenger_type,unit_price,seats_per_person,min_age,max_age_exclusive)
 	SELECT id,passenger_type,price,seats,min_age,max_age FROM new_departure CROSS JOIN (VALUES
 		('adult',8900000,1,12,NULL::int),('child',6900000,1,2,12),('infant',0,0,0,2)) AS t(passenger_type,price,seats,min_age,max_age)`,
-		catalog.DemoID("mvp-international"), catalog.DemoID("mvp-intl-departure"), start, start.Add(60*time.Hour), start.AddDate(0, 0, -2), start.AddDate(0, 0, -7))
+		catalog.DemoID("mvp-international"), catalog.DemoID("mvp-intl-departure"), start, start.Add(60*time.Hour), start.AddDate(0, 0, -2), start.AddDate(0, 0, -7), catalog.DemoID("singapore.jpg"))
 	return err
 }

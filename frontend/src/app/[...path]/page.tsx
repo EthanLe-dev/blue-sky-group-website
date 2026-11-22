@@ -459,7 +459,10 @@ async function Company() {
         </ul>
       )}
       {p.office_coordinates && (
-        <Map points={[{ name: p.display_name, ...p.office_coordinates }]} />
+        <div>
+          {p.is_demo && <p>Vị trí minh họa. Vui lòng xác nhận địa chỉ trước khi đến.</p>}
+          <Map points={[{ name: p.is_demo ? "Vị trí minh họa" : p.display_name, ...p.office_coordinates }]} />
+        </div>
       )}
       {p.office_coordinates && (
         <a
@@ -472,7 +475,7 @@ async function Company() {
             p.office_coordinates.longitude
           }
         >
-          Xem văn phòng trên OpenStreetMap ↗
+          {p.is_demo ? "Xem vị trí minh họa trên OpenStreetMap" : "Xem văn phòng trên OpenStreetMap"} ↗
         </a>
       )}
     </section>
