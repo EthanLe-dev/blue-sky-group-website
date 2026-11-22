@@ -1,6 +1,7 @@
 package platform
 
 import (
+	"bytes"
 	"context"
 	"crypto/hmac"
 	_ "embed"
@@ -167,6 +168,23 @@ func (a *App) limit(scope string, max, seconds int) gin.HandlerFunc {
 		if scope == "checkout" {
 			principal = c.GetString("guest_id")
 		}
+		if scope == "lookup" {
+			raw, e := io.ReadAll(io.LimitReader(c.Request.Body, 256*1024+1))
+			if e != nil || len(raw) > 256*1024 {
+				fail(c, 413, "PAYLOAD_TOO_LARGE")
+				return
+			}
+			c.Request.Body = io.NopCloser(bytes.NewReader(raw))
+			var input struct {
+				Code string `json:"code"`
+			}
+			if json.Unmarshal(raw, &input) != nil || len(input.Code) > 24 {
+				fail(c, 422, "VALIDATION_ERROR")
+				return
+			}
+			principal = strings.ToUpper(strings.TrimSpace(input.Code))
+		}
+
 		key := hash(scope + ":" + c.ClientIP() + ":" + principal)
 		var count int
 		e := a.DB.QueryRow(c.Request.Context(), `INSERT INTO rate_limit_buckets(key_hash,window_start,count,expires_at) VALUES($1,now(),1,now()+$2*interval '1 second') ON CONFLICT(key_hash) DO UPDATE SET count=CASE WHEN rate_limit_buckets.expires_at<=now() THEN 1 ELSE rate_limit_buckets.count+1 END,expires_at=CASE WHEN rate_limit_buckets.expires_at<=now() THEN now()+$2*interval '1 second' ELSE rate_limit_buckets.expires_at END RETURNING count`, key, seconds).Scan(&count)

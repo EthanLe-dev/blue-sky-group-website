@@ -197,3 +197,6 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 ### T304 — Lazy expiry khi Admin sửa lịch
 - Dùng cùng ExpireLocked trong transaction đã khoá departure; Admin giảm capacity không bị giữ bởi hold đã hết hạn khi worker chưa sweep. TestCapacityEditExpiresHoldsWhileLocked PASS, cùng bộ booking/race26.835s.
 - Go vet và full race M2/M3 gần nhất68.957s PASS, gồm related posts không lộ draft và tag filter.
+
+### T305 — Lookup và giới hạn theo mã
+- Lookup token vẫn chỉ lưu hash/TTL15 phút, che contact và không cấp creator quyền. Bucket lookup dùng IP+mã đơn đã chuẩn hoá; không khoá nhầm mã đơn khác qua cùng proxy. TestLookupLimiterIsBoundToBookingCode và GuestLookup privacy PASS race7.368s. Không lưu contact/token vào URL hoặc localStorage.
