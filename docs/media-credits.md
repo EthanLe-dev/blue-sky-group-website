@@ -9,3 +9,4 @@
 
 - Ảnh Singapore trong dữ liệu M7 dùng bản 1280px của [Skyscrapers of Singapore as seen from Marina Bay](https://commons.wikimedia.org/wiki/File:Skyscrapers_of_Singapore_as_seen_from_Marina_Bay.jpg), Kistara, CC0 1.0.
 - Video nền Trang chủ: [Bay landscape, aerial shot](https://mixkit.co/free-stock-video/bay-landscape-aerial-shot-1940/), [Mixkit Stock Video Free License](https://mixkit.co/license/modal/videoFree/). Các tệp `frontend/public/images/home-coast.*` là đoạn 9 giây, VP9 và H.264, 1280×720, bỏ âm thanh. Dùng làm cảnh biển minh họa.
+- Ảnh minh họa tour theo đoàn theo [giấy phép Pexels](https://www.pexels.com/license/): [ngoại khóa của Andy Lee](https://www.pexels.com/photo/group-of-children-on-outdoor-field-trip-34251803/) và [hoạt động đội nhóm của ANH LÊ](https://www.pexels.com/photo/fun-sack-race-outdoors-in-hanoi-vietnam-35301403/). Bản WebP 1200 px, hiển thị nhãn ảnh minh họa.

@@ -4,6 +4,7 @@ import Link from "next/link";
 import Hero from "@/components/Hero";
 import HomeActions from "@/components/HomeActions";
 import { HomeFooter, type CompanyProfile } from "@/components/HomeFooter";
+import HomeGroupTours from "@/components/HomeGroupTours";
 import PhotoMoment from "@/components/PhotoMoment";
 import { Header } from "@/components/Shell";
 import TourCard from "@/components/TourCard";
@@ -21,11 +22,6 @@ export const metadata: Metadata = {
   alternates: { canonical: "/" },
   openGraph: { title, description, locale: "vi_VN", siteName: "Blue Sky Group", type: "website", images: ["/images/vinh-hy.jpg"] },
 };
-
-const groupServices = [
-  { route: "/schools", title: "Chuyến đi cho trường học", text: "Tổ chức ngoại khóa và tham quan phù hợp với lứa tuổi, quy mô lớp và kế hoạch của nhà trường." },
-  { route: "/companies", title: "Chuyến đi cho doanh nghiệp", text: "Lên chương trình du lịch và hoạt động cho đội ngũ theo số lượng, thời gian và ngân sách của đoàn." },
-];
 
 export default async function Home() {
   const [data, homeCopy, settings] = await Promise.all([
@@ -106,18 +102,7 @@ export default async function Home() {
           )}
         </section>
 
-        <section className="wrap home-block" aria-labelledby="groups-heading">
-          <h2 id="groups-heading">Tour theo đoàn</h2>
-          <div className="home-group-grid">
-            {groupServices.map(({ route, title, text }) => (
-              <article className="home-group-card" key={route}>
-                <h3><Link prefetch={false} href={route}>{title}</Link></h3>
-                <p>{text}</p>
-                <Link className="home-outline" prefetch={false} href={route + "#bao-gia"}>Yêu cầu báo giá <span className="sr-only">{route === "/schools" ? "trường học" : "doanh nghiệp"}</span></Link>
-              </article>
-            ))}
-          </div>
-        </section>
+        <HomeGroupTours />
 
         <section className="wrap home-block home-about" aria-labelledby="about-heading">
           <div>

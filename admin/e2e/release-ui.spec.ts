@@ -117,7 +117,12 @@ test("homepage links use existing filters and group quote routes", async ({ page
 
   for (const [route, audience] of [["schools", "trường học"], ["companies", "doanh nghiệp"]]) {
     await page.goto(home);
-    await page.getByRole("link", { name: "Yêu cầu báo giá " + audience }).click();
+    const quote = page.getByRole("link", { name: "Yêu cầu báo giá " + audience });
+    const card = page.getByRole("article").filter({ has: quote });
+    const photo = card.getByRole("img", { name: /Ảnh minh họa/ });
+    await photo.scrollIntoViewIfNeeded();
+    await expect.poll(() => photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await quote.click();
     await expect(page).toHaveURL(new RegExp("/" + route + "#bao-gia$"));
     await expect(page.locator("#bao-gia")).toBeVisible();
   }
