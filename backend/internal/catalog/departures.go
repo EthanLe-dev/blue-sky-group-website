@@ -331,6 +331,16 @@ func (s *Server) patchDeparture(c *gin.Context) {
 		httpx.Error(c, 404, "NOT_FOUND")
 		return
 	}
+	if s.ExpireLocked != nil {
+		if e = s.ExpireLocked(ctx, tx, c.Param("id")); e != nil {
+			httpx.Error(c, 500, "INTERNAL_ERROR")
+			return
+		}
+		if e = tx.QueryRow(ctx, "SELECT held_seats,confirmed_seats FROM departures WHERE id=$1", c.Param("id")).Scan(&held, &confirmed); e != nil {
+			httpx.Error(c, 500, "INTERNAL_ERROR")
+			return
+		}
+	}
 	if tx.QueryRow(ctx, "SELECT "+departureJSON+" FROM departures d WHERE id=$1", c.Param("id")).Scan(&raw) != nil {
 		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return

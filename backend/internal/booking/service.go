@@ -11,8 +11,8 @@ import (
 	"time"
 )
 
-// Every inventory mutation takes the departure lock before bookings and holds.
-func expireTx(ctx context.Context, tx pgx.Tx, departure string) error {
+// ExpireLocked requires the caller to hold the departure row lock in this transaction.
+func ExpireLocked(ctx context.Context, tx pgx.Tx, departure string) error {
 	rows, e := tx.Query(ctx, "SELECT b.id,b.seat_count FROM bookings b JOIN seat_holds h ON h.booking_id=b.id WHERE b.departure_id=$1 AND b.status='pending' AND h.status='active' AND h.expires_at<=clock_timestamp() ORDER BY b.id FOR UPDATE OF b", departure)
 	if e != nil {
 		return e
@@ -61,7 +61,7 @@ func (s *Server) Expire(ctx context.Context, departure string) error {
 	if e = tx.QueryRow(ctx, "SELECT id FROM departures WHERE id=$1 FOR UPDATE", departure).Scan(&id); e != nil {
 		return e
 	}
-	if e = expireTx(ctx, tx, departure); e != nil {
+	if e = ExpireLocked(ctx, tx, departure); e != nil {
 		return e
 	}
 	return tx.Commit(ctx)
@@ -122,7 +122,7 @@ func (s *Server) Quote(ctx context.Context, p Principal, b QuoteInput) (Quote, e
 	if e = tx.QueryRow(ctx, "SELECT d.status,d.sales_close_at,d.price_version,d.deposit_bps,d.starts_at,d.balance_due_at,d.capacity-d.held_seats-d.confirmed_seats,jsonb_build_object('id',t.id,'slug',t.slug,'title',t.title,'starts_at',d.starts_at,'ends_at',d.ends_at),t.cancellation_policy FROM departures d JOIN tours t ON t.id=d.tour_id WHERE d.id=$1 AND t.status='published' FOR UPDATE OF d", b.Departure).Scan(&status, &close, &q.Version, &bps, &q.Snapshot.Start, &q.Due, &capacity, &tour, &policy); e != nil {
 		return q, ErrNotFound
 	}
-	if e = expireTx(ctx, tx, b.Departure); e != nil {
+	if e = ExpireLocked(ctx, tx, b.Departure); e != nil {
 		return q, e
 	}
 	if e = tx.QueryRow(ctx, "SELECT clock_timestamp()").Scan(&q.Now); e != nil {
@@ -341,7 +341,7 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	if e = tx.QueryRow(ctx, "SELECT status,price_version,sales_close_at FROM departures WHERE id=$1 FOR UPDATE", q.Departure).Scan(&status, &version, &close); e != nil {
 		return nil, e
 	}
-	if e = expireTx(ctx, tx, q.Departure); e != nil {
+	if e = ExpireLocked(ctx, tx, q.Departure); e != nil {
 		return nil, e
 	}
 	if e = tx.QueryRow(ctx, "SELECT clock_timestamp(),capacity-held_seats-confirmed_seats FROM departures WHERE id=$1", q.Departure).Scan(&now, &remaining); e != nil {

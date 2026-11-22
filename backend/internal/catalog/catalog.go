@@ -7,6 +7,7 @@ import (
 	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/httpx"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"math"
 	"net/url"
@@ -16,10 +17,11 @@ import (
 )
 
 type Server struct {
-	DB     *pgxpool.Pool
-	UserID func(*gin.Context) string
-	Expire func(context.Context, string) error
-	Media  *MediaStore
+	DB           *pgxpool.Pool
+	UserID       func(*gin.Context) string
+	Expire       func(context.Context, string) error
+	ExpireLocked func(context.Context, pgx.Tx, string) error
+	Media        *MediaStore
 }
 
 func (s *Server) Register(v, admin *gin.RouterGroup, product, content, media, private gin.HandlerFunc) {

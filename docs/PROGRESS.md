@@ -193,3 +193,7 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 
 ### T306 — Ma trận vai trò
 - TestBookingRoleMatrix PASS race3.771s: admin đọc/tạo quote/catalog; sales đọc/tạo quote nhưng không sửa catalog; product_manager có catalog nhưng bị chặn booking; accountant chỉ đọc booking; executive không có booking PII. Backend kiểm quyền trực tiếp từng route.
+
+### T304 — Lazy expiry khi Admin sửa lịch
+- Dùng cùng ExpireLocked trong transaction đã khoá departure; Admin giảm capacity không bị giữ bởi hold đã hết hạn khi worker chưa sweep. TestCapacityEditExpiresHoldsWhileLocked PASS, cùng bộ booking/race26.835s.
+- Go vet và full race M2/M3 gần nhất68.957s PASS, gồm related posts không lộ draft và tag filter.

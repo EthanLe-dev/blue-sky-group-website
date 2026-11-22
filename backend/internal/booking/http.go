@@ -248,7 +248,7 @@ func (s *Server) lockBooking(ctx context.Context, tx pgx.Tx, id string) (string,
 	if e := tx.QueryRow(ctx, "SELECT id FROM departures WHERE id=$1 FOR UPDATE", dep).Scan(&locked); e != nil {
 		return "", e
 	}
-	if e := expireTx(ctx, tx, dep); e != nil {
+	if e := ExpireLocked(ctx, tx, dep); e != nil {
 		return "", e
 	}
 	if e := tx.QueryRow(ctx, "SELECT id FROM bookings WHERE id=$1 FOR UPDATE", id).Scan(&locked); e != nil {
