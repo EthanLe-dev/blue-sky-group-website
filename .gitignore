@@ -77,3 +77,6 @@ __pycache__/
 .taste-skill/chrome*/
 .taste-skill/shots/
 .taste-skill/reports/
+
+.taste-skill/build.json
+.taste-skill/gate.json

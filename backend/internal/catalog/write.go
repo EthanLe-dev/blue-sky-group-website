@@ -393,13 +393,28 @@ func (s *Server) verifyPoster(c *gin.Context) {
 		httpx.Error(c, 422, "VALIDATION_ERROR")
 		return
 	}
-	tag, e := s.DB.Exec(c.Request.Context(), "UPDATE tours SET poster_verified_at=now(),poster_verified_by=$3 WHERE id=$1 AND poster_revision=$2 AND EXISTS(SELECT 1 FROM media_assets m WHERE m.id=tours.poster_media_id AND m.kind='image' AND m.visibility='public' AND m.status='ready')", c.Param("id"), b.Version, s.UserID(c))
+	ctx := c.Request.Context()
+	tx, e := s.DB.Begin(ctx)
+	if e != nil {
+		httpx.Error(c, 503, "INTERNAL_ERROR")
+		return
+	}
+	defer tx.Rollback(ctx)
+	tag, e := tx.Exec(ctx, "UPDATE tours SET poster_verified_at=now(),poster_verified_by=$3 WHERE id=$1 AND poster_revision=$2 AND EXISTS(SELECT 1 FROM media_assets m WHERE m.id=tours.poster_media_id AND m.kind='image' AND m.visibility='public' AND m.status='ready')", c.Param("id"), b.Version, s.UserID(c))
 	if e != nil {
 		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return
 	}
 	if tag.RowsAffected() != 1 {
 		httpx.Error(c, 409, "VERSION_CONFLICT")
+		return
+	}
+	if e = s.auditTx(ctx, tx, c, "tour.poster_verified", "tour", c.Param("id")); e != nil {
+		httpx.Error(c, 500, "INTERNAL_ERROR")
+		return
+	}
+	if e = tx.Commit(ctx); e != nil {
+		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return
 	}
 	httpx.OK(c, 200, gin.H{"verified": true, "verified_at": time.Now().UTC()})

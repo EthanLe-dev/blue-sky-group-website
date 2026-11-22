@@ -179,3 +179,9 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - Playwright 5/5 PASS (11.3s): guest proxy/CSRF, login/settings save-reload/logout, catalog filter/poster Escape/favourites, checkout 3 bước → lookup che PII → admin cancel; tour editor save/reload/verify poster; responsive320/390/768/820/1024/1440 và trang CMS/slug404. Dữ liệu E2E giả; đơn vừa tạo được huỷ qua Admin, nội dung và cấu hình được phục hồi.
 - T307 hoàn thành luồng quote/validation/hold/countdown/retry idempotency; PII chỉ trong React memory. Payment CTA disabled có giải thích M4, không ghi thu tiền.
 - T308 có lookup chỉ đọc và Admin list/detail/edit/notes/manual/cancel/complete.
+
+### M2 — UI và hợp đồng
+- Tour editor/departure bulk/price-version, CMS theo resource, thư viện upload/metadata/private link, company document IDs và đối chiếu poster đã nối API thật. Các trường nâng cao itinerary/stops/prices dùng JSON có hướng dẫn; chưa có visual rich-text/drag-drop editor.
+- Public dùng logo thật, Be Vietnam Pro tự host, GSAP scoped entrance/reduced motion, native dialog gallery/menu, filter URL/suggestions, saved/recent/share, CMS/blog/destinations/policies, lazy OpenStreetMap, metadata/sitemap/robots/JSON-LD. Không review giả.
+- Docker frontend bổ sung public assets; media_data giữ tệp. .env.example có SITE_URL, Compose truyền env Turnstile runtime.
+- OpenAPI M1–M3 validate PASS; bổ sung response validator cho catalog/home/gallery/404. Các test full race gần nhất platform57.587s PASS; kiểm browser5/5 PASS. Taste gate vẫn đang kiểm, T703 chưa đóng.

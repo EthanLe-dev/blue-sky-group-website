@@ -13,3 +13,16 @@ Public settings DTO là company_profile/response_sla. Default booking chỉ áp 
 ## CI và branch checks
 
 Required status đề xuất: `CI result` (foundation, frontend, admin, backend và container smoke nếu áp dụng). Kiểm tra branch protection ở GitHub Settings trước release; hiện chưa tự cấu hình required checks. PR failing không merge. Pipeline container dùng `.env` random riêng CI, migration/bootstrap, local-only captcha; không dùng secret production. Failure artifacts không chứa .env/cookie/password. Render/Neon chưa được tạo hoặc deploy trong phiên nền tảng.
+
+## M2/M3 — catalog, media và đặt chỗ
+
+Người dùng tự chạy bằng `bluesky run`, tự dừng bằng `bluesky off`. Agent chỉ được chạy kiểm thử local khi được cho phép trong phiên đó.
+
+- Lần đầu cần dữ liệu demo sau migration và tài khoản đã tồn tại: `docker compose --profile app run --rm backend seed-demo`. Seed chỉ local/demo/test, không reset password và không ghi đè tour/trang đã có. Không chạy lại bootstrap bằng mật khẩu tạm ngắn của local.
+- Public: http://localhost:3000 — danh mục/detail, checkout, lookup; Admin: http://localhost:5173 — Tour & Nội dung, Media, Đơn tour, Cài đặt. Giá theo từng lịch đi; defaults chỉ áp dụng dữ liệu mới.
+- Company logo: `frontend/public/brand/logo.jpg` và `admin/public/brand/logo.jpg`, từ file người dùng chỉ định. Poster mẫu trong backend/demo-assets, Media cho thay poster tour; lưu rồi đối chiếu và bấm xác minh để public hiện poster. Sửa nội dung/giá/lịch cần xác minh lại.
+- Media local dùng named volume `media_data`; không `down -v`. Backup phải có cả PostgreSQL và media. R2 dùng biến R2_* trong .env.example, chưa kiểm tra trên tài khoản cloud thật; test adapter dùng S3 endpoint giả lập có xác minh chữ ký AWS4.
+- Các trường itinerary/prices/stops nâng cao trong Admin dùng JSON có nhãn cấu trúc; backend validate, tiền phải chuỗi số nguyên (`"1650000"`), không float. Lỗi giữ form đang sửa. Không nhập thông tin khách thật vào demo.
+- M3 tạo đơn pending và giữ chỗ theo thời hạn chốt trong quote; worker30s và kiểm tra trực tiếp xử lý hết hạn. Checkout không tự gia hạn khi refresh. Payment M4 chưa triển khai nên chưa có cách thanh toán/xác nhận từ UI; không chuyển tiền thật. Admin có thể huỷ đơn để trả chỗ, complete chỉ dành đơn confirmed của chuyến đã kết thúc.
+- HTTP404 slug SSR dùng metadata blocking và không streaming loading toàn trang; nội dung pending có state trên form và API. Tham khảo Next [not-found](https://nextjs.org/docs/app/api-reference/file-conventions/not-found) và [metadata](https://nextjs.org/docs/app/getting-started/metadata-and-og-images).
+- `SITE_URL`, APP_ENV và TURNSTILE_* cần đúng host trước public demo. Demo/local không index; deploy thật ở M7 kiểm tra lại canonical, TLS, Turnstile real và R2. Render+Neon chưa được tự deploy trong đợt code này.

@@ -163,7 +163,8 @@ func (a *App) cookie(c *gin.Context, name, value string, age int) {
 }
 func (a *App) limit(scope string, max, seconds int) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		key := hash(scope + ":" + c.ClientIP())
+		principal:="";if scope=="checkout"{principal=c.GetString("guest_id")}
+key := hash(scope + ":" + c.ClientIP()+":"+principal)
 		var count int
 		e := a.DB.QueryRow(c.Request.Context(), `INSERT INTO rate_limit_buckets(key_hash,window_start,count,expires_at) VALUES($1,now(),1,now()+$2*interval '1 second') ON CONFLICT(key_hash) DO UPDATE SET count=CASE WHEN rate_limit_buckets.expires_at<=now() THEN 1 ELSE rate_limit_buckets.count+1 END,expires_at=CASE WHEN rate_limit_buckets.expires_at<=now() THEN now()+$2*interval '1 second' ELSE rate_limit_buckets.expires_at END RETURNING count`, key, seconds).Scan(&count)
 		if e != nil {

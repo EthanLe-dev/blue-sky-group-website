@@ -6,11 +6,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/httpx"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"strings"
 	"time"
 )
@@ -32,6 +34,10 @@ func (s *Server) Register(v, admin *gin.RouterGroup, guest, origin, lookupLimit,
 }
 func respondError(c *gin.Context, e error) {
 	code := e.Error()
+	var pgError *pgconn.PgError
+	if errors.As(e, &pgError) && pgError.Code == "55P03" {
+		code = "REQUEST_IN_PROGRESS"
+	}
 	status := 409
 	switch code {
 	case "NOT_FOUND", "BOOKING_NOT_FOUND":

@@ -198,3 +198,12 @@ Không tạo trước schema cho tính năng chưa chốt để tránh ngầm m�
 ## Migration nền tảng đã triển khai
 
 `backend/internal/platform/migrations/000001_identity.sql` tạo identity/RBAC/guest/customer/session/reset/audit/limiter. `000002_settings.sql` tạo và seed cấu hình demo. Runner dùng advisory lock và transaction, version table; bootstrap là lệnh riêng, không mật khẩu trong migration. `mock_password_deliveries` giữ ciphertext AES-GCM của token reset cho preview có quyền, hạn15 phút; token xác minh chỉ lưu hash ở password_reset_tokens. Không log plaintext; cache key từ CSRF secret, rotate secret làm preview cũ không đọc được (token vẫn hết hạn). Bảng booking_lookup_tokens hoãn đến T301 vì cần FK booking; phần guest session của T108 đã thực hiện, không tạo FK rỗng để giả hoàn tất.
+
+## Schema đã thực thi M2/M3
+
+- `000003_catalog.sql`: media, normalized catalog/itinerary, departures/prices/surcharges, pricing_quotes và CMS. FK UUID, VND bigint ≤10^12, counters không âm và held+confirmed≤capacity, ràng buộc ngày. Quotes chốt price_version/settings_version/snapshots, principal guest XOR staff.
+- `000004_booking.sql`: bookings (unique quote_id/code), booking_items/passengers, seat_holds, booking_events/notes, idempotency_keys, booking_lookup_tokens. Contact JSONB chỉ ở bảng booking nội bộ; response lookup che email/phone. Money trong API chuỗi; trong DB bigint. Consent/policy/price/settings/tour snapshots immutable khi admin sửa default/catalog.
+- Inventory lock order departure→bookings UUID tăng dần→holds. `clock_timestamp()` sau lock quyết định expiry; created/expired/cancelled/complete được ghi event trong transaction. Complete giữ counters lịch sử; không tự đổi paid_amount.
+- Idempotency `(principal,route,key)` claim, tài nguyên và response cùng transaction; lỗi rollback cả key. TTL tối thiểu24 giờ; hiện giữ lâu hơn24h, chưa tự xoá key/booking/PII. Dọn retention cần migration/job theo policy được duyệt, không truncate dữ liệu.
+- Worker trong process lấy batch500 departure có hold hết hạn, khoá từng departure; restart dựa hoàn toàn dữ liệu DB. Catalog/read và mọi mutation vẫn cleanup trực tiếp. Không tạo bảng payment trước M4.
+- Khôi phục thay down schema destructive: backup PostgreSQL trước migrate; nếu lỗi runner rollback migration chưa commit; đã commit thì roll forward hoặc restore backup đã kiểm chứng. Không xoá volume local khi rollback app.

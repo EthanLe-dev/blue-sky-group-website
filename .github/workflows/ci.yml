@@ -191,6 +191,7 @@ jobs:
       - run: python3 scripts/init_local.py
       - run: docker compose --profile app up -d --build --wait
       - run: docker compose --profile app run --rm backend bootstrap
+      - run: docker compose --profile app run --rm backend seed-demo
       - run: npm ci
         working-directory: admin
       - run: npx playwright install --with-deps chromium

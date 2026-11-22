@@ -185,7 +185,7 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 			return
 		}
 		if text, ok := v.(string); ok {
-			if len(text) > 100000 || field == "slug" && (!slugPattern.MatchString(text) || len(text) > 180) || strings.HasSuffix(field, "_id") && uuid.Validate(text) != nil {
+			if strings.Contains(","+r.required+",", ","+field+",") && strings.TrimSpace(text) == "" || len(text) > 100000 || field == "slug" && (!slugPattern.MatchString(text) || len(text) > 180) || strings.HasSuffix(field, "_id") && uuid.Validate(text) != nil {
 				httpx.Error(c, 422, "VALIDATION_ERROR")
 				return
 			}

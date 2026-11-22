@@ -339,3 +339,24 @@ func TestCompletePreservesHistoricalInventory(t *testing.T) {
 		t.Fatal("completion mutated seats or cash")
 	}
 }
+
+func TestQuoteClockAfterWaitingForDepartureLock(t *testing.T) {
+	a, p, dep := bookingFixture(t, 2)
+	ctx := context.Background()
+	q := quoteFor(t, a, p, dep, booking.Counts{Adult: 1})
+	a.DB.Exec(ctx, "UPDATE pricing_quotes SET expires_at=clock_timestamp()+interval '100 milliseconds' WHERE id=$1", q.ID)
+	tx, e := a.DB.Begin(ctx)
+	if e != nil {
+		t.Fatal(e)
+	}
+	defer tx.Rollback(ctx)
+	var locked string
+	tx.QueryRow(ctx, "SELECT id FROM departures WHERE id=$1 FOR UPDATE", dep).Scan(&locked)
+	result := make(chan error, 1)
+	go func() { _, err := a.BookingServer().Create(ctx, p, uuid.NewString(), bookingInput(q)); result <- err }()
+	time.Sleep(250 * time.Millisecond)
+	tx.Commit(ctx)
+	if e := <-result; e == nil || e.Error() != "QUOTE_EXPIRED" {
+		t.Fatal("used transaction-start time after lock", e)
+	}
+}

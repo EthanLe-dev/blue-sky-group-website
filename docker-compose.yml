@@ -79,6 +79,10 @@ services:
     build: ./frontend
     environment:
       API_UPSTREAM_URL: http://backend:8080
+      APP_ENV: ${APP_ENV:-local}
+      TURNSTILE_MODE: ${TURNSTILE_MODE:-real}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
     ports: ["127.0.0.1:3000:3000"]
     depends_on:
       backend:

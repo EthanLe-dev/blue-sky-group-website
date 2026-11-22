@@ -1,17 +1,317 @@
-import Link from 'next/link';
-import {notFound} from 'next/navigation';
-import type {Metadata} from 'next';
-import {read,DataError,type Content,type Media,type Tour} from '@/lib/catalog';
-import TourCard from '@/components/TourCard';
-const names:Record<string,string>={about:'Về Blue Sky Group',contact:'Liên hệ',schools:'Tour dành cho trường học',companies:'Tour dành cho doanh nghiệp',blog:'Cẩm nang du lịch',destinations:'Điểm đến',faq:'Câu hỏi thường gặp',gallery:'Thư viện ảnh',credits:'Nguồn ảnh và quyền sử dụng'};
-async function pageContent(key:string){try{return await read<Content>('/pages/'+encodeURIComponent(key))}catch(e){if(e instanceof DataError&&e.status===404)notFound();throw e}}
-export async function generateMetadata({params}:{params:Promise<{path:string[]}>}):Promise<Metadata>{const{path}=await params;let title=names[path[0]];if(path[0]==='policies'||(['blog','destinations'].includes(path[0])&&path[1])){const type=path[0]==='blog'?'posts':path[0]==='destinations'?'destinations':'pages';try{const p=await read<Content>('/'+type+'/'+encodeURIComponent(path[1]));title=p.title||p.name}catch{}}return {title:title||'Thông tin',alternates:{canonical:'/'+path.join('/')}}}
-export default async function ContentPage({params}:{params:Promise<{path:string[]}>}){const{path}=await params;const key=path[0];if(path.length>2)notFound();let title=names[key];let body:React.ReactNode;
-if(key==='credits'){body=<><p>Logo và poster Ninh Chữ do chủ dự án cung cấp. Không chỉnh sửa nội dung ảnh.</p><p>Ảnh Vịnh Vĩnh Hy và bãi biển Ninh Chữ: Phương Huy, phạm vi công cộng theo công bố của tác giả trên Wikimedia Commons.</p><ul><li><a href="https://commons.wikimedia.org/wiki/File:V%E1%BB%8Bnh_V%C4%A9nh_Hy.jpg">Nguồn ảnh Vịnh Vĩnh Hy</a></li><li><a href="https://commons.wikimedia.org/wiki/File:B%C3%A3i_bi%E1%BB%83n_Ninh_Ch%E1%BB%AF.JPG">Nguồn ảnh Ninh Chữ</a></li></ul></>}
-else if(key==='gallery'){const images=await read<Media[]>('/gallery');body=<div className="gallery-grid">{images.length?images.map(m=><a href={m.url} target="_blank" rel="noreferrer" key={m.id}>{m.kind==='video'?<video controls src={m.url}/>:<img src={m.url} width="500" height="340" loading="lazy" alt={m.alt_text||'Ảnh điểm đến'}/>}</a>):<p>Thư viện đang được cập nhật.</p>}</div>}
-else if(key==='faq'){const list=await read<Content[]>('/faqs');body=<div className="content-list">{list.length?list.map(i=><article key={i.id}><h2>{i.question}</h2><div className="prose" dangerouslySetInnerHTML={{__html:i.answer}}/></article>):<p>Chưa có câu hỏi được đăng.</p>}</div>}
-else if(key==='blog'||key==='destinations'){const type=key==='blog'?'posts':'destinations';if(path[1]){let item:Content;try{item=await read('/'+type+'/'+encodeURIComponent(path[1]))}catch(e){if(e instanceof DataError&&e.status===404)notFound();throw e}title=item.title||item.name;body=<>{item.cover_media_id&&<img className="content-image" src={'/api/v1/media/'+item.cover_media_id} alt={title} width="900" height="540"/>}<div className="prose" dangerouslySetInnerHTML={{__html:item.body||item.description}}/>{key==='destinations'&&<Link className="btn" href={'/tours?destination='+item.slug}>Xem tour tại điểm đến</Link>}</>}else{const list=await read<Content[]>('/'+type);body=<div className="content-list">{list.length?list.map(i=><article key={i.id}><h2><Link href={'/'+key+'/'+i.slug}>{i.title||i.name} ↗</Link></h2><p>{i.excerpt}</p></article>):<p>Nội dung đang được cập nhật.</p>}</div>}}
-else if(['about','contact','schools','companies','policies'].includes(key)){const page=await pageContent(key==='policies'?path[1]||'terms':key);title=page.title;body=<><div className="prose" dangerouslySetInnerHTML={{__html:page.body}}/>{['schools','companies'].includes(key)&&<><p className="notice">Form báo giá trực tuyến sẽ được mở trong giai đoạn M5. Hiện tại bạn có thể xem chương trình và liên hệ trực tiếp.</p><GroupTours audience={key==='schools'?'school':'company'}/><Link className="btn" href="/contact">Xem thông tin liên hệ</Link></>}{key==='contact'&&<Company/>}</>}
-else notFound();return <main id="main" className={'page wrap '+(!['gallery','schools','companies'].includes(key)?'prose-page':'')}><p className="eyebrow">BLUE SKY GROUP</p><h1>{title}</h1>{body}</main>}
-async function GroupTours({audience}:{audience:string}){const tours=await read<Tour[]>('/tours?audience='+audience);return <div className="tour-grid">{tours.map(t=><TourCard key={t.id} tour={t}/>)}</div>}
-async function Company(){const company=await read<{company_profile:{display_name:string;address:string|null;hotline:string|null;email:string|null;zalo_url:string|null;is_demo:boolean;office_coordinates:{latitude:number;longitude:number}|null}}>('/site-settings');const p=company.company_profile;return <section className="detail-section"><h2>{p.display_name}</h2>{p.is_demo&&<p className="notice">Thông tin công ty đang ở chế độ demo. Cần xác minh trước khi sử dụng.</p>}<p>{p.address||'Địa chỉ đang được cập nhật.'}</p>{p.hotline&&<p><a href={'tel:'+p.hotline.replace(/[^+0-9]/g,'')}>Gọi {p.hotline}</a></p>}{p.email&&<p><a href={'mailto:'+p.email}>{p.email}</a></p>}{p.zalo_url&&<p><a href={p.zalo_url}>Liên hệ qua Zalo</a></p>}{p.office_coordinates&&<a target="_blank" rel="noreferrer" href={'https://www.openstreetmap.org/?mlat='+p.office_coordinates.latitude+'&mlon='+p.office_coordinates.longitude}>Xem văn phòng trên OpenStreetMap ↗</a>}</section>}
+import Link from "next/link";
+import Map from "@/components/Map";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import {
+  read,
+  DataError,
+  type Content,
+  type Media,
+  type Tour,
+} from "@/lib/catalog";
+import TourCard from "@/components/TourCard";
+const names: Record<string, string> = {
+  about: "Về Blue Sky Group",
+  contact: "Liên hệ",
+  schools: "Tour dành cho trường học",
+  companies: "Tour dành cho doanh nghiệp",
+  blog: "Cẩm nang du lịch",
+  destinations: "Điểm đến",
+  faq: "Câu hỏi thường gặp",
+  gallery: "Thư viện ảnh",
+  credits: "Nguồn ảnh và quyền sử dụng",
+};
+async function pageContent(key: string) {
+  try {
+    return await read<Content>("/pages/" + encodeURIComponent(key));
+  } catch (e) {
+    if (e instanceof DataError && e.status === 404) notFound();
+    throw e;
+  }
+}
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ path: string[] }>;
+}): Promise<Metadata> {
+  const { path } = await params;
+  let title = names[path[0]];
+  if (
+    path[0] === "policies" ||
+    (["blog", "destinations"].includes(path[0]) && path[1])
+  ) {
+    const type =
+      path[0] === "blog"
+        ? "posts"
+        : path[0] === "destinations"
+          ? "destinations"
+          : "pages";
+    try {
+      const p = await read<Content>(
+        "/" + type + "/" + encodeURIComponent(path[1]),
+      );
+      title = p.title || p.name;
+    } catch {}
+  }
+  return {
+    title: title || "Thông tin",
+    alternates: { canonical: "/" + path.join("/") },
+  };
+}
+export default async function ContentPage({
+  params,
+}: {
+  params: Promise<{ path: string[] }>;
+}) {
+  const { path } = await params;
+  const key = path[0];
+  if (path.length > 2) notFound();
+  let title = names[key];
+  let body: React.ReactNode;
+  if (key === "credits") {
+    body = (
+      <>
+        <p>
+          Logo và poster Ninh Chữ do chủ dự án cung cấp. Không chỉnh sửa nội
+          dung ảnh.
+        </p>
+        <p>
+          Ảnh Vịnh Vĩnh Hy và bãi biển Ninh Chữ: Phương Huy, phạm vi công cộng
+          theo công bố của tác giả trên Wikimedia Commons.
+        </p>
+        <ul>
+          <li>
+            <a href="https://commons.wikimedia.org/wiki/File:V%E1%BB%8Bnh_V%C4%A9nh_Hy.jpg">
+              Nguồn ảnh Vịnh Vĩnh Hy
+            </a>
+          </li>
+          <li>
+            <a href="https://commons.wikimedia.org/wiki/File:B%C3%A3i_bi%E1%BB%83n_Ninh_Ch%E1%BB%AF.JPG">
+              Nguồn ảnh Ninh Chữ
+            </a>
+          </li>
+        </ul>
+      </>
+    );
+  } else if (key === "gallery") {
+    const images = await read<Media[]>("/gallery");
+    body = (
+      <div className="gallery-grid">
+        {images.length ? (
+          images.map((m) => (
+            <a href={m.url} target="_blank" rel="noreferrer" key={m.id}>
+              {m.kind === "video" ? (
+                <video controls src={m.url} />
+              ) : (
+                <img
+                  src={m.url}
+                  width="500"
+                  height="340"
+                  loading="lazy"
+                  alt={m.alt_text || "Ảnh điểm đến"}
+                />
+              )}
+            </a>
+          ))
+        ) : (
+          <p>Thư viện đang được cập nhật.</p>
+        )}
+      </div>
+    );
+  } else if (key === "faq") {
+    const list = await read<Content[]>("/faqs");
+    body = (
+      <div className="content-list">
+        {list.length ? (
+          list.map((i) => (
+            <article key={i.id}>
+              <h2>{i.question}</h2>
+              <div
+                className="prose"
+                dangerouslySetInnerHTML={{ __html: i.answer }}
+              />
+            </article>
+          ))
+        ) : (
+          <p>Chưa có câu hỏi được đăng.</p>
+        )}
+      </div>
+    );
+  } else if (key === "blog" || key === "destinations") {
+    const type = key === "blog" ? "posts" : "destinations";
+    if (path[1]) {
+      let item: Content;
+      try {
+        item = await read("/" + type + "/" + encodeURIComponent(path[1]));
+      } catch (e) {
+        if (e instanceof DataError && e.status === 404) notFound();
+        throw e;
+      }
+      title = item.title || item.name;
+      body = (
+        <>
+          {item.cover_media_id && (
+            <img
+              className="content-image"
+              src={"/api/v1/media/" + item.cover_media_id}
+              alt={title}
+              width="900"
+              height="540"
+            />
+          )}
+          <div
+            className="prose"
+            dangerouslySetInnerHTML={{ __html: item.body || item.description }}
+          />
+          {key === "destinations" && (
+            <Link className="btn" href={"/tours?destination=" + item.slug}>
+              Xem tour tại điểm đến
+            </Link>
+          )}
+        </>
+      );
+    } else {
+      const list = await read<Content[]>("/" + type);
+      body = (
+        <div className="content-list">
+          {list.length ? (
+            list.map((i) => (
+              <article key={i.id}>
+                <h2>
+                  <Link href={"/" + key + "/" + i.slug}>
+                    {i.title || i.name} ↗
+                  </Link>
+                </h2>
+                <p>{i.excerpt}</p>
+              </article>
+            ))
+          ) : (
+            <p>Nội dung đang được cập nhật.</p>
+          )}
+        </div>
+      );
+    }
+  } else if (
+    ["about", "contact", "schools", "companies", "policies"].includes(key)
+  ) {
+    const page = await pageContent(
+      key === "policies" ? path[1] || "terms" : key,
+    );
+    title = page.title;
+    body = (
+      <>
+        <div
+          className="prose"
+          dangerouslySetInnerHTML={{ __html: page.body }}
+        />
+        {["schools", "companies"].includes(key) && (
+          <>
+            <p className="notice">
+              Form báo giá trực tuyến sẽ được mở trong giai đoạn M5. Hiện tại
+              bạn có thể xem chương trình và liên hệ trực tiếp.
+            </p>
+            <GroupTours audience={key === "schools" ? "school" : "company"} />
+            <Link className="btn" href="/contact">
+              Xem thông tin liên hệ
+            </Link>
+          </>
+        )}
+        {key === "contact" && <Company />}
+      </>
+    );
+  } else notFound();
+  return (
+    <main
+      id="main"
+      className={
+        "page wrap " +
+        (!["gallery", "schools", "companies"].includes(key) ? "prose-page" : "")
+      }
+    >
+      <p className="eyebrow">BLUE SKY GROUP</p>
+      <h1>{title}</h1>
+      {body}
+    </main>
+  );
+}
+async function GroupTours({ audience }: { audience: string }) {
+  const tours = await read<Tour[]>("/tours?audience=" + audience);
+  return (
+    <div className="tour-grid">
+      {tours.map((t) => (
+        <TourCard key={t.id} tour={t} />
+      ))}
+    </div>
+  );
+}
+async function Company() {
+  const company = await read<{
+    company_profile: {
+      display_name: string;
+      address: string | null;
+      hotline: string | null;
+      email: string | null;
+      zalo_url: string | null;
+      is_demo: boolean;
+      document_media_ids: string[];
+      office_coordinates: { latitude: number; longitude: number } | null;
+    };
+  }>("/site-settings");
+  const p = company.company_profile;
+  return (
+    <section className="detail-section">
+      <h2>{p.display_name}</h2>
+      {p.is_demo && (
+        <p className="notice">
+          Thông tin công ty đang ở chế độ demo. Cần xác minh trước khi sử dụng.
+        </p>
+      )}
+      <p>{p.address || "Địa chỉ đang được cập nhật."}</p>
+      {p.hotline && (
+        <p>
+          <a href={"tel:" + p.hotline.replace(/[^+0-9]/g, "")}>
+            Gọi {p.hotline}
+          </a>
+        </p>
+      )}
+      {p.email && (
+        <p>
+          <a href={"mailto:" + p.email}>{p.email}</a>
+        </p>
+      )}
+      {p.zalo_url && (
+        <p>
+          <a href={p.zalo_url}>Liên hệ qua Zalo</a>
+        </p>
+      )}
+      {p.document_media_ids?.length > 0 && (
+        <ul>
+          {p.document_media_ids.map((id) => (
+            <li key={id}>
+              <a href={"/api/v1/media/" + id} target="_blank" rel="noreferrer">
+                Xem tài liệu công ty
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+      {p.office_coordinates && (
+        <Map points={[{ name: p.display_name, ...p.office_coordinates }]} />
+      )}
+      {p.office_coordinates && (
+        <a
+          target="_blank"
+          rel="noreferrer"
+          href={
+            "https://www.openstreetmap.org/?mlat=" +
+            p.office_coordinates.latitude +
+            "&mlon=" +
+            p.office_coordinates.longitude
+          }
+        >
+          Xem văn phòng trên OpenStreetMap ↗
+        </a>
+      )}
+    </section>
+  );
+}

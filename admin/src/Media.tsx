@@ -1,4 +1,191 @@
-import {useEffect,useState} from 'react'
-import {authorized} from './lib/session'
-type Asset={id:string;kind:string;visibility:string;url:string|null;alt_text:string;collection:string;original_name:string}
-export default function Media(){const[assets,setAssets]=useState<Asset[]>([]);const[message,setMessage]=useState('');const[busy,setBusy]=useState(false);async function load(){try{setAssets(await authorized<Asset[]>('/admin/media?page_size=100'))}catch(e){setMessage(String(e))}}useEffect(()=>{void load()},[]);return <section className="workspace"><h2>Thư viện media</h2><p>Ảnh JPEG/PNG/WebP tối đa 10 MB, PDF 20 MB, MP4/WebM 50 MB. Tài liệu khách dùng chế độ riêng tư.</p><form onSubmit={async e=>{e.preventDefault();setBusy(true);const form=e.currentTarget;const data=new FormData(form);try{const out=await authorized<Asset>('/admin/media?visibility='+data.get('visibility'),{method:'POST',body:data});setMessage('Đã tải lên. ID: '+out.id);form.reset();await load()}catch(e){setMessage(String(e))}finally{setBusy(false)}}}><label>Tệp<input type="file" name="file" accept="image/jpeg,image/png,image/webp,application/pdf,video/mp4,video/webm" required/></label><label>Quyền truy cập<select name="visibility"><option value="public">Công khai — ảnh/tài liệu được phép đăng</option><option value="private">Riêng tư — chỉ người tải lên</option></select></label><label>Mô tả ảnh (alt)<input name="alt_text" required maxLength={500}/></label><label>Bộ sưu tập<input name="collection" maxLength={100}/></label><label>Nguồn/quyền sử dụng<input name="source_credit" required maxLength={1000}/></label><button disabled={busy}>{busy?'Đang tải…':'Tải media lên'}</button></form><p role="status">{message}</p><div className="media-grid">{assets.map(a=><article className="media-card" key={a.id}>{a.url&&a.kind==='image'&&<img src={a.url} alt={a.alt_text} loading="lazy"/>}<h3>{a.original_name}</h3><p>{a.visibility} · {a.kind}</p><label>ID để gắn vào nội dung<input readOnly value={a.id} onFocus={e=>e.target.select()}/></label><label>Mô tả ảnh<input defaultValue={a.alt_text} onBlur={async e=>{if(e.target.value===a.alt_text)return;try{await authorized('/admin/media/'+a.id,{method:'PATCH',body:JSON.stringify({alt_text:e.target.value})});setMessage('Đã lưu mô tả ảnh.')}catch(e){setMessage(String(e))}}}/></label><label>Bộ sưu tập<input defaultValue={a.collection} onBlur={async e=>{if(e.target.value===a.collection)return;try{await authorized('/admin/media/'+a.id,{method:'PATCH',body:JSON.stringify({collection:e.target.value})});setMessage('Đã lưu bộ sưu tập.')}catch(e){setMessage(String(e))}}}/></label><div className="toolbar"><button onClick={async()=>{try{const out=await authorized<{url:string}>('/admin/media/'+a.id+'/download-url',{method:'POST',body:'{}'});window.open(out.url,'_blank','noopener,noreferrer')}catch(e){setMessage(String(e))}}}>Mở/tải tệp</button><button onClick={async()=>{if(!confirm('Lưu trữ media? Tệp đang được nội dung sử dụng sẽ bị từ chối.'))return;try{await authorized('/admin/media/'+a.id,{method:'DELETE'});await load();setMessage('Đã lưu trữ.')}catch(e){setMessage(String(e))}}}>Lưu trữ tệp</button></div></article>)}</div></section>}
+import { useEffect, useState } from "react";
+import { authorized } from "./lib/session";
+type Asset = {
+  id: string;
+  kind: string;
+  visibility: string;
+  url: string | null;
+  alt_text: string;
+  collection: string;
+  original_name: string;
+};
+export default function Media() {
+  const [assets, setAssets] = useState<Asset[]>([]);
+  const [message, setMessage] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function load() {
+    try {
+      setAssets(await authorized<Asset[]>("/admin/media?page_size=100"));
+    } catch (e) {
+      setMessage(String(e));
+    }
+  }
+  useEffect(() => {
+    let active = true;
+    authorized<Asset[]>("/admin/media?page_size=100")
+      .then((rows) => {
+        if (active) setAssets(rows);
+      })
+      .catch((e) => {
+        if (active) setMessage(String(e));
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+  return (
+    <section className="workspace">
+      <h2>Thư viện media</h2>
+      <p>
+        Ảnh JPEG/PNG/WebP tối đa 10 MB, PDF 20 MB, MP4/WebM 50 MB. Tài liệu
+        khách dùng chế độ riêng tư.
+      </p>
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
+          setBusy(true);
+          const form = e.currentTarget;
+          const data = new FormData(form);
+          try {
+            const out = await authorized<Asset>(
+              "/admin/media?visibility=" + data.get("visibility"),
+              { method: "POST", body: data },
+            );
+            setMessage("Đã tải lên. ID: " + out.id);
+            form.reset();
+            await load();
+          } catch (e) {
+            setMessage(String(e));
+          } finally {
+            setBusy(false);
+          }
+        }}
+      >
+        <label>
+          Tệp
+          <input
+            type="file"
+            name="file"
+            accept="image/jpeg,image/png,image/webp,application/pdf,video/mp4,video/webm"
+            required
+          />
+        </label>
+        <label>
+          Quyền truy cập
+          <select name="visibility">
+            <option value="public">
+              Công khai — ảnh/tài liệu được phép đăng
+            </option>
+            <option value="private">Riêng tư — chỉ người tải lên</option>
+          </select>
+        </label>
+        <label>
+          Mô tả ảnh (alt)
+          <input name="alt_text" required maxLength={500} />
+        </label>
+        <label>
+          Bộ sưu tập
+          <input name="collection" maxLength={100} />
+        </label>
+        <label>
+          Nguồn/quyền sử dụng
+          <input name="source_credit" required maxLength={1000} />
+        </label>
+        <button disabled={busy}>{busy ? "Đang tải…" : "Tải media lên"}</button>
+      </form>
+      <p role="status">{message}</p>
+      <div className="media-grid">
+        {assets.map((a) => (
+          <article className="media-card" key={a.id}>
+            {a.url && a.kind === "image" && (
+              <img src={a.url} alt={a.alt_text} loading="lazy" />
+            )}
+            <h3>{a.original_name}</h3>
+            <p>
+              {a.visibility} · {a.kind}
+            </p>
+            <label>
+              ID để gắn vào nội dung
+              <input readOnly value={a.id} onFocus={(e) => e.target.select()} />
+            </label>
+            <label>
+              Mô tả ảnh
+              <input
+                defaultValue={a.alt_text}
+                onBlur={async (e) => {
+                  if (e.target.value === a.alt_text) return;
+                  try {
+                    await authorized("/admin/media/" + a.id, {
+                      method: "PATCH",
+                      body: JSON.stringify({ alt_text: e.target.value }),
+                    });
+                    setMessage("Đã lưu mô tả ảnh.");
+                  } catch (e) {
+                    setMessage(String(e));
+                  }
+                }}
+              />
+            </label>
+            <label>
+              Bộ sưu tập
+              <input
+                defaultValue={a.collection}
+                onBlur={async (e) => {
+                  if (e.target.value === a.collection) return;
+                  try {
+                    await authorized("/admin/media/" + a.id, {
+                      method: "PATCH",
+                      body: JSON.stringify({ collection: e.target.value }),
+                    });
+                    setMessage("Đã lưu bộ sưu tập.");
+                  } catch (e) {
+                    setMessage(String(e));
+                  }
+                }}
+              />
+            </label>
+            <div className="toolbar">
+              <button
+                onClick={async () => {
+                  try {
+                    if(a.url){window.open(a.url,"_blank","noopener,noreferrer");return}
+                    const out = await authorized<{ url: string }>(
+                      "/admin/media/" + a.id + "/download-url",
+                      { method: "POST", body: "{}" },
+                    );
+                    window.open(out.url, "_blank", "noopener,noreferrer");
+                  } catch (e) {
+                    setMessage(String(e));
+                  }
+                }}
+              >
+                Mở/tải tệp
+              </button>
+              <button
+                onClick={async () => {
+                  if (
+                    !confirm(
+                      "Lưu trữ media? Tệp đang được nội dung sử dụng sẽ bị từ chối.",
+                    )
+                  )
+                    return;
+                  try {
+                    await authorized("/admin/media/" + a.id, {
+                      method: "DELETE",
+                    });
+                    await load();
+                    setMessage("Đã lưu trữ.");
+                  } catch (e) {
+                    setMessage(String(e));
+                  }
+                }}
+              >
+                Lưu trữ tệp
+              </button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
