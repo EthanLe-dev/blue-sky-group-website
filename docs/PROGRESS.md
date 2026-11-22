@@ -174,3 +174,8 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - `go vet` và toàn bộ `go test -race -count=1 ./...` PASS; platform 58.738s. Thêm biên ngày sinh đúng sinh nhật, cọc làm tròn lên, phụ thu bắt buộc/tuỳ chọn, báo giá hết hạn và chỉ full khi quá hạn cọc.
 - Complete chỉ nhận chuyến đã kết thúc, giữ confirmed_seats và không tự ghi nhận tiền; cancel/retry không nhả chỗ lần hai.
 - T302 đạt gate backend; task khác tiếp tục có bằng chứng riêng.
+
+### M3 — Kiểm thử giao diện
+- Playwright 5/5 PASS (11.3s): guest proxy/CSRF, login/settings save-reload/logout, catalog filter/poster Escape/favourites, checkout 3 bước → lookup che PII → admin cancel; tour editor save/reload/verify poster; responsive320/390/768/820/1024/1440 và trang CMS/slug404. Dữ liệu E2E giả; đơn vừa tạo được huỷ qua Admin, nội dung và cấu hình được phục hồi.
+- T307 hoàn thành luồng quote/validation/hold/countdown/retry idempotency; PII chỉ trong React memory. Payment CTA disabled có giải thích M4, không ghi thu tiền.
+- T308 có lookup chỉ đọc và Admin list/detail/edit/notes/manual/cancel/complete.

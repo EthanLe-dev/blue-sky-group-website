@@ -76,8 +76,8 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |
 | T305 | Creator read và guest lookup read-only che PII | T303,T108b | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
 | T306 | Admin tạo/sửa/notes/cancel/complete dùng chung service | T303,T304,T107 | Manual+web tranh cùng kho; cancel hai lần; completed không nhả chỗ |
-| T307 | Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
-| T308 | Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |
+| T307 | DONE — Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
+| T308 | DONE — Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |
 
 ## M4 — Payment/notification mock (FR-27–29)
 
