@@ -1,5 +1,7 @@
 import Link from "next/link";
+import Image from "next/image";
 import Map from "@/components/Map";
+import { Gallery } from "@/components/TourTools";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
@@ -36,6 +38,13 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { path } = await params;
   let title = names[path[0]];
+  let content: Content | null = null;
+  if (["about", "contact", "schools", "companies"].includes(path[0])) {
+    try {
+      content = await read<Content>("/pages/" + path[0]);
+      title = content.title;
+    } catch {}
+  }
   if (
     path[0] === "policies" ||
     (["blog", "destinations"].includes(path[0]) && path[1])
@@ -50,21 +59,39 @@ export async function generateMetadata({
       const p = await read<Content>(
         "/" + type + "/" + encodeURIComponent(path[1]),
       );
-      title = p.title || p.name;
+      content = p;
+      title = p.seo_title || p.title || p.name;
     } catch {}
   }
   return {
-    title: title || "Thông tin",
+    title: content?.seo_title || title || "Thông tin",
+    description:
+      content?.seo_description ||
+      content?.excerpt ||
+      (content?.description || content?.body || "")
+        .replace(/<[^>]*>/g, " ")
+        .replace(/\s+/g, " ")
+        .trim()
+        .slice(0, 160) ||
+      undefined,
     alternates: { canonical: "/" + path.join("/") },
   };
 }
 export default async function ContentPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ path: string[] }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { path } = await params;
   const key = path[0];
+  const filter = await searchParams;
+  const query = new URLSearchParams();
+  for (const k of ["q", "category", "tag", "kind", "collection", "page"]) {
+    const v = filter[k];
+    if (typeof v === "string" && v) query.set(k, v);
+  }
   if (path.length > 2) notFound();
   let title = names[key];
   let body: React.ReactNode;
@@ -94,29 +121,47 @@ export default async function ContentPage({
       </>
     );
   } else if (key === "gallery") {
-    const images = await read<Media[]>("/gallery");
+    const images = await read<Media[]>("/gallery?" + query);
     body = (
-      <div className="gallery-grid">
+      <>
+        <form className="filters" action="/gallery">
+          <label>
+            Loại media
+            <select name="kind" defaultValue={query.get("kind") || ""}>
+              <option value="">Ảnh và video</option>
+              <option value="image">Ảnh</option>
+              <option value="video">Video</option>
+            </select>
+          </label>
+          <label>
+            Bộ sưu tập
+            <input
+              name="collection"
+              defaultValue={query.get("collection") || ""}
+            />
+          </label>
+          <button className="btn">Lọc thư viện</button>
+        </form>
         {images.length ? (
-          images.map((m) => (
-            <a href={m.url} target="_blank" rel="noreferrer" key={m.id}>
-              {m.kind === "video" ? (
-                <video controls src={m.url} />
-              ) : (
-                <img
-                  src={m.url}
-                  width="500"
-                  height="340"
-                  loading="lazy"
-                  alt={m.alt_text || "Ảnh điểm đến"}
-                />
-              )}
-            </a>
-          ))
+          <Gallery pictures={images} />
         ) : (
-          <p>Thư viện đang được cập nhật.</p>
+          <p>Chưa có media phù hợp bộ lọc.</p>
         )}
-      </div>
+        {images.length === 20 && (
+          <Link
+            className="text-action"
+            href={
+              "/gallery?" +
+              new URLSearchParams({
+                ...Object.fromEntries(query),
+                page: String(Number(query.get("page") || 1) + 1),
+              })
+            }
+          >
+            Xem trang tiếp
+          </Link>
+        )}
+      </>
     );
   } else if (key === "faq") {
     const list = await read<Content[]>("/faqs");
@@ -151,7 +196,9 @@ export default async function ContentPage({
       body = (
         <>
           {item.cover_media_id && (
-            <img
+            <Image
+              sizes="100vw"
+              loading="eager"
               className="content-image"
               src={"/api/v1/media/" + item.cover_media_id}
               alt={title}
@@ -163,6 +210,49 @@ export default async function ContentPage({
             className="prose"
             dangerouslySetInnerHTML={{ __html: item.body || item.description }}
           />
+          {key === "blog" && (
+            <>
+              <p>
+                {item.category && (
+                  <Link href={"/blog?category=" + item.category.slug}>
+                    {item.category.name}
+                  </Link>
+                )}
+              </p>
+              <div className="tools">
+                {item.tags?.map((tag) => (
+                  <Link href={"/blog?tag=" + tag.slug} key={tag.id}>
+                    #{tag.name}
+                  </Link>
+                ))}
+              </div>
+              {(item.related_posts?.length || 0) > 0 && (
+                <section className="detail-section">
+                  <h2>Bài viết liên quan</h2>
+                  <ul>
+                    {item.related_posts?.map((post) => (
+                      <li key={post.id}>
+                        <Link href={"/blog/" + post.slug}>{post.title}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              )}
+            </>
+          )}
+          {key === "destinations" &&
+            item.latitude != null &&
+            item.longitude != null && (
+              <Map
+                points={[
+                  {
+                    name: item.name,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                  },
+                ]}
+              />
+            )}
           {key === "destinations" && (
             <Link className="btn" href={"/tours?destination=" + item.slug}>
               Xem tour tại điểm đến
@@ -171,24 +261,83 @@ export default async function ContentPage({
         </>
       );
     } else {
-      const list = await read<Content[]>("/" + type);
+      const list = await read<Content[]>("/" + type + "?" + query);
+      const categories =
+        key === "blog" ? await read<Content[]>("/post-categories") : [];
+      const tags = key === "blog" ? await read<Content[]>("/tags") : [];
       body = (
-        <div className="content-list">
-          {list.length ? (
-            list.map((i) => (
-              <article key={i.id}>
-                <h2>
-                  <Link href={"/" + key + "/" + i.slug}>
-                    {i.title || i.name} ↗
-                  </Link>
-                </h2>
-                <p>{i.excerpt}</p>
-              </article>
-            ))
-          ) : (
-            <p>Nội dung đang được cập nhật.</p>
+        <>
+          {key === "blog" && (
+            <form className="filters" action="/blog">
+              <label>
+                Tìm bài viết
+                <input
+                  name="q"
+                  defaultValue={query.get("q") || ""}
+                  maxLength={100}
+                />
+              </label>
+              <label>
+                Danh mục
+                <select
+                  name="category"
+                  defaultValue={query.get("category") || ""}
+                >
+                  <option value="">Tất cả danh mục</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Thẻ
+                <select name="tag" defaultValue={query.get("tag") || ""}>
+                  <option value="">Tất cả thẻ</option>
+                  {tags.map((c) => (
+                    <option key={c.id} value={c.slug}>
+                      {c.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className="btn">Lọc bài viết</button>
+            </form>
           )}
-        </div>
+          <div className="content-list">
+            {list.length ? (
+              list.map((i) => (
+                <article key={i.id}>
+                  <h2>
+                    <Link href={"/" + key + "/" + i.slug}>
+                      {i.title || i.name} ↗
+                    </Link>
+                  </h2>
+                  <p>{i.excerpt}</p>
+                </article>
+              ))
+            ) : (
+              <p>Nội dung đang được cập nhật.</p>
+            )}
+          </div>
+          {list.length === 20 && (
+            <Link
+              className="text-action"
+              href={
+                "/" +
+                key +
+                "?" +
+                new URLSearchParams({
+                  ...Object.fromEntries(query),
+                  page: String(Number(query.get("page") || 1) + 1),
+                })
+              }
+            >
+              Xem trang tiếp
+            </Link>
+          )}
+        </>
       );
     }
   } else if (

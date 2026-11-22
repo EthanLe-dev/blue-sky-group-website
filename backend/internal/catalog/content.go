@@ -129,6 +129,9 @@ func (s *Server) contentDetail(c *gin.Context, r resource, admin bool) {
 	if r.table == "posts" {
 		value += `||jsonb_build_object('tag_ids',COALESCE((SELECT jsonb_agg(tag_id) FROM post_tags WHERE post_id=x.id),'[]'),'tags',COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM post_tags pt JOIN tags t ON t.id=pt.tag_id WHERE pt.post_id=x.id),'[]'))`
 	}
+	if r.table == "posts" && !admin {
+		value += `||jsonb_build_object('category',(SELECT to_jsonb(cat) FROM post_categories cat WHERE cat.id=x.category_id),'related_posts',COALESCE((SELECT jsonb_agg(to_jsonb(rel)) FROM (SELECT p.id,p.slug,p.title,p.excerpt,p.cover_media_id FROM posts p WHERE p.status='published' AND p.id<>x.id AND (p.category_id=x.category_id OR EXISTS(SELECT 1 FROM post_tags a JOIN post_tags b ON a.tag_id=b.tag_id WHERE a.post_id=x.id AND b.post_id=p.id)) ORDER BY p.published_at DESC LIMIT 3) rel),'[]'))`
+	}
 	if s.DB.QueryRow(c.Request.Context(), "SELECT "+value+" FROM "+r.table+" x WHERE "+where, key).Scan(&raw) != nil {
 		httpx.Error(c, 404, "NOT_FOUND")
 		return
@@ -203,6 +206,13 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 				v = richText.Sanitize(text)
 			}
 			if field == "status" && text != "draft" && text != "published" && text != "archived" {
+				httpx.Error(c, 422, "VALIDATION_ERROR")
+				return
+			}
+		}
+		if v != nil && (field == "cover_media_id" || field == "media_id") {
+			var ready bool
+			if s.DB.QueryRow(c.Request.Context(), "SELECT EXISTS(SELECT 1 FROM media_assets WHERE id=$1 AND kind='image' AND visibility='public' AND status='ready')", v).Scan(&ready) != nil || !ready {
 				httpx.Error(c, 422, "VALIDATION_ERROR")
 				return
 			}

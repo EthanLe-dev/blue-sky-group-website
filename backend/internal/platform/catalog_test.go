@@ -205,3 +205,59 @@ func TestDemoSeedIdempotentPreservesAdminChanges(t *testing.T) {
 		t.Fatal("seed overwrote data or duplicated tours")
 	}
 }
+
+func TestRelatedPostsHideDraftsAndKeepTags(t *testing.T) {
+	a, token, _ := catalogFixture(t)
+	create := func(path, body string) string {
+		w := request(a, "POST", "/api/v1/admin/"+path, body, token, "", nil)
+		if w.Code != 201 {
+			t.Fatal(w.Body)
+		}
+		return data(t, w)["id"].(string)
+	}
+	tag := create("tags", `{"slug":"bien","name":"Biển"}`)
+	for i, state := range []string{"published", "published", "draft"} {
+		create("posts", fmt.Sprintf(`{"slug":"cam-nang-%d","title":"Cẩm nang %d","body":"Bài viết demo","tag_ids":[%q],"status":%q}`, i, i, tag, state))
+	}
+	w := request(a, "GET", "/api/v1/posts/cam-nang-0", "", "", "", nil)
+	if w.Code != 200 {
+		t.Fatal(w.Body)
+	}
+	d := data(t, w)
+	if len(d["related_posts"].([]any)) != 1 || len(d["tags"].([]any)) != 1 {
+		t.Fatal("related draft or tags wrong", w.Body)
+	}
+	w = request(a, "GET", "/api/v1/posts?tag=bien", "", "", "", nil)
+	if w.Code != 200 {
+		t.Fatal(w.Body)
+	}
+	var envelope struct {
+		Data []json.RawMessage `json:"data"`
+	}
+	json.Unmarshal(w.Body.Bytes(), &envelope)
+	if len(envelope.Data) != 2 {
+		t.Fatal("tag leaked draft")
+	}
+}
+
+func TestContentCoverRequiresPublicReadyImage(t *testing.T) {
+	a, token, tour := catalogFixture(t)
+	ctx := context.Background()
+	for i, asset := range []struct{ kind, visibility, mime string }{{"image", "private", "image/png"}, {"document", "public", "application/pdf"}} {
+		var id string
+		e := a.DB.QueryRow(ctx, "INSERT INTO media_assets(object_key,original_name,mime_type,size_bytes,kind,visibility,status) VALUES($1,'cover',$2,12,$3,$4,'ready') RETURNING id", fmt.Sprintf("cover-%d", i), asset.mime, asset.kind, asset.visibility).Scan(&id)
+		if e != nil {
+			t.Fatal(e)
+		}
+		w := request(a, "POST", "/api/v1/admin/posts", fmt.Sprintf(`{"slug":"bad-%d","title":"Nội dung demo","cover_media_id":%q}`, i, id), token, "", nil)
+		if w.Code != 422 {
+			t.Fatal("nonpublic or nonimage cover accepted", w.Body)
+		}
+	}
+	var cover string
+	a.DB.QueryRow(ctx, "SELECT cover_media_id FROM tours WHERE id=$1", tour).Scan(&cover)
+	w := request(a, "POST", "/api/v1/admin/posts", fmt.Sprintf(`{"slug":"valid-cover","title":"Nội dung demo","cover_media_id":%q}`, cover), token, "", nil)
+	if w.Code != 201 {
+		t.Fatal("public image cover rejected", w.Body)
+	}
+}
