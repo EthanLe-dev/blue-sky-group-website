@@ -34,6 +34,7 @@ export default async function Page({
       <Checkout
         departure={departure}
         title={t.title}
+        tourId={t.id}
         prices={d.prices}
         surcharges={d.surcharges || []}
         mock={

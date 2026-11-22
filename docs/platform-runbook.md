@@ -28,3 +28,10 @@ Người dùng tự chạy bằng `bluesky run`, tự dừng bằng `bluesky off
 - `SITE_URL`, APP_ENV và TURNSTILE_* cần đúng host trước public demo. Demo/local không index; deploy thật ở M7 kiểm tra lại canonical, TLS, Turnstile real và R2. Render+Neon chưa được tự deploy trong đợt code này.
 
 Bổ sung M2: bản đồ dùng Leaflet1.9.4 lazy import, chỉ gọi tile OpenStreetMap sau khi bấm mở, giữ attribution và có liên kết địa chỉ fallback. Không geocode địa chỉ giả; vị trí tour mẫu cần xác minh. Tham chiếu [Leaflet stable](https://leafletjs.com/reference-1.9.4.html). Home có ô tìm nhanh, CMS banners/điểm đến/cẩm nang/đánh giá đã duyệt; Blog có category/tag/related; gallery có kind/collection và viewer. Phụ thu optional chọn ở checkout và form đơn thủ công, backend tự thêm phụ thu bắt buộc.
+
+### Báo cáo, xuất file và đo lường
+
+- Admin vào **Báo cáo** và chọn khoảng ngày Việt Nam. `report.read` xem số liệu tổng hợp. `report.export` tải Excel/CSV doanh thu. Danh sách đơn chứa PII nên cần thêm `booking.read`. File private được tải qua phiên Admin, không có link dùng lại công khai.
+- PDF lịch trình chỉ tải được với tour published. PDF báo giá ở từng phiên bản trong **Yêu cầu tư vấn**, cần `lead.write`. PDF có nhãn trạng thái bản nháp/phát hành và nguồn nội dung từ database. Font Be Vietnam Pro được nhúng theo giấy phép OFL lưu trong repository. Renderer nhận văn bản và không truy cập tài nguyên từ URL.
+- Đặt `GA4_MEASUREMENT_ID` khi đã có thuộc tính GA4 và dùng thuộc tính riêng cho demo. Tắt Enhanced Measurement và tính năng đo theo lịch sử trình duyệt của data stream trước khi bật thu thập. Website chỉ nạp thẻ khi khách chọn cho phép. Các URL sự kiện được rút gọn, bỏ query và thông tin nhận diện khách. Mã purchase demo là mã băm giao dịch, gửi một lần lúc xác nhận đơn và có `is_demo=true`. `GA4_DEBUG=true` chỉ có tác dụng ngoài production để kiểm thử DebugView.
+- Đặt `GSC_VERIFICATION` bằng nội dung của meta tag xác minh thuộc tính URL-prefix. Sau khi site có URL công khai, xác minh trang chủ và nộp sitemap trong Search Console. Các thiết lập này mặc định bỏ trống. Chưa xác minh thuộc tính GA4/Search Console trong CI.

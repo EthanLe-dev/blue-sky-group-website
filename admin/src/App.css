@@ -229,3 +229,12 @@ h3 {
     flex: 1;
   }
 }
+
+.report-table { overflow-x: auto; margin-block: 1rem; }
+.report-table table { width: 100%; border-collapse: collapse; }
+.report-table :is(th, td) {
+  padding: .65rem .85rem;
+  text-align: start;
+  border-bottom: 1px solid #dce5ef;
+  white-space: nowrap;
+}

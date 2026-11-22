@@ -1,3 +1,4 @@
+import ExportButton from "./ExportButton";
 import { useEffect, useState } from "react";
 import { authorized } from "./lib/session";
 type Row = Record<string, unknown>;
@@ -294,6 +295,7 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
   return (
     <section className="workspace">
       <h2>Danh mục và nội dung</h2>
+      {permissions.includes("catalog.write") && <ExportButton path="/admin/tours/export" filename="danh-sach-tour" label="danh sách tour" />}
       <div className="toolbar">
         <label>
           Loại nội dung

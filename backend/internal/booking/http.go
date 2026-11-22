@@ -162,67 +162,14 @@ func (s *Server) list(c *gin.Context) {
 		respondError(c, problem("VALIDATION_ERROR"))
 		return
 	}
-	where := []string{"true"}
-	args := []any{}
-	allowed := map[string]bool{"page": true, "page_size": true, "q": true}
-	for _, k := range []string{"status", "payment_status", "tour_id", "departure_id", "source", "from", "to"} {
-		allowed[k] = true
-	}
-	for k := range c.Request.URL.Query() {
-		if !allowed[k] {
-			respondError(c, problem("VALIDATION_ERROR"))
-			return
-		}
-	}
-	for _, k := range []string{"status", "payment_status", "departure_id", "source"} {
-		if v := c.Query(k); v != "" {
-			if k == "departure_id" && uuid.Validate(v) != nil {
-				respondError(c, problem("VALIDATION_ERROR"))
-				return
-			}
-			args = append(args, v)
-			where = append(where, fmt.Sprintf("b.%s=$%d", k, len(args)))
-		}
-	}
-	if v := c.Query("tour_id"); v != "" {
-		if uuid.Validate(v) != nil {
-			respondError(c, problem("VALIDATION_ERROR"))
-			return
-		}
-		args = append(args, v)
-		where = append(where, fmt.Sprintf("b.departure_id IN(SELECT id FROM departures WHERE tour_id=$%d)", len(args)))
-	}
-	for _, k := range []string{"from", "to"} {
-		if v := c.Query(k); v != "" {
-			if _, e := time.Parse("2006-01-02", v); e != nil {
-				respondError(c, problem("VALIDATION_ERROR"))
-				return
-			}
-			args = append(args, v)
-			op := ">="
-			if k == "to" {
-				op = "<="
-			}
-			where = append(where, fmt.Sprintf("(b.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date %s $%d::date", op, len(args)))
-		}
-	}
-	if c.Query("from") > c.Query("to") && c.Query("to") != "" {
-		respondError(c, problem("VALIDATION_ERROR"))
+	clause, args, ok := bookingFilters(c, false)
+	if !ok {
 		return
-	}
-	if q := c.Query("q"); q != "" {
-		if len(q) > 100 {
-			respondError(c, problem("VALIDATION_ERROR"))
-			return
-		}
-		args = append(args, "%"+q+"%")
-		where = append(where, fmt.Sprintf("(b.code ILIKE $%d OR b.contact->>'name' ILIKE $%d)", len(args), len(args)))
 	}
 	if e := s.Sweep(c.Request.Context()); e != nil {
 		respondError(c, e)
 		return
 	}
-	clause := " WHERE " + strings.Join(where, " AND ")
 	var total int
 	if e := s.DB.QueryRow(c.Request.Context(), "SELECT count(*) FROM bookings b"+clause, args...).Scan(&total); e != nil {
 		respondError(c, e)
@@ -235,6 +182,65 @@ func (s *Server) list(c *gin.Context) {
 		return
 	}
 	httpx.List(c, out, p, n, total)
+}
+func bookingFilters(c *gin.Context, export bool) (string, []any, bool) {
+	where := []string{"true"}
+	args := []any{}
+	allowed := map[string]bool{"page": true, "page_size": true, "q": true, "format": export}
+	for _, k := range []string{"status", "payment_status", "tour_id", "departure_id", "source", "from", "to"} {
+		allowed[k] = true
+	}
+	for k := range c.Request.URL.Query() {
+		if !allowed[k] {
+			respondError(c, problem("VALIDATION_ERROR"))
+			return "", nil, false
+		}
+	}
+	for _, k := range []string{"status", "payment_status", "departure_id", "source"} {
+		if v := c.Query(k); v != "" {
+			if k == "departure_id" && uuid.Validate(v) != nil {
+				respondError(c, problem("VALIDATION_ERROR"))
+				return "", nil, false
+			}
+			args = append(args, v)
+			where = append(where, fmt.Sprintf("b.%s=$%d", k, len(args)))
+		}
+	}
+	if v := c.Query("tour_id"); v != "" {
+		if uuid.Validate(v) != nil {
+			respondError(c, problem("VALIDATION_ERROR"))
+			return "", nil, false
+		}
+		args = append(args, v)
+		where = append(where, fmt.Sprintf("b.departure_id IN(SELECT id FROM departures WHERE tour_id=$%d)", len(args)))
+	}
+	for _, k := range []string{"from", "to"} {
+		if v := c.Query(k); v != "" {
+			if _, e := time.Parse("2006-01-02", v); e != nil {
+				respondError(c, problem("VALIDATION_ERROR"))
+				return "", nil, false
+			}
+			args = append(args, v)
+			op := ">="
+			if k == "to" {
+				op = "<="
+			}
+			where = append(where, fmt.Sprintf("(b.created_at AT TIME ZONE 'Asia/Ho_Chi_Minh')::date %s $%d::date", op, len(args)))
+		}
+	}
+	if c.Query("from") > c.Query("to") && c.Query("to") != "" {
+		respondError(c, problem("VALIDATION_ERROR"))
+		return "", nil, false
+	}
+	if q := c.Query("q"); q != "" {
+		if len(q) > 100 {
+			respondError(c, problem("VALIDATION_ERROR"))
+			return "", nil, false
+		}
+		args = append(args, "%"+q+"%")
+		where = append(where, fmt.Sprintf("(b.code ILIKE $%d OR b.contact->>'name' ILIKE $%d)", len(args), len(args)))
+	}
+	return " WHERE " + strings.Join(where, " AND "), args, true
 }
 func (s *Server) lockBooking(ctx context.Context, tx pgx.Tx, id string) (string, error) {
 	if uuid.Validate(id) != nil {

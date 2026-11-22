@@ -25,10 +25,20 @@ async function login(page: Page) {
 test("catalog, mock payment, private lookup and verified customer history", async ({
   page,
 }) => {
+  const analytics = () => page.evaluate(() => (window as typeof window & { dataLayer?: Array<ArrayLike<unknown>> }).dataLayer?.map(e => Array.from(e)) || []);
+  await page.route("**/measurement", route => route.fulfill({ json: { id: "G-DEMO123", debug: true } }));
+  await page.route("https://www.googletagmanager.com/gtag/js?*", route => route.fulfill({ contentType: "application/javascript", body: "" }));
   await page.goto("http://localhost:3000/tours?budget_max=1700000");
   await expect(page.locator(".tour-card")).not.toHaveCount(0);
   await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
   await expect(page.locator("main h1")).toContainText("Ninh Chữ");
+  const pdf = await page.request.get("http://localhost:3000/api/v1/tours/ninh-chu-2-ngay-1-dem/itinerary.pdf");
+  expect(pdf.headers()["content-disposition"]).toContain("attachment");
+  expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
+  await expect(page.getByRole("button", { name: "Cho phép phân tích" })).toBeVisible();
+  expect(await analytics()).toEqual([]);
+  await page.getByRole("button", { name: "Cho phép phân tích" }).click();
+  await expect.poll(async () => (await analytics()).map(e => e[1])).toContain("view_item");
   await page.route("https://tile.openstreetmap.org/**", (route) =>
     route.fulfill({
       contentType: "image/png",
@@ -88,6 +98,12 @@ test("catalog, mock payment, private lookup and verified customer history", asyn
   await expect(page.locator("summary").filter({ hasText: "Email giả lập · Xác nhận đặt tour" })).toBeVisible({ timeout: 15_000 });
   await page.getByRole("link", { name: "Mở lại đơn trên trình duyệt này" }).click();
   await expect(page.getByRole("heading", { name: "Đã xác nhận đặt tour" })).toBeVisible();
+  await expect.poll(async () => (await analytics()).filter(e => e[1] === "purchase").length).toBe(1);
+  const events = await analytics();
+  expect(events.some(e => e[1] === "begin_checkout")).toBe(true);
+  expect(events.find(e => e[1] === "purchase")?.[2]).toMatchObject({ currency: "VND", is_demo: true });
+  expect(JSON.stringify(events)).not.toMatch(/browser-demo@example\.com|0901234567|Khách Kiểm Thử|\?booking=/u);
+  expect(JSON.stringify(events)).not.toContain(code);
   await page.goto("http://localhost:3000/lookup");
   await page.getByLabel("Mã đơn", { exact: true }).fill(code);
   await page
@@ -235,4 +251,23 @@ test("home search, blog facets and media filters", async ({ page }) => {
   ).toBeVisible();
   await page.goto("http://localhost:3000/gallery?kind=image");
   await expect(page.locator(".gallery-grid img").first()).toBeVisible();
+});
+
+test("report filters and real Excel/CSV downloads", async ({ page }) => {
+  await login(page);
+  await page.getByRole("button", { name: "Báo cáo", exact: true }).click();
+  await page.getByLabel("Từ ngày", { exact: true }).fill("2000-01-01");
+  await page.getByLabel("Đến ngày", { exact: true }).fill("2000-01-30");
+  await page.getByRole("button", { name: "Xem báo cáo", exact: true }).click();
+  await expect(page.getByText("Chưa có giao dịch trong kỳ.")).toBeVisible();
+  const xlsxPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Tải báo cáo doanh thu", exact: true }).click();
+  const xlsx = await xlsxPromise;
+  expect(xlsx.suggestedFilename()).toBe("bao-cao-doanh-thu.xlsx");
+  expect(readFileSync((await xlsx.path())!).subarray(0, 2).toString()).toBe("PK");
+  await page.getByLabel("Định dạng báo cáo doanh thu", { exact: true }).selectOption("csv");
+  const csvPromise = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Tải báo cáo doanh thu", exact: true }).click();
+  const csv = await csvPromise;
+  expect(readFileSync((await csv.path())!, "utf8")).toContain("Thu ròng (VND)");
 });

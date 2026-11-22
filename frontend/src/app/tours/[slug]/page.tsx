@@ -70,7 +70,7 @@ export default async function Detail({
     })),
   };
   return (
-    <main id="main" className="page wrap">
+    <main data-analytics-tour={t.id} id="main" className="page wrap">
       <nav className="breadcrumb" aria-label="Đường dẫn">
         <Link href="/tours">Khám phá tour</Link>
         <span> / {t.title}</span>
@@ -199,9 +199,9 @@ export default async function Detail({
               <p>Chưa có đánh giá được xác thực cho hành trình này.</p>
             )}
           </section>
-          <button disabled title="Có trong giai đoạn M6">
-            Tải PDF lịch trình — sắp có
-          </button>
+          <a className="text-action" href={`/api/v1/tours/${encodeURIComponent(t.slug)}/itinerary.pdf`}>
+            Tải PDF lịch trình
+          </a>
         </div>
         <aside className="booking-panel" id="departures">
           <p className="eyebrow">CHỌN LỊCH KHỞI HÀNH</p>

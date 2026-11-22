@@ -175,3 +175,7 @@ Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0
 T401–T406 dùng chung transaction và thứ tự khóa của booking. Checkout hỗ trợ toàn bộ, cọc và phần còn lại. Admin đối soát, ghi hoàn tiền và xem nhật ký theo quyền. Mọi giao dịch và thông báo M4 dùng dữ liệu giả lập. CI đầu tiên trên PR #4 đã đạt 6/6 job, gồm Go/PostgreSQL và Playwright. PR sẽ chỉ nhập `develop` sau CI của bản cập nhật.
 
 M5 tiếp tục với form báo giá và gọi lại khi được giao. Nghiệm thu UI T703 vẫn mở.
+
+### M6 — Báo cáo, xuất file và analytics
+
+T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. Excel/CSV theo quyền và giới hạn dòng. PDF nhúng phông tiếng Việt, báo giá theo phiên bản. Analytics chỉ gửi sau khi người dùng đồng ý. Bản mẫu Excel đã mở bằng Microsoft Excel và PDF đã render bằng Poppler. Kiểm tra tích hợp thực hiện trên CI. GA4 DebugView và Search Console chờ cấu hình thuộc tính thật.

@@ -255,12 +255,13 @@ Chỉ giao việc cho nhân viên đang hoạt động có `lead.write`. Gửi `
 
 | GET endpoint | Query | Quyền / dữ liệu |
 | --- | --- | --- |
+| `/admin/reports/tours` | — | report.read; `[{id,title}]` cho bộ lọc, gồm cả tour đã lưu trữ |
 | `/admin/reports/revenue` | `from,to,tour_id?,source?,group_by=day|month` | report.read; `{currency,timezone,gross_booking_amount,cash_received,refund_amount,net_received,booking_count,series[],is_demo}` |
 | `/admin/reports/occupancy` | `from,to,tour_id?` | report.read; `[{departure_id,tour_title,starts_at,capacity,held_seats,confirmed_seats,occupancy_percent}]` |
 | `/admin/reports/group-quotes` | `from,to,group_type?` | report.read; `{request_count,by_status,won_count,won_rate_percent}` theo cohort created_at |
-| `/admin/reports/revenue/export` | Như report + `format=xlsx|csv` | report.export; stream |
-| `/admin/bookings/export` | Như list booking + `format=xlsx|csv` | report.export + booking.read; stream, audit action export |
-| `/admin/tours/export` | `status?,format=xlsx|csv` | catalog.write; stream |
+| `/admin/reports/revenue/export` | Như report + `format=xlsx\|csv` | report.export; stream |
+| `/admin/bookings/export` | Như list booking + `format=xlsx\|csv` | report.export + booking.read; stream, audit action export |
+| `/admin/tours/export` | `status?,format=xlsx\|csv` | catalog.write; stream |
 
 `from/to` bắt buộc, inclusive ngày VN, from<=to, max366 ngày; decimal percentages số thập phân 0..100, không Money. Revenue dùng paid_at và completed_at refunds; gross_booking_amount và count dùng created_at của đơn confirmed/completed. `is_demo` phân biệt dữ liệu thử, không trộn báo cáo tài chính thật.
 

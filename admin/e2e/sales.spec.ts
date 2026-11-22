@@ -93,6 +93,9 @@ test("sales staff assigns a lead, issues a quote and serves a private attachment
   await expect(detail.getByRole("heading", { name: /Phiên bản 1.*Bản nháp/ })).toBeVisible();
   await detail.getByRole("button", { name: "Phát hành", exact: true }).click();
   await expect(detail.getByRole("heading", { name: /Phiên bản 1.*Đã phát hành/ })).toBeVisible();
+  const downloadPromise = page.waitForEvent("download");
+  await detail.getByRole("button", { name: "Tải PDF báo giá", exact: true }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe("bao-gia-v1.pdf");
   await expect(detail.getByRole("button", { name: "Sửa bản nháp" })).toHaveCount(0);
   await detail.getByLabel("Lý do hoặc cách xác minh").fill("Đại diện đoàn xác nhận qua điện thoại.");
   await detail.getByRole("button", { name: "Ghi nhận kết quả" }).click();

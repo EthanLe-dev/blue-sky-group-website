@@ -84,6 +84,9 @@ services:
       TURNSTILE_MODE: ${TURNSTILE_MODE:-real}
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
       SITE_URL: ${SITE_URL:-http://localhost:3000}
+      GA4_MEASUREMENT_ID: ${GA4_MEASUREMENT_ID:-}
+      GA4_DEBUG: ${GA4_DEBUG:-false}
+      GSC_VERIFICATION: ${GSC_VERIFICATION:-}
     ports: ["127.0.0.1:3000:3000"]
     depends_on:
       backend:
