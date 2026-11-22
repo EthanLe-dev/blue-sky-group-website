@@ -33,7 +33,7 @@ export function setAnalytics(id: string, allowed: boolean, debug: boolean) {
   browser.gtag("js", new Date());
   browser.gtag("config", id, {
     send_page_view: false, allow_google_signals: false, allow_ad_personalization_signals: false,
-    page_location: location.origin + analyticsLocation(location.pathname), page_referrer: "",
+    page_location: location.origin + analyticsLocation(location.pathname), page_referrer: location.origin + "/", page_title: "Blue Sky Group",
     ...(debug ? { debug_mode: true } : {}),
   });
   document.head.append(tag);
@@ -44,7 +44,7 @@ function send(event: string, data: Record<string, unknown>) {
   if (!enabled || !browser.gtag) return;
   browser.gtag("event", event, {
     ...data, send_to: measurement, page_location: location.origin + analyticsLocation(location.pathname),
-    page_referrer: "", page_title: "Blue Sky Group",
+    page_referrer: location.origin + "/", page_title: "Blue Sky Group",
   });
 }
 

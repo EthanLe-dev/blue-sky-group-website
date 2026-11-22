@@ -259,3 +259,10 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - CI bản đầy đủ `9170c07` và bản chốt `b76c2f0` đều đạt 6/6 job. Bản chốt kiểm tra build public/Admin, Go vet/race với PostgreSQL, container và 8 kịch bản Chromium. [CI bản đầy đủ](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009350708) · [CI bản chốt](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009896743)
 - Kiểm thử tích hợp chạy trên CI. Tệp báo giá có thể đính kèm trong Admin. Xuất PDF tự động thuộc T604, nghiệm thu giao diện toàn site thuộc T703.
 - Theo dõi lần kiểm chứng và hợp nhất vào `develop` trên [PR #5](https://github.com/EthanLe-dev/blue-sky-group-website/pull/5).
+
+### M6 — Báo cáo và tài liệu xuất
+
+- Nhánh `feature/reporting`, PR #6 vào `develop`. T601–T605 có báo cáo theo ngày Việt Nam, phân quyền dashboard, xuất Excel/CSV, PDF công khai theo lịch trình và private theo phiên bản báo giá, cấu hình GA4/Search Console.
+- Kiểm thử PostgreSQL dùng dữ liệu hai hành khách, một khoản thu đúng ranh giới nửa đêm và một khoản hoàn vào ngày kế tiếp. Playwright tải XLSX/CSV/PDF và kiểm tra sự kiện bằng thẻ GA stub có xác nhận cho phép.
+- Kiểm tra file mẫu local: Microsoft Excel mở ở chế độ chỉ đọc, đủ 4 hàng/2 cột, ô dữ liệu nguy hiểm không phải công thức, tiền âm đọc là số và 16 chữ số được giữ dưới dạng text. Poppler render PDF A4 ba trang, kiểm tra trực quan trang 1 và 2 có dấu tiếng Việt và không cắt nội dung ở chân trang. App local không được khởi động.
+- CI PR #6 là bằng chứng tích hợp. DebugView thật và xác minh Search Console cần tài khoản và địa chỉ site, chưa thực hiện.

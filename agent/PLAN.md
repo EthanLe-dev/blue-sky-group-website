@@ -176,6 +176,6 @@ T401–T406 dùng chung transaction và thứ tự khóa của booking. Checkout
 
 M5 tiếp tục với form báo giá và gọi lại khi được giao. Nghiệm thu UI T703 vẫn mở.
 
-### M6 — Đang triển khai
+### M6 — Báo cáo, xuất file và analytics
 
-T601–T605 thực hiện trên nhánh feature/reporting. CI dùng PostgreSQL và Playwright.
+T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. Excel/CSV theo quyền và giới hạn dòng. PDF nhúng phông tiếng Việt, báo giá theo phiên bản. Analytics chỉ gửi sau khi người dùng đồng ý. Bản mẫu Excel đã mở bằng Microsoft Excel và PDF đã render bằng Poppler. Kiểm tra tích hợp thực hiện trên CI. GA4 DebugView và Search Console chờ cấu hình thuộc tính thật.

@@ -26,7 +26,7 @@ func parseReport(c *gin.Context) (reportPeriod, bool) {
 	}
 	from, startErr := time.Parse(time.DateOnly, p.From)
 	to, endErr := time.Parse(time.DateOnly, p.To)
-	valid := startErr == nil && endErr == nil && !to.Before(from) && to.Sub(from) < 366*24*time.Hour &&
+	valid := startErr == nil && endErr == nil && from.Year() > 0 && !to.Before(from) && to.Sub(from) < 366*24*time.Hour &&
 		(p.Tour == "" || uuid.Validate(p.Tour) == nil) &&
 		(p.Source == "" || p.Source == "web" || p.Source == "phone" || p.Source == "counter") &&
 		(p.Bucket == "day" || p.Bucket == "month") &&
@@ -43,7 +43,7 @@ const reportBounds = `WITH bounds AS (
 )`
 
 type revenueRow struct {
-	Period   string `json:"period"`
+	Period   string `json:"period,omitempty"`
 	Gross    string `json:"gross_booking_amount"`
 	Received string `json:"cash_received"`
 	Refunded string `json:"refund_amount"`
@@ -60,7 +60,7 @@ type revenueReport struct {
 
 func (a *App) revenue(ctx context.Context, p reportPeriod) (revenueReport, error) {
 	// Each money movement contributes once on its own date. Passenger and quote tables do not enter the query.
-	query := reportBounds + `, eligible AS (
+	query := reportBounds + `, eligible AS NOT MATERIALIZED (
 		SELECT b.id,b.created_at,b.status,b.total_amount
 		FROM bookings b JOIN departures d ON d.id=b.departure_id
 		WHERE ($3='' OR d.tour_id=NULLIF($3,'')::uuid) AND ($4='' OR b.source=$4)
