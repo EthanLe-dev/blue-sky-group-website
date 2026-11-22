@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import Image from "next/image";
+import { demoPurchase, tourEvent } from "@/lib/analytics";
 import Captcha from "./Captcha";
 import type { Surcharge } from "@/lib/catalog";
 type Counts = { adult: number; child: number; infant: number };
@@ -52,7 +53,7 @@ type Booking = {
   server_time: string;
   payment_option: string;
   version: number;
-  tour_snapshot: { title: string; starts_at: string };
+  tour_snapshot: { id?: string; title: string; starts_at: string };
 };
 const money = (v: string) => BigInt(v).toLocaleString("vi-VN") + " ₫";
 const labels: Record<string, string> = {
@@ -231,7 +232,10 @@ export function BookingResult({ initial, csrf, mockPayment }: {
           <Image src="/images/demo-payment-qr.png" width={180} height={180} alt="Mã QR chỉ chứa thông báo giả lập" />
           <p>Số tiền mô phỏng <strong>{money(payment.amount)}</strong></p>
           <button className="btn" disabled={busy} onClick={() => void run(async () => {
-            const result = await post<{ booking: Booking }>("/payments/" + payment.id + "/mock-confirm", {});
+            const result = await post<{ booking: Booking; payment: { id: string; amount: string; is_mock: boolean } }>("/payments/" + payment.id + "/mock-confirm", {});
+            if (booking.status === "pending" && result.payment.is_mock && result.booking.status === "confirmed") {
+              void demoPurchase(result.payment.id, result.payment.amount, result.booking.tour_snapshot.id).catch(() => {});
+            }
             setBooking(result.booking);
             setPayment(null);
           })}>Xác nhận thanh toán giả lập</button>
@@ -292,6 +296,7 @@ export function ResumeBooking({ id, mockPayment }: { id: string; mockPayment: bo
 export default function Checkout({
   departure,
   title,
+  tourId,
   prices,
   surcharges,
   mock,
@@ -300,6 +305,7 @@ export default function Checkout({
 }: {
   departure: string;
   title: string;
+  tourId: string;
   surcharges: Surcharge[];
   prices: {
     passenger_type: string;
@@ -355,6 +361,7 @@ export default function Checkout({
           surcharge_codes: codes,
         }),
       });
+      if (!quote) tourEvent("begin_checkout", tourId);
       setQuote(q);
       setPeople((old) =>
         Object.entries(counts).flatMap(([type, n]) =>

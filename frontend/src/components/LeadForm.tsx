@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRef, useState, type FormEvent } from "react";
+import { leadEvent } from "@/lib/analytics";
 import Captcha from "@/components/Captcha";
 import { api, ApiError } from "@/lib/api";
 
@@ -85,6 +86,7 @@ export default function LeadForm({
         body: JSON.stringify({ ...input, turnstile_token: token }),
       });
       setReceipt(result);
+      leadEvent(groupType);
       attempt.current = null;
     } catch (err) {
       setError(err instanceof ApiError && err.code === "VALIDATION_ERROR"

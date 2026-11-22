@@ -5,10 +5,14 @@ import "@fontsource/be-vietnam-pro/vietnamese-600.css";
 import "@fontsource/be-vietnam-pro/latin-400.css";
 import "@fontsource/be-vietnam-pro/latin-600.css";
 import "./globals.css";
+import Analytics from "@/components/Analytics";
 import Script from "next/script";
 import { Header, Footer } from "@/components/Shell";
 const origin = process.env.SITE_URL || "http://localhost:3000";
-export const metadata: Metadata = {
+export function generateMetadata(): Metadata {
+  const verification = process.env.GSC_VERIFICATION || "";
+  return {
+  verification: /^[A-Za-z0-9_-]{1,200}$/.test(verification) ? { google: verification } : undefined,
   metadataBase: new URL(origin),
   title: {
     default: "Blue Sky Group | Tour Ninh Chữ & Vĩnh Hy",
@@ -23,7 +27,8 @@ export const metadata: Metadata = {
     images: ["/images/vinh-hy.jpg"],
   },
   robots: { index: process.env.APP_ENV === "production", follow: true },
-};
+  };
+}
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="vi" data-type="service" data-buttons="solid" data-motion="">
@@ -37,6 +42,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <Header />
         {children}
         <Footer />
+        <Analytics />
       </body>
     </html>
   );

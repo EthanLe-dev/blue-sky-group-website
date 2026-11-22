@@ -70,7 +70,7 @@ export default async function Detail({
     })),
   };
   return (
-    <main id="main" className="page wrap">
+    <main data-analytics-tour={t.id} id="main" className="page wrap">
       <nav className="breadcrumb" aria-label="Đường dẫn">
         <Link href="/tours">Khám phá tour</Link>
         <span> / {t.title}</span>
