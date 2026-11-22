@@ -94,10 +94,12 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T501 | Lead/callback/quote version/notes/attachments migrations/API | T104,T107,T215 | Validation/date/consent, status transitions, assignment active staff |
-| T502 | Form báo giá/gọi lại + receipt/SLA | T214,T501,T110 | Turnstile fail, double submit, input giữ khi lỗi; SLA có nguồn |
-| T503 | Admin lead/callback assignment/notes/quote editor | T102,T501 | Issued immutable, version mới, accepted offline không e-sign |
-| T504 | CRM contact/list/history/notes | T105,T306 | Không tự merge email/SĐT; quyền và link khách chỉ sau xác minh |
+| T501 · DONE | Migration/API tiếp nhận yêu cầu, ghi chú, báo giá và tệp đính kèm | T104,T107,T215 | PostgreSQL CI kiểm tra ngày, đồng ý, chống gửi trùng, trạng thái và nhân viên đủ quyền |
+| T502 · DONE | Form báo giá và gọi lại, biên nhận theo SLA | T214,T501,T110 | Playwright CI kiểm tra captcha lỗi, bấm gửi lặp, giữ nội dung và SLA từ cấu hình |
+| T503 · DONE | Admin phân công, ghi chú, xử lý báo giá và tệp đính kèm | T102,T501 | CI kiểm tra tính bất biến của bản phát hành, phiên bản mới, xác nhận ngoại tuyến và tải tệp riêng tư |
+| T504 · DONE | CRM hồ sơ khách, tìm kiếm, lịch sử và ghi chú | T105,T306 | CI kiểm tra quyền, email/SĐT trùng, liên kết cũ và lịch sử sau xác minh |
+
+Bằng chứng M5 trên `b76c2f0` trong [GitHub Actions 45009896743](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009896743).
 
 ## M6 — Reporting/export/analytics (FR-08,48,95–99,INT-04)
 

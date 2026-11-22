@@ -252,3 +252,10 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - Admin cho phép tạo, tìm và sửa hồ sơ khách cùng ghi chú. Hồ sơ có thể dùng cùng email hoặc số điện thoại. Lịch sử yêu cầu quyền đọc đơn và chỉ hiện liên kết đã được nhân viên xác minh.
 - Nhân viên đối chiếu đúng mã và thông tin liên hệ của đơn trước khi xác nhận gắn. Liên kết giữ dấu thời gian và người xác minh, đồng thời ghi sự kiện trong cùng giao dịch. Liên kết cũ chờ xác minh trước khi hiện trong CRM.
 - Go kiểm tra trùng thông tin liên hệ, quyền, liên kết trước M5, phiên bản cũ và gắn chéo hồ sơ. Kịch bản browser tạo hồ sơ trùng email với đơn và kiểm tra đơn chỉ hiện sau bước xác nhận. Kết quả tích hợp lấy từ CI.
+
+### Kiểm chứng M5
+
+- Nhánh `feature/sales` đã push commit theo task. T501 `bac6332`, T502 `50115ba`, T503 `716180d`, T504 `9170c07`. Commit `b76c2f0` bổ sung chốt chuyển trạng thái theo hợp đồng API và kiểm tra từ chối đổi sang “Không chốt” trước khi phát hành báo giá.
+- CI bản đầy đủ `9170c07` và bản chốt `b76c2f0` đều đạt 6/6 job. Bản chốt kiểm tra build public/Admin, Go vet/race với PostgreSQL, container và 8 kịch bản Chromium. [CI bản đầy đủ](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009350708) · [CI bản chốt](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009896743)
+- Kiểm thử tích hợp chạy trên CI. Tệp báo giá có thể đính kèm trong Admin. Xuất PDF tự động thuộc T604, nghiệm thu giao diện toàn site thuộc T703.
+- Theo dõi lần kiểm chứng và hợp nhất vào `develop` trên [PR #5](https://github.com/EthanLe-dev/blue-sky-group-website/pull/5).
