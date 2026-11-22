@@ -278,3 +278,7 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - CI 45025034406 đạt 12 ca Chromium và smoke Firefox. WebKit báo lỗi các request tải trước trang tour/Liên hệ. Đã tắt prefetch cho các liên kết liên quan và kiểm lại qua thao tác bấm link thật.
 - Run 45025522153 xác nhận thao tác bấm tour và Liên hệ trong WebKit, còn lỗi tải trước nền danh sách tour. Tắt prefetch trên các liên kết ở những trang kiểm tra thay vì bỏ assertion lỗi trình duyệt. Liên kết vẫn điều hướng khi bấm.
 - CI `783e6f86` đạt 6/6 job. Chromium 12 ca và smoke trên Firefox/WebKit đạt, có ảnh responsive. Diễn tập dump/restore PostgreSQL đạt cùng số tour, đơn và yêu cầu đoàn. [CI 45025910519](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45025910519).
+
+### Menu dọc Admin
+
+Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cuộn trên desktop. Trên mobile, nút Menu mở danh sách dọc, Escape trả focus về nút mở và chọn mục đưa focus tới nội dung. Thứ tự mục theo quyền hiện có. Ca Playwright Admin kiểm vị trí, mục đang chọn, điều hướng bàn phím và không tràn ngang ở 390px. App local không khởi động.

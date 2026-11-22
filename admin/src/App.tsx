@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import type { FormEvent } from "react";
 import "./App.css";
 import Captcha from "./Captcha";
@@ -19,6 +19,9 @@ import {
 type User = { full_name: string; permissions: string[] };
 export default function App() {
   const [tab, setTab] = useState("catalog");
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuToggle = useRef<HTMLButtonElement>(null);
+  const content = useRef<HTMLElement>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -74,25 +77,61 @@ export default function App() {
     { id: "settings", label: "Cài đặt", allowed: permissions.includes("settings.write") },
   ].filter(entry => entry.allowed);
   const activeTab = tabs.some(entry => entry.id === tab) ? tab : tabs[0]?.id;
-  return (
-    <main>
-      <a className="admin-brand" href="/">
-        <img
-          src="/brand/logo.jpg"
-          width="72"
-          height="72"
-          alt="Logo Blue Sky Group"
-        />
-        BLUE SKY GROUP · Quản trị
-      </a>
-      {user ? (
-        <>
+  const brand = (
+    <a className="admin-brand" href="/" aria-label="Blue Sky Group — Quản trị">
+      <img src="/brand/logo.jpg" width="48" height="48" alt="" />
+      <span>Blue Sky Group <small>Quản trị</small></span>
+    </a>
+  );
+
+  return user ? (
+    <div className="admin-shell">
+      <aside className="admin-sidebar" onKeyDown={(event) => {
+        if (event.key === "Escape" && menuOpen && menuToggle.current?.getClientRects().length) {
+          setMenuOpen(false);
+          menuToggle.current.focus();
+        }
+      }}>
+        <div className="admin-sidebar-header">
+          {brand}
+          <button
+            ref={menuToggle}
+            className="admin-menu-toggle"
+            type="button"
+            aria-expanded={menuOpen}
+            aria-controls="admin-navigation"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            Menu
+          </button>
+        </div>
+        <nav id="admin-navigation" className="admin-nav" data-expanded={menuOpen} aria-label="Module quản trị">
+          {tabs.map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={activeTab === id}
+              onClick={() => {
+                setTab(id);
+                setMenuOpen(false);
+                if (menuToggle.current?.getClientRects().length) content.current?.focus();
+              }}
+            >
+              {label}
+            </button>
+          ))}
+        </nav>
+      </aside>
+      <main className="admin-content" ref={content} tabIndex={-1}>
+        <header className="admin-topbar">
           <h1>Xin chào, {user.full_name}</h1>
           <button
+            type="button"
             onClick={async () => {
               try {
                 await logoutSession();
                 setUser(null);
+                setMenuOpen(false);
               } catch {
                 setError("Không đăng xuất được. Thử lại.");
               }
@@ -100,65 +139,55 @@ export default function App() {
           >
             Đăng xuất
           </button>
-          {error && <p role="alert">{error}</p>}
-          <nav className="admin-tabs" aria-label="Module quản trị">
-            {tabs.map(({ id, label }) => (
-              <button
-                key={id}
-                aria-pressed={activeTab === id}
-                onClick={() => setTab(id)}
-              >
-                {label}
-              </button>
-            ))}
-          </nav>
-          {activeTab === "bookings" && user.permissions.includes("booking.read") && (
-            <Bookings canExport={user.permissions.includes("report.export")} write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
-          )}{" "}
-          {activeTab === "reports" && user.permissions.includes("report.read") && <Reports canExport={user.permissions.includes("report.export")} />}
-          {activeTab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
-          {activeTab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
-          {activeTab === "customers" && user.permissions.includes("customer.write") && (
-            <Customers canReadBookings={user.permissions.includes("booking.read")} canLink={user.permissions.includes("booking.write")} />
-          )}
-          {activeTab === "catalog" && <Catalog permissions={user.permissions} />}{" "}
-          {activeTab === "media" && user.permissions.includes("media.write") && (
-            <Media />
-          )}
-          {activeTab === "settings" &&
-            user.permissions.includes("settings.write") && <Settings />}
-        </>
-      ) : (
-        <>
-          <h1>Đăng nhập quản trị</h1>
-          <p>Chỉ dành cho nhân viên được cấp quyền.</p>
-          <form onSubmit={login}>
-            <label htmlFor="email">Email</label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="username"
-              required
-              maxLength={254}
-            />
-            <label htmlFor="password">Mật khẩu</label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              maxLength={72}
-            />
-            {error && <p role="alert">{error}</p>}
-            <Captcha key={attempt} onToken={onToken} />
-            <button disabled={loading || !captcha}>
-              {loading ? "Đang đăng nhập…" : "Đăng nhập"}
-            </button>
-          </form>
-        </>
-      )}
+        </header>
+        {error && <p role="alert">{error}</p>}
+        {activeTab === "bookings" && user.permissions.includes("booking.read") && (
+          <Bookings canExport={user.permissions.includes("report.export")} write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
+        )}{" "}
+        {activeTab === "reports" && user.permissions.includes("report.read") && <Reports canExport={user.permissions.includes("report.export")} />}
+        {activeTab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
+        {activeTab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
+        {activeTab === "customers" && user.permissions.includes("customer.write") && (
+          <Customers canReadBookings={user.permissions.includes("booking.read")} canLink={user.permissions.includes("booking.write")} />
+        )}
+        {activeTab === "catalog" && <Catalog permissions={user.permissions} />}{" "}
+        {activeTab === "media" && user.permissions.includes("media.write") && (
+          <Media />
+        )}
+        {activeTab === "settings" &&
+          user.permissions.includes("settings.write") && <Settings />}
+      </main>
+    </div>
+  ) : (
+    <main className="admin-login">
+      {brand}
+      <h1>Đăng nhập quản trị</h1>
+      <p>Chỉ dành cho nhân viên được cấp quyền.</p>
+      <form onSubmit={login}>
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          name="email"
+          type="email"
+          autoComplete="username"
+          required
+          maxLength={254}
+        />
+        <label htmlFor="password">Mật khẩu</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+          maxLength={72}
+        />
+        {error && <p role="alert">{error}</p>}
+        <Captcha key={attempt} onToken={onToken} />
+        <button disabled={loading || !captcha}>
+          {loading ? "Đang đăng nhập…" : "Đăng nhập"}
+        </button>
+      </form>
     </main>
   );
 }
