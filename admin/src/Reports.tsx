@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
+import ExportButton from "./ExportButton";
 import { authorized } from "./lib/session";
 
 type Movement = {
@@ -21,7 +22,7 @@ const today = () => date(new Date());
 const money = (amount: string) => BigInt(amount).toLocaleString("vi-VN") + " ₫";
 const counts: Record<string, string> = { new: "Mới", preparing: "Đang chuẩn bị", quoted: "Đã báo giá", won: "Đã chốt", lost: "Không chốt" };
 
-export default function Reports() {
+export default function Reports({ canExport }: { canExport: boolean }) {
   const [result, setResult] = useState<{ revenue: Revenue; occupancy: Occupancy[]; quotes: Quotes } | null>(null);
   const [tours, setTours] = useState<{ id: string; title: string }[]>([]);
   const [filters, setFilters] = useState(() => new URLSearchParams({ from: today().slice(0, 7) + "-01", to: today() }));
@@ -82,6 +83,8 @@ export default function Reports() {
       {result && (
         <>
           <h3>Doanh thu</h3>
+          {canExport && <ExportButton label="báo cáo doanh thu" filename="bao-cao-doanh-thu"
+            path={"/admin/reports/revenue/export?" + new URLSearchParams([...filters].filter(([k]) => k !== "group_type"))} />}
           <p>Giá trị đơn {money(result.revenue.gross_booking_amount)} · {result.revenue.booking_count} đơn</p>
           <p>Đã thu {money(result.revenue.cash_received)} · Đã hoàn {money(result.revenue.refund_amount)} · Thu ròng {money(result.revenue.net_received)}</p>
           {result.revenue.series.length === 0 ? <p>Chưa có giao dịch trong kỳ.</p> : (

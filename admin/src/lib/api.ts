@@ -7,13 +7,13 @@ export class ApiError extends Error {
     this.code = code;
   }
 }
-export async function api<T>(
+export async function apiResponse(
   path: string,
   options: RequestInit = {},
-): Promise<T> {
+): Promise<Response> {
   if (!path.startsWith("/") || path.startsWith("//"))
     throw new Error("API path must be relative");
-  const response = await fetch("/api/v1" + path, {
+  return fetch("/api/v1" + path, {
     ...options,
     credentials: "include",
     cache: "no-store",
@@ -24,6 +24,9 @@ export async function api<T>(
       ...options.headers,
     },
   });
+}
+export async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  const response = await apiResponse(path, options);
   const result = await response.json();
   if (!response.ok || !result.success)
     throw new ApiError(

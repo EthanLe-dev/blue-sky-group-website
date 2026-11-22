@@ -110,9 +110,9 @@ export default function App() {
             ))}
           </nav>
           {tab === "bookings" && user.permissions.includes("booking.read") && (
-            <Bookings write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
+            <Bookings canExport={user.permissions.includes("report.export")} write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
           )}{" "}
-          {tab === "reports" && user.permissions.includes("report.read") && <Reports />}
+          {tab === "reports" && user.permissions.includes("report.read") && <Reports canExport={user.permissions.includes("report.export")} />}
           {tab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
           {tab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
           {tab === "customers" && user.permissions.includes("customer.write") && (

@@ -1,3 +1,4 @@
+import ExportButton from "./ExportButton";
 import { useEffect, useState, useRef } from "react";
 import BookingPayments from "./BookingPayments";
 import { authorized } from "./lib/session";
@@ -40,7 +41,7 @@ type Quote = {
   };
 };
 const money = (v: string) => Number(v).toLocaleString("vi-VN") + " đ";
-export default function Bookings({ write, canPay, canReadNotifications }: { write: boolean; canPay: boolean; canReadNotifications: boolean }) {
+export default function Bookings({ write, canPay, canReadNotifications, canExport }: { write: boolean; canPay: boolean; canReadNotifications: boolean; canExport: boolean }) {
   const [rows, setRows] = useState<Booking[]>([]);
   const [record, setRecord] = useState<Booking | null>(null);
   const [message, setMessage] = useState("");
@@ -95,6 +96,7 @@ export default function Bookings({ write, canPay, canReadNotifications }: { writ
   return (
     <section className="workspace">
       <h2>Quản lý đơn tour</h2>
+      {canExport && <ExportButton path={"/admin/bookings/export?" + new URLSearchParams({ status, q })} filename="danh-sach-don" label="danh sách đơn" />}
       <div className="toolbar">
         <label>
           Trạng thái
