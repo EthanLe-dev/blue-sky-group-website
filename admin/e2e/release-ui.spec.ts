@@ -43,7 +43,8 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
   }
-  await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
+  await page.getByRole("link", { name: "Xem hành trình Ninh Chữ", exact: true }).click();
+  await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
   await page.getByRole("button", { name: /Xem poster đầy đủ/ }).click();
   await expect(page.getByRole("dialog")).toBeVisible();
@@ -53,7 +54,8 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     contentType: "image/png",
     body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jNioAAAAASUVORK5CYII=", "base64"),
   }));
-  await page.goto("http://localhost:3000/contact");
+  await page.getByRole("link", { name: "Liên hệ ↗", exact: true }).click();
+  await expect(page).toHaveURL(/\/contact$/);
   await expect(page.getByText("Vị trí minh họa. Vui lòng xác nhận địa chỉ trước khi đến.")).toBeVisible();
   await page.getByRole("button", { name: "Mở bản đồ điểm đến" }).click();
   await expect(page.locator(".leaflet-marker-icon")).toBeVisible();

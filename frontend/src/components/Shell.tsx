@@ -46,7 +46,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        <Link className="header-contact" href="/contact">
+        <Link prefetch={false} className="header-contact" href="/contact">
           Liên hệ ↗
         </Link>
         <button
@@ -74,7 +74,7 @@ export function Header() {
           </button>
           <nav aria-label="Điều hướng di động">
             {[...links, ["/contact", "Liên hệ"]].map(([href, label]) => (
-              <Link key={href} href={href} onClick={close}>
+              <Link prefetch={href === "/contact" ? false : undefined} key={href} href={href} onClick={close}>
                 {label}
               </Link>
             ))}
@@ -107,7 +107,7 @@ export function Footer() {
             <Link href="/destinations">Điểm đến</Link>
             <Link href="/gallery">Thư viện ảnh</Link>
             <Link href="/faq">Câu hỏi thường gặp</Link>
-            <Link href="/contact">Thông tin liên hệ</Link>
+            <Link prefetch={false} href="/contact">Thông tin liên hệ</Link>
           </nav>
           <nav aria-label="Chính sách">
             <Link href="/policies/privacy">Bảo mật thông tin</Link>
