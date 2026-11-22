@@ -200,3 +200,9 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 
 ### T305 — Lookup và giới hạn theo mã
 - Lookup token vẫn chỉ lưu hash/TTL15 phút, che contact và không cấp creator quyền. Bucket lookup dùng IP+mã đơn đã chuẩn hoá; không khoá nhầm mã đơn khác qua cùng proxy. TestLookupLimiterIsBoundToBookingCode và GuestLookup privacy PASS race7.368s. Không lưu contact/token vào URL hoặc localStorage.
+
+T304: sau khi tách test inventory sang file riêng, bước compile báo thiếu import booking; đã bổ sung import. Không thay logic transaction; kiểm tra lại sau chỉnh file trước merge.
+
+T304 compile sau tách file đã kiểm lại PASS; capacity/lookup/related-posts/public-image-cover tests PASS race12.330s.
+
+M2 bổ sung theo MVP: Leaflet tải sau click với markers/attribution/cleanup; home search; blog category/tag/related approved-only; gallery kind/collection + viewer; tour advanced facets; phụ thu optional web/manual. Browser6/6 PASS15.0s, gồm tile mock để CI không phụ thuộc OSM network.

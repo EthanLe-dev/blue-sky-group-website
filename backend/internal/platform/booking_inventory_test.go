@@ -3,6 +3,7 @@ package platform
 import (
 	"context"
 	"encoding/json"
+	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/booking"
 	"github.com/google/uuid"
 	"testing"
 )
