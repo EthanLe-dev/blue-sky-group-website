@@ -206,3 +206,9 @@ T304: sau khi tách test inventory sang file riêng, bước compile báo thiế
 T304 compile sau tách file đã kiểm lại PASS; capacity/lookup/related-posts/public-image-cover tests PASS race12.330s.
 
 M2 bổ sung theo MVP: Leaflet tải sau click với markers/attribution/cleanup; home search; blog category/tag/related approved-only; gallery kind/collection + viewer; tour advanced facets; phụ thu optional web/manual. Browser6/6 PASS15.0s, gồm tile mock để CI không phụ thuộc OSM network.
+
+### Bản tích hợp cuối M2/M3
+- Commit theo task đã push trên feature/booking, chứa dependency feature/catalog. Những sửa liên kết/kiểm thử của T304 có commit riêng bổ sung; không force-push hoặc sửa lịch sử để giấu lỗi compile đã ghi.
+- Full Go vet/race M2/M3 PASS68.957s; targeted sau đó lookup/privacy7.368s, capacity/related-post/image-cover12.330s PASS. Browser6/6 PASS15.0s. Lint/typecheck/unit/build đều đã chạy, kiểm lại CI trên SHA cuối tại PR#3 trước merge.
+- Perf0 FAIL4 WARN sau tối ưu ảnh, chi tiết docs/ui-qa-m2-m3.md. Nghiệm thu taste vẫn OPEN19 từ vòng3, T703 chưa DONE và chưa UAT thiết bị thật.
+- Chưa triển khai M4/M5/M6, chưa deploy cloud. Seed/local giữ mật khẩu hiện tại, volume và sửa đổi người dùng. Khi bàn giao dừng toàn bộ service kiểm thử, không dùng down -v. Trạng thái CI/merge thực tế xem PR#3; main giữ nguyên.

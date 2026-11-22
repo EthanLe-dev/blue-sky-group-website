@@ -317,3 +317,5 @@ OpenAPI `backend/internal/platform/openapi.json` mô tả endpoint đã mount M1
 - Lookup Summary không có booking UUID, contact name, passengers, ngày sinh hoặc special_requests; chỉ code/status/payment_status/payment_option/amounts, tour, contact_masked và giờ/hạn. Token chỉ lưu trong memory client; hash SHA256 trong DB, TTL15 phút.
 - Tạo đơn và cancel có Idempotency-Key UUID; cùng principal/route/key/payload trả DTO gốc. Tính hash bỏ Turnstile; retry đã commit không xác minh token một lần lần nữa. Conflict payload409, lock timeout409 REQUEST_IN_PROGRESS. Expiry sweep mỗi30 giây cộng kiểm tra trực tiếp khi đọc/ghi; không cần Redis.
 - Payment/thông báo M4 chưa có endpoint trong runtime. UI ghi rõ chưa thanh toán và không gửi email/SMS thật.
+
+Bổ sung CMS: Post detail có category, tags, related_posts tối đa3 cùng category/tag, chỉ published; cover_media_id/media_id của nội dung công khai phải public-ready-image. Gallery kind/collection có pagination. Public/admin quote cùng nhận surcharge_codes; optional do khách/nhân viên chọn, required do server tự thêm. Lookup limiter scope IP+mã chuẩn hoá, body vẫn qua strict validation sau middleware.

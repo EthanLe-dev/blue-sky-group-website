@@ -40,3 +40,11 @@ Thiết kế và nguồn ảnh: [.taste-skill/plan.md](../.taste-skill/plan.md),
 - Ảnh điểm đến do Phương Huy công bố public domain; chưa có bộ ảnh riêng cho từng tour từ team nên cover cùng điểm đến có thể trùng. Poster do user cung cấp, không crop chữ.
 - Các giả định giá, lịch, tuổi, cọc, policy, nội dung tour khác mẫu đều có nhãn demo và sửa được qua Admin. Canonical localhost dành local; SITE_URL cần cấu hình khi deploy. Không có form nhận .example email hay cam kết gửi thật.
 - Chưa có R2/Render/Neon deployment thực, chưa kiểm trên thiết bị vật lý hay UAT khách hàng.
+
+## Kiểm chứng bổ sung
+
+- Browser mới6/6 PASS15.0s: có Leaflet marker/đổi điểm/đóng map (tile mock), home search, advanced facets, blog category và gallery empty/image. Không dùng kết quả tile mock để khẳng định tọa độ đã xác minh hoặc provider luôn hoạt động.
+- Sau tối ưu Next Image: perf1440/390 **0 FAIL,4 WARN**. Transfer801.7/534KiB; images472/209.3KiB; fonts4files66.5KiB; CLS0.015/0.000. Cảnh báo JS parsed622.5KiB (203.5KiB gzip) và logo fixed nav eager bị đo như dưới fold. Logo eager là chủ ý, không lazy thương hiệu trên nav. Timing CPU chỉ tương đối, không phải số đo thiết bị thật.
+- Hai FAIL oversized-image của lần đo đầu đã hết sau resize bằng Next Image; signed private URL có query bị image optimizer từ chối để không kéo dài TTL qua cache công khai. Tệp gốc giữ nguyên.
+- Bổ sung chức năng home/blog/media/surcharge diễn ra sau vòng taste3. Không chạy lại gate để vượt giới hạn3 vòng; 19 finding là bản ghi lần3, chưa phải danh sách nghiệm thu thẩm mỹ đầy đủ của giao diện cuối. T703 tiếp tục ở M7.
+- Một warning ESLint stylesheet là link tới CSS vendor taste-skill được giữ nguyên theo hướng dẫn skill; không sửa vendor để che warning. Native dialog, font Việt, focus và reduced motion có test browser. Chưa có visual UAT trên thiết bị vật lý.
