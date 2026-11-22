@@ -122,6 +122,11 @@ export default async function ContentPage({
             Video nền: <a href="https://mixkit.co/free-stock-video/bay-landscape-aerial-shot-1940/">Bay landscape, aerial shot</a> từ Mixkit,
             đã cắt ngắn và bỏ âm thanh. <a href="https://mixkit.co/license/modal/videoFree/">Mixkit Stock Video Free License</a>.
           </li>
+          <li>
+            Ảnh minh họa tour theo đoàn: <a href="https://www.pexels.com/photo/group-of-children-on-outdoor-field-trip-34251803/">ngoại khóa của Andy Lee</a>
+            {" và "}<a href="https://www.pexels.com/photo/fun-sack-race-outdoors-in-hanoi-vietnam-35301403/">hoạt động đội nhóm của ANH LÊ</a>,
+            theo <a href="https://www.pexels.com/license/">giấy phép Pexels</a>.
+          </li>
         </ul>
       </>
     );

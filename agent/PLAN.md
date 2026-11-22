@@ -6,6 +6,8 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
+- T703f: Thêm ảnh minh họa và hiệu ứng GSAP khi cuộn đến hai thẻ Tour theo đoàn. Giữ luồng báo giá và hỗ trợ giảm chuyển động.
+
 - T703e: Làm mới thẻ tour Trang chủ. Phân cấp lại ảnh, thời lượng, giá và thao tác xem chi tiết. Kiểm giao diện responsive qua CI trên nhánh `feature/homepage-tour-cards`.
 
 - T703d: Video nền Trang chủ. Dùng đoạn stock được phép sử dụng, bố trí nút phát/tạm dừng và ảnh tĩnh dự phòng. Kiểm phát và giảm chuyển động qua CI trên nhánh `feature/homepage-video`.
