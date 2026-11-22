@@ -158,6 +158,7 @@ test("homepage plays the muted video and keeps it paused when requested", async 
   await page.getByRole("button", { name: "Tạm dừng video nền" }).click();
   await expect(page.getByRole("button", { name: "Phát video nền" })).toBeVisible();
   expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await page.screenshot({ path: test.info().outputPath("homepage-video.png"), animations: "disabled" });
   await page.getByRole("button", { name: "Phát video nền" }).click();
   await expect(page.getByRole("button", { name: "Tạm dừng video nền" })).toBeVisible();
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
@@ -166,7 +167,7 @@ test("homepage plays the muted video and keeps it paused when requested", async 
   await expect(video).toHaveCount(0);
   await page.route("**/images/home-coast.*", route => route.abort());
   await page.emulateMedia({ reducedMotion: "no-preference" });
-  await page.reload();
+  await page.goto("http://localhost:3000/?video=fallback");
   await expect(page.locator(".home-video-toggle")).toHaveCount(0);
   await expect(video).toHaveAttribute("data-frame", "false");
   await expect(page.locator(".hero-photo")).toBeVisible();
