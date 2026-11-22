@@ -212,3 +212,5 @@ M2 bổ sung theo MVP: Leaflet tải sau click với markers/attribution/cleanup
 - Full Go vet/race M2/M3 PASS68.957s; targeted sau đó lookup/privacy7.368s, capacity/related-post/image-cover12.330s PASS. Browser6/6 PASS15.0s. Lint/typecheck/unit/build đều đã chạy, kiểm lại CI trên SHA cuối tại PR#3 trước merge.
 - Perf0 FAIL4 WARN sau tối ưu ảnh, chi tiết docs/ui-qa-m2-m3.md. Nghiệm thu taste vẫn OPEN19 từ vòng3, T703 chưa DONE và chưa UAT thiết bị thật.
 - Chưa triển khai M4/M5/M6, chưa deploy cloud. Seed/local giữ mật khẩu hiện tại, volume và sửa đổi người dùng. Khi bàn giao dừng toàn bộ service kiểm thử, không dùng down -v. Trạng thái CI/merge thực tế xem PR#3; main giữ nguyên.
+
+T215 log privacy: Nginx access log chỉ ghi method/uri không query, media location tắt error log có thể chứa signed URL khi upstream lỗi. Backend không log body/query/token. Kiểm nginx -t và query redaction trong vòng kiểm thử cuối.
