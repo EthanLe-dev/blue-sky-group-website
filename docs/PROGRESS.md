@@ -234,15 +234,21 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 
 - `feature/sales` xuất phát từ `develop` tại bản hợp nhất PR #4 (`ff59d0f`). Migration `000006_sales.sql` thêm yêu cầu đoàn, gọi lại, ghi chú, phiên bản báo giá và tệp đính kèm riêng tư.
 - API dùng phiên khách, CSRF, giới hạn gửi và Turnstile. Gửi lại cùng khóa trả biên nhận đã lưu. Admin chỉ giao việc cho nhân viên đủ quyền đang hoạt động. Báo giá đã phát hành giữ nguyên nội dung và kết quả trao đổi được ghi nhận trong Admin.
-- Go vet và các test chạy được của booking/platform đã đạt trên bản kiểm tra ban đầu. Bộ test Go toàn bộ gặp giới hạn socket loopback của sandbox ở test R2 có sẵn. PostgreSQL và browser chờ CI, gồm kiểm tra gửi trùng, quyền xem, chuyển trạng thái và phiên bản báo giá.
+- [CI 45008730188](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45008730188) đạt 6/6 job trên `bac6332`, gồm Go race/PostgreSQL và container/browser. Bộ test Go toàn bộ gặp giới hạn socket loopback của sandbox ở test R2 khi chạy local.
 
 ### T502 — Biểu mẫu tư vấn công khai
 
 - Form báo giá trên trang trường học và doanh nghiệp, form gọi lại trên trang liên hệ, có lối vào từ trang tour. Biên nhận hiển thị mã và thời gian phản hồi lấy từ Cài đặt Admin. Biểu mẫu giữ nội dung khi gửi lỗi và giữ cùng khóa khi thử lại dữ liệu cũ.
-- Lint frontend qua với một cảnh báo stylesheet có sẵn, TypeScript và unit test đạt. Test Playwright được thêm vào luồng CI hiện có để kiểm tra captcha lỗi, giữ nội dung, bấm gửi hai lần và biên nhận.
+- Lint frontend qua với một cảnh báo stylesheet có sẵn, TypeScript và unit test đạt. Turbopack local dừng ở tiến trình xử lý stylesheet Leaflet. CI kiểm tra build và luồng Playwright gồm captcha lỗi, giữ nội dung, bấm gửi hai lần và biên nhận.
 
 ### T503 — Hàng chờ Sales và báo giá đoàn
 
 - Admin có hàng chờ báo giá và gọi lại, bộ lọc trạng thái/người phụ trách, hạn theo dõi theo giờ Việt Nam, ghi chú nội bộ và thông báo quá hạn trong danh sách.
 - Nhân viên có thể tạo và sửa bản nháp, phát hành, tạo phiên bản từ báo giá cũ và ghi nhận kết quả trao đổi ngoại tuyến. Tệp đính kèm riêng tư dùng lưu trữ media hiện có và liên kết có hạn.
 - Admin lint, TypeScript, 4 unit test và build đạt. Playwright đã nhận diện kịch bản phân công, phát hành, chốt báo giá và kiểm tra tải tệp; chạy kịch bản trên CI.
+
+### T504 — CRM và lịch sử đơn đã xác minh
+
+- Admin cho phép tạo, tìm và sửa hồ sơ khách cùng ghi chú. Hồ sơ có thể dùng cùng email hoặc số điện thoại. Lịch sử yêu cầu quyền đọc đơn và chỉ hiện liên kết đã được nhân viên xác minh.
+- Nhân viên đối chiếu đúng mã và thông tin liên hệ của đơn trước khi xác nhận gắn. Liên kết giữ dấu thời gian và người xác minh, đồng thời ghi sự kiện trong cùng giao dịch. Liên kết cũ chờ xác minh trước khi hiện trong CRM.
+- Go kiểm tra trùng thông tin liên hệ, quyền, liên kết trước M5, phiên bản cũ và gắn chéo hồ sơ. Kịch bản browser tạo hồ sơ trùng email với đơn và kiểm tra đơn chỉ hiện sau bước xác nhận. Kết quả tích hợp lấy từ CI.

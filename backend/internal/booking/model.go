@@ -52,15 +52,16 @@ type Consent struct {
 	Version  string `json:"policy_version"`
 }
 type CreateInput struct {
-	Quote      string      `json:"quote_id"`
-	Contact    Contact     `json:"contact"`
-	Passengers []Passenger `json:"passengers"`
-	Option     string      `json:"payment_option"`
-	Requests   string      `json:"special_requests"`
-	Consent    Consent     `json:"consent"`
-	Captcha    string      `json:"turnstile_token"`
-	Source     string      `json:"source"`
-	Customer   *string     `json:"customer_id"`
+	Quote            string      `json:"quote_id"`
+	Contact          Contact     `json:"contact"`
+	Passengers       []Passenger `json:"passengers"`
+	Option           string      `json:"payment_option"`
+	Requests         string      `json:"special_requests"`
+	Consent          Consent     `json:"consent"`
+	Captcha          string      `json:"turnstile_token"`
+	Source           string      `json:"source"`
+	Customer         *string     `json:"customer_id"`
+	CustomerVerified bool        `json:"customer_link_verified,omitempty"`
 }
 type Line struct {
 	Code     string        `json:"code"`

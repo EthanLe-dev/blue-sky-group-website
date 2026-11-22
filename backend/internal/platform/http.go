@@ -72,7 +72,7 @@ func (a *App) Router() *gin.Engine {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 		defer cancel()
 		var ready bool
-		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000006_sales.sql')").Scan(&ready)
+		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000007_customer_verification.sql')").Scan(&ready)
 		if e != nil || !ready {
 			c.JSON(503, gin.H{"status": "not_ready"})
 			return
@@ -104,6 +104,7 @@ func (a *App) Router() *gin.Engine {
 	admin.GET("/audit-logs", a.permission("audit.read"), a.audit)
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
 	a.registerSales(v, admin)
+	a.registerCustomers(admin)
 	bookingServer := a.BookingServer()
 	bookingServer.Register(v, admin, a.guestAccess, a.origin, a.limit("lookup", 5, 900), a.limit("checkout", 10, 600), a.permission("booking.read"), a.permission("booking.write"))
 	if a.Config.Env != "production" && a.Config.MockPayment {

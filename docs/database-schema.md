@@ -157,14 +157,17 @@ Public media dùng CDN URL từ object_key đã ready; file báo giá/export ph�
 
 ## 10. Migration, seed và dữ liệu nhạy cảm
 
-Thứ tự đề xuất:
+Thứ tự migration đã triển khai đến M5:
 
-1. `000001_identity`: staff/RBAC/sessions/customers/guest/rate limit/audit.
-2. `000002_content_catalog`: media/content/tours/departures/prices/quotes.
-3. `000003_booking`: booking/hold/passengers/items/events/notes/idempotency/lookup.
-4. `000006_sales.sql`: group/callback/quote/attachments, sau `000004_booking.sql` và `000005_payment_notification.sql`. Không cần backfill. Khi phải quay lại bản M4, giữ nguyên bảng sau khi sao lưu và quay lại revision ứng dụng trước M5.
-5. `000005_payment_notification`: payment/refund/events/outbox/notification.
-6. `000006_indexes_seed_roles`: indexes và permissions mặc định; demo seed chạy lệnh riêng, không trong migration production.
+1. `000001_identity.sql` tạo staff, RBAC, sessions, customers, guest, rate limit và audit.
+2. `000002_settings.sql` tạo cài đặt và giá trị demo.
+3. `000003_catalog.sql` tạo media, nội dung, tour, lịch khởi hành, giá và báo giá lẻ.
+4. `000004_booking.sql` tạo đơn, giữ chỗ, hành khách, nhật ký, idempotency và tra cứu.
+5. `000005_payment_notification.sql` tạo ledger thanh toán, hoàn tiền, outbox và thông báo.
+6. `000006_sales.sql` tạo yêu cầu đoàn, gọi lại, báo giá và tệp đính kèm.
+7. `000007_customer_verification.sql` thêm `customer_verified_at`, `customer_verified_by_staff_id` và index lịch sử. Liên kết cũ được giữ nguyên và cần nhân viên xác minh trước khi hiện trong CRM.
+
+Khi cần quay lại M4, sao lưu và giữ các bảng/cột của M5 rồi chạy revision ứng dụng trước M5. Dữ liệu demo chạy bằng lệnh seed riêng.
 
 Mỗi migration có up và kế hoạch down/restore; migration đã dùng không sửa. Tạo constraints/indexes trong migration, chạy test với PostgreSQL cùng major. Không bật seed demo khi `APP_ENV=production`. Bootstrap admin không ghi password vào migration.
 

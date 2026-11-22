@@ -204,8 +204,8 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | GET `/admin/bookings` | `status,payment_status,tour_id,departure_id,source,from,to,q,page,page_size` | booking.read; Booking list bỏ passengers/special_requests, contact theo quyền |
 | GET `/admin/bookings/{id}` | — | booking.read; Booking + events/notes theo quyền sales/admin |
 | POST `/admin/booking-quotes` | Cùng quote public | booking.write; quote gắn staff principal |
-| POST `/admin/bookings` | Cùng booking public, bỏ Turnstile, thêm `source:phone|counter,customer_id?` | booking.write + Idempotency-Key; cùng inventory service, không bỏ hold/chỗ |
-| PATCH `/admin/bookings/{id}` | `expected_version,contact?,passengers?,special_requests?,customer_id?` | booking.write; không đổi counts/departure/giá; thay passengers phải khớp snapshot/nhóm tuổi |
+| POST `/admin/bookings` | Cùng booking public, bỏ Turnstile, thêm `source:phone|counter,customer_id?,customer_link_verified?` | booking.write + Idempotency-Key; cùng inventory service, không bỏ hold/chỗ |
+| PATCH `/admin/bookings/{id}` | `expected_version,contact?,passengers?,special_requests?,customer_id?,customer_link_verified?` | booking.write; không đổi counts/departure/giá; thay passengers phải khớp snapshot/nhóm tuổi |
 | POST `/admin/bookings/{id}/notes` | `{body}` | booking.write; note nội bộ |
 | POST `/admin/bookings/{id}/cancel` | `{expected_version,reason}` | booking.write + Idempotency-Key; CancelResult `{booking,refund_required_amount}`, không tự refund |
 | POST `/admin/bookings/{id}/complete` | `{expected_version}` | booking.write; sau ends_at, trả Booking |
@@ -218,6 +218,8 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | GET/PATCH `/admin/customers/{id}` | PATCH partial CustomerWrite | customer.write; Customer |
 | GET `/admin/customers/{id}/bookings` | `page,page_size` | customer.write + booking.read; lịch sử chỉ booking đã linked xác minh |
 | GET `/admin/notifications` | `booking_id,channel,status,page,page_size` | notification.read; `{logs,jobs}` |
+
+Gắn `customer_id` yêu cầu thêm quyền `customer.write` và `customer_link_verified:true` sau khi nhân viên đối chiếu chủ đơn. Lịch sử chỉ hiện đơn có thời điểm và người xác minh. Với đơn đã kết thúc, PATCH chỉ nhận thao tác xác minh liên kết. Một đơn đã xác minh cho một hồ sơ trả 409 nếu gắn sang hồ sơ khác. Hồ sơ có thể trùng email hoặc số điện thoại.
 
 Huỷ có phí: MVP nhân viên xem policy_snapshot và nhập số tiền refund có lý do, không tự tính mức phạt chưa được BA chốt. Refund không tự cancel booking; muốn trả chỗ phải action cancel trước. Chuyến cancelled thực hiện workflow huỷ từng đơn rồi đóng departure khi không còn active booking (MVP xử lý qua admin, không bulk update bỏ transaction).
 

@@ -301,7 +301,7 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	if uuid.Validate(b.Quote) != nil || !NormalizeContact(&b.Contact) || len(b.Requests) > 5000 || !b.Consent.Accepted || b.Consent.Version != "booking-v1" || b.Option != "full" && b.Option != "deposit" || !p.Staff && b.Source != "" && b.Source != "web" || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
 		return nil, problem("VALIDATION_ERROR")
 	}
-	if !p.Staff && b.Customer != nil {
+	if b.CustomerVerified != (b.Customer != nil) || !p.Staff && b.Customer != nil {
 		return nil, problem("VALIDATION_ERROR")
 	}
 	if p.Staff {
@@ -330,6 +330,11 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	}
 	if !p.Staff && (s.Captcha == nil || !s.Captcha(ctx, captcha, "checkout")) {
 		return nil, problem("CAPTCHA_FAILED")
+	}
+	if b.Customer != nil {
+		if e = authorizeCustomerLink(ctx, tx, p, *b.Customer); e != nil {
+			return nil, e
+		}
 	}
 	q, e := loadQuote(ctx, tx, p, b.Quote)
 	if e != nil {
@@ -402,6 +407,11 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	}
 	if _, e = tx.Exec(ctx, "INSERT INTO booking_events(booking_id,event_type,actor_staff_id) VALUES($1,'created',$2)", id, staff); e != nil {
 		return nil, e
+	}
+	if b.Customer != nil {
+		if e = recordCustomerLink(ctx, tx, id, *b.Customer, p.ID); e != nil {
+			return nil, e
+		}
 	}
 	out, e := bookingJSON(ctx, tx, id, true)
 	if e != nil {

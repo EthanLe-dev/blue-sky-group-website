@@ -22,7 +22,7 @@ async function login(page: Page) {
     page.getByRole("heading", { name: "Danh mục và nội dung" }),
   ).toBeVisible();
 }
-test("catalog, QR checkout, private lookup, cancellation and mock refund", async ({
+test("catalog, mock payment, private lookup and verified customer history", async ({
   page,
 }) => {
   await page.goto("http://localhost:3000/tours?budget_max=1700000");
@@ -110,6 +110,19 @@ test("catalog, QR checkout, private lookup, cancellation and mock refund", async
   await page.getByLabel("Lý do hoàn tiền", { exact: true }).fill("Hoàn thử 1.000 đồng");
   await page.getByRole("button", { name: "Ghi nhận hoàn tiền giả lập", exact: true }).click();
   await expect(page.getByText("Đã ghi nhận hoàn tiền giả lập.", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Khách hàng", exact: true }).click();
+  await page.getByRole("button", { name: "Thêm khách hàng", exact: true }).click();
+  await page.getByLabel("Họ và tên", { exact: true }).fill("Khách CRM Kiểm Thử");
+  await page.getByLabel("Email", { exact: true }).fill("browser-demo@example.com");
+  await page.getByLabel("Ghi chú nội bộ", { exact: true }).fill("Hồ sơ kiểm thử CI");
+  await page.getByRole("button", { name: "Lưu khách hàng", exact: true }).click();
+  await expect(page.getByText("Chưa có đơn đã xác minh.")).toBeVisible();
+  await page.getByLabel("Mã đơn cần xác minh").fill(code);
+  await page.getByRole("button", { name: "Kiểm tra mã đơn" }).click();
+  await expect(page.getByText("Khách Kiểm Thử · browser-demo@example.com")).toBeVisible();
+  await page.getByRole("checkbox", { name: /Tôi đã xác minh chủ đơn/ }).check();
+  await page.getByRole("button", { name: "Gắn đơn đã xác minh" }).click();
+  await expect(page.getByRole("listitem").filter({ hasText: code })).toContainText("Đã hủy");
 });
 test("admin tour editor persists edits and verifies poster", async ({
   page,
