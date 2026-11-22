@@ -23,6 +23,10 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
       await expect(menu).toBeFocused();
     }
     await page.goto("http://localhost:3000/");
+    const photo = page.locator("img.hero-photo");
+    await expect.poll(() => photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect(page.locator(".hero h1")).toHaveCSS("opacity", "1");
+    await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
   }
   await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
@@ -31,5 +35,13 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).not.toBeVisible();
+  await page.route("https://tile.openstreetmap.org/**", route => route.fulfill({
+    contentType: "image/png",
+    body: Buffer.from("iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jNioAAAAASUVORK5CYII=", "base64"),
+  }));
+  await page.goto("http://localhost:3000/contact");
+  await expect(page.getByText("Vị trí minh họa. Vui lòng xác nhận địa chỉ trước khi đến.")).toBeVisible();
+  await page.getByRole("button", { name: "Mở bản đồ điểm đến" }).click();
+  await expect(page.locator(".leaflet-marker-icon")).toBeVisible();
   expect(problems).toEqual([]);
 });

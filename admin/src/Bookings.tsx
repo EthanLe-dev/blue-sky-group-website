@@ -184,7 +184,7 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
             {money(record.deposit_amount)} · Đã thu {money(record.paid_amount)}{" "}
             · Còn nợ {money(record.balance_amount)}
           </p>
-          <p>Giả lập — không chuyển tiền thật. Thanh toán ở M4.</p>
+          <p>Đơn demo. Các khoản thu và hoàn chỉ là số liệu giả lập.</p>
           <form
             onSubmit={async (e) => {
               e.preventDefault();
