@@ -127,9 +127,11 @@ body:has(.home-shell) {
   max-width: 44ch;
 }
 
-.home-search-panel {
+.home-shell .home-hero > .home-search-panel {
   z-index: 2;
   position: relative;
+  display: block;
+  min-height: 0;
   margin-top: -64px;
   padding: 22px;
   border: 1px solid var(--home-line);
@@ -150,6 +152,12 @@ body:has(.home-shell) {
   min-width: 0;
   font-size: 1rem;
   font-weight: 750;
+}
+
+.home-search-field {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
 }
 
 .home-search :is(input, select) {
@@ -378,6 +386,24 @@ body:has(.home-shell) {
 
 @media (min-width: 1101px) {
   .home-tour-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .home-tour-grid:has(> :nth-child(5)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (min-width: 681px) {
+  .home-editorial-grid > article:only-child {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    align-content: center;
+    column-gap: 24px;
+  }
+  .home-editorial-grid > article:only-child img {
+    grid-row: 1 / span 2;
+    align-self: center;
+    margin: 0;
+  }
+  .home-editorial-grid > article:only-child :is(h3, p) { grid-column: 2; }
+  .home-editorial-grid > article:only-child:not(:has(img)) :is(h3, p) { grid-column: 1 / -1; }
 }
 
 @media (max-width: 950px) {
@@ -409,7 +435,7 @@ body:has(.home-shell) {
   .home-shell #main { scroll-margin-top: 104px; }
   .home-hero-scene { min-height: 250px; }
   .home-hero-copy { padding-block: 44px 28px; }
-  .home-search-panel { margin-top: 14px; padding: 16px; }
+  .home-shell .home-hero > .home-search-panel { margin-top: 14px; padding: 16px; }
   .home-search,
   .home-banner-grid,
   .home-tour-grid,

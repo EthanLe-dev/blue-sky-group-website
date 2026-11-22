@@ -43,21 +43,21 @@ export default function Hero({ destinations }: { destinations: { slug: string; n
       </div>
       <div className="wrap home-search-panel">
         <form className="home-search" action="/tours" method="get" aria-label="Tìm tour">
-          <label htmlFor="hero-q">
-            Từ khóa
+          <div className="home-search-field">
+            <label htmlFor="hero-q">Từ khóa</label>
             <input id="hero-q" name="q" maxLength={100} placeholder="Nhập tên tour hoặc điểm đến" />
-          </label>
-          <label htmlFor="hero-destination">
-            Điểm đến
+          </div>
+          <div className="home-search-field">
+            <label htmlFor="hero-destination">Điểm đến</label>
             <select id="hero-destination" name="destination">
               <option value="">Tất cả điểm đến</option>
               {destinations.map(({ slug, name }) => <option key={slug} value={slug}>{name}</option>)}
             </select>
-          </label>
-          <label htmlFor="hero-departure">
-            Khởi hành từ ngày
+          </div>
+          <div className="home-search-field">
+            <label htmlFor="hero-departure">Khởi hành từ ngày</label>
             <input id="hero-departure" name="depart_from" type="date" />
-          </label>
+          </div>
           <button className="btn home-button" type="submit">Tìm tour <span aria-hidden="true">↗</span></button>
         </form>
       </div>
