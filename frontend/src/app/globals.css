@@ -1315,3 +1315,95 @@ body {
     min-height: 340px;
   }
 }
+
+.leaflet-container {
+  font:
+    16px/1.5 "Be Vietnam Pro",
+    sans-serif;
+  z-index: 0;
+}
+.leaflet-touch .leaflet-bar a,
+.leaflet-bar a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+.leaflet-popup-content {
+  font-size: 16px;
+}
+.leaflet-container a.leaflet-popup-close-button {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+.hero-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  margin: 20px 0 0;
+}
+.hero-search label {
+  grid-column: 1/-1;
+  color: var(--ink);
+  font-size: 15px;
+}
+.hero-search input {
+  min-width: 0;
+}
+.hero-search .btn {
+  white-space: nowrap;
+}
+@media (max-width: 540px) {
+  .hero-search .btn {
+    width: auto;
+  }
+  .hero-search label {
+    font-size: 16px;
+  }
+  .hero-search input {
+    font-size: 16px;
+  }
+}
+
+.filter-advanced {
+  grid-column: 1/-1;
+}
+.filter-advanced summary {
+  min-height: 44px;
+  cursor: pointer;
+  padding: 10px 0;
+  font-weight: 600;
+}
+.advanced-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-block: 16px;
+}
+.section.home-content {
+  min-height: 0;
+}
+.home-content h2 {
+  margin-bottom: 32px;
+}
+.home-content .content-list article {
+  padding-block: 16px;
+}
+.home-banner {
+  display: block;
+  margin-bottom: 24px;
+}
+.home-banner img {
+  width: 100%;
+  height: auto;
+}
+@media (max-width: 850px) {
+  .advanced-fields {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 540px) {
+  .advanced-fields {
+    grid-template-columns: 1fr;
+  }
+}
