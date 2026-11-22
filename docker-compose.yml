@@ -80,6 +80,7 @@ services:
     environment:
       API_UPSTREAM_URL: http://backend:8080
       APP_ENV: ${APP_ENV:-local}
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
       TURNSTILE_MODE: ${TURNSTILE_MODE:-real}
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
       SITE_URL: ${SITE_URL:-http://localhost:3000}

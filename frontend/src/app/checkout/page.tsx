@@ -30,6 +30,7 @@ export default async function Page({
           ["local", "test"].includes(process.env.APP_ENV || "local") &&
           process.env.TURNSTILE_MODE !== "real"
         }
+        mockPayment={process.env.APP_ENV !== "production" && process.env.PAYMENT_PROVIDER === "mock"}
         siteKey={process.env.TURNSTILE_SITE_KEY || ""}
       />
     </main>

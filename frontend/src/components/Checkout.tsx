@@ -2,6 +2,7 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
+import Image from "next/image";
 import Captcha from "./Captcha";
 import type { Surcharge } from "@/lib/catalog";
 type Counts = { adult: number; child: number; infant: number };
@@ -42,13 +43,17 @@ type Booking = {
   total_amount: string;
   deposit_amount: string;
   balance_amount: string;
+  paid_amount: string;
+  refunded_amount: string;
+  payment_status: string;
+  balance_due_at: string;
   expires_at: string;
   server_time: string;
   payment_option: string;
   version: number;
   tour_snapshot: { title: string; starts_at: string };
 };
-const money = (v: string) => Number(v).toLocaleString("vi-VN") + " ₫";
+const money = (v: string) => BigInt(v).toLocaleString("vi-VN") + " ₫";
 const labels: Record<string, string> = {
   adult: "Người lớn",
   child: "Trẻ em",
@@ -79,78 +84,176 @@ function Timer({ expires, server }: { expires: string; server: string }) {
     </p>
   );
 }
-export function BookingResult({ initial }: { initial: Booking }) {
+type Payment = { id: string; amount: string; status: string; expires_at: string };
+type Preview = { id: string; channel: string; subject: string | null; body: string; template_code: string };
+
+export function BookingResult({ initial, csrf, mockPayment }: {
+  initial: Booking;
+  csrf: string;
+  mockPayment: boolean;
+}) {
   const [booking, setBooking] = useState(initial);
+  const [payment, setPayment] = useState<Payment | null>(null);
+  const [previews, setPreviews] = useState<Preview[]>([]);
   const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [pollCycle, setPollCycle] = useState(0);
+  const lock = useRef(false);
+  const keys = useRef<Record<string, string>>({});
+  const bookingPath = "/bookings/" + initial.id;
+  const expected = booking.paid_amount === booking.total_amount &&
+    booking.payment_option === "deposit" && booking.deposit_amount !== booking.total_amount ? 4 : 2;
+
   useEffect(() => {
-    let active = true;
-    api<Booking>("/bookings/" + initial.id)
-      .then((b) => {
-        if (active) setBooking(b);
-      })
+    const controller = new AbortController();
+    api<Booking>(bookingPath, { signal: controller.signal })
+      .then(setBooking)
       .catch(() => {
-        if (active)
-          setError(
-            "Chưa cập nhật được giờ máy chủ. Bấm cập nhật trạng thái để thử lại.",
-          );
+        if (!controller.signal.aborted) setError("Chưa cập nhật được trạng thái đơn.");
       });
+    return () => controller.abort();
+  }, [bookingPath]);
+
+  const allPreviews = previews.length >= expected;
+  useEffect(() => {
+    if (!mockPayment || booking.paid_amount === "0" || allPreviews) return;
+    const controller = new AbortController();
+    const deadline = performance.now() + 30_000;
+    let timer: ReturnType<typeof setTimeout>;
+    async function check() {
+      if (controller.signal.aborted || performance.now() >= deadline) return;
+      if (!document.hidden) {
+        try {
+          const items = await api<Preview[]>(bookingPath + "/notifications", { signal: controller.signal });
+          if (controller.signal.aborted) return;
+          setPreviews(items);
+          if (items.length >= expected) return;
+        } catch {
+          if (controller.signal.aborted) return;
+        }
+      }
+      timer = setTimeout(check, 2000);
+    }
+    void check();
     return () => {
-      active = false;
+      controller.abort();
+      clearTimeout(timer);
     };
-  }, [initial.id]);
+  }, [bookingPath, booking.paid_amount, expected, mockPayment, pollCycle, allPreviews]);
+
+  async function run(action: () => Promise<void>) {
+    if (lock.current) return;
+    lock.current = true;
+    setBusy(true);
+    setError("");
+    try {
+      await action();
+    } catch (e) {
+      const code = e instanceof ApiError ? e.code : "";
+      const messages: Record<string, string> = {
+        HOLD_EXPIRED: "Đơn đã hết hạn giữ chỗ. Vui lòng đặt lại.",
+        PAYMENT_EXPIRED: "Mã thanh toán đã hết hạn. Hãy tạo mã mới.",
+        INVALID_STATE: "Trạng thái đơn đã thay đổi. Hãy cập nhật đơn.",
+      };
+      setError(messages[code] || (e instanceof Error ? e.message : "Chưa thực hiện được yêu cầu."));
+      if (code === "PAYMENT_EXPIRED" || code === "HOLD_EXPIRED") setPayment(null);
+      if (code === "HOLD_EXPIRED" || code === "INVALID_STATE") {
+        api<Booking>(bookingPath).then(setBooking).catch(() => {});
+      }
+    } finally {
+      lock.current = false;
+      setBusy(false);
+    }
+  }
+  async function post<T>(path: string, data: object) {
+    const key = keys.current[path] ||= crypto.randomUUID();
+    const response = await api<T>(path, {
+      method: "POST",
+      headers: { "X-CSRF-Token": csrf, "Idempotency-Key": key },
+      body: JSON.stringify(data),
+    });
+    delete keys.current[path];
+    return response;
+  }
+  const purpose = booking.status === "pending" ? booking.payment_option :
+    booking.status === "confirmed" && booking.balance_amount !== "0" && booking.refunded_amount === "0" &&
+    new Date(booking.server_time) < new Date(booking.tour_snapshot.starts_at) ? "balance" : "";
+  const paymentLabels: Record<string, string> = {
+    unpaid: "Chưa thanh toán", partially_paid: "Đã đặt cọc", paid: "Đã thanh toán đủ",
+    refunded: "Đã hoàn tiền", partially_refunded: "Đã hoàn một phần",
+  };
   return (
     <section className="summary">
-      <h2>
-        {booking.status === "pending"
-          ? "Đã tạo đơn giữ chỗ"
-          : "Trạng thái đơn: " +
-            ({
-              expired: "Đã hết hạn giữ chỗ",
-              cancelled: "Đã huỷ",
-              confirmed: "Đã xác nhận",
-              completed: "Đã hoàn thành",
-            }[booking.status] || booking.status)}
-      </h2>
-      <p>
-        Mã đơn <strong>{booking.code}</strong>. Lưu mã này để tra cứu bằng email
-        hoặc số điện thoại.
-      </p>
+      <h2>{({
+        pending: "Đã tạo đơn giữ chỗ", expired: "Đã hết hạn giữ chỗ",
+        cancelled: "Đã huỷ đơn", confirmed: "Đã xác nhận đặt tour",
+        completed: "Đã hoàn thành chuyến",
+      } as Record<string, string>)[booking.status]}</h2>
+      <p>Mã đơn <strong>{booking.code}</strong>. Lưu mã này để tra cứu bằng email hoặc số điện thoại.</p>
       <p>{booking.tour_snapshot.title}</p>
-      <Timer
-        key={booking.server_time}
-        expires={booking.expires_at}
-        server={booking.server_time}
-      />
+      {booking.status === "pending" && (
+        <Timer key={booking.server_time} expires={booking.expires_at} server={booking.server_time} />
+      )}
       <dl>
-        <dt>Tổng tiền</dt>
-        <dd>{money(booking.total_amount)}</dd>
-        <dt>Tiền cọc theo chính sách</dt>
-        <dd>{money(booking.deposit_amount)}</dd>
-        <dt>Còn phải thanh toán</dt>
-        <dd>{money(booking.balance_amount)}</dd>
+        <dt>Thanh toán</dt><dd>{paymentLabels[booking.payment_status]}</dd>
+        <dt>Tổng tiền</dt><dd>{money(booking.total_amount)}</dd>
+        <dt>Đã thanh toán</dt><dd>{money(booking.paid_amount)}</dd>
+        {booking.refunded_amount !== "0" && <><dt>Đã hoàn</dt><dd>{money(booking.refunded_amount)}</dd></>}
+        {booking.status !== "cancelled" && booking.status !== "expired" && <>
+          <dt>Còn phải thanh toán</dt><dd>{money(booking.balance_amount)}</dd>
+        </>}
       </dl>
-      <p className="notice">
-        Giả lập — không chuyển tiền thật. Thanh toán và email/SMS giả lập được
-        triển khai ở M4. Đơn chưa được xác nhận thanh toán và sẽ tự hết hạn giữ
-        chỗ.
-      </p>
-      <button disabled>Thanh toán giả lập — sắp có ở M4</button>
-      <button
-        onClick={async () => {
+      {purpose === "balance" && (
+        <p>Hạn thanh toán phần còn lại {new Date(booking.balance_due_at).toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" })}.</p>
+      )}
+      {mockPayment && <p className="notice">Giả lập — không chuyển tiền thật.</p>}
+      {mockPayment && purpose && !payment && (
+        <button className="btn" disabled={busy} onClick={() => void run(async () => {
           try {
-            setBooking(await api<Booking>("/bookings/" + booking.id));
-            setError("");
+            setPayment(await post<Payment>(bookingPath + "/payments", { purpose }));
           } catch (e) {
-            setError(String(e));
+            if (!(e instanceof ApiError) || e.code !== "PAYMENT_IN_PROGRESS") throw e;
+            const { payments } = await api<{ payments: Payment[] }>(bookingPath + "/payments");
+            const pending = payments.find((p) => p.status === "pending");
+            if (!pending) throw e;
+            delete keys.current[bookingPath + "/payments"];
+            setPayment(pending);
           }
-        }}
-      >
-        Cập nhật trạng thái đơn
-      </button>
+        })}>
+          {({ deposit: "Đặt cọc giả lập", full: "Thanh toán toàn bộ giả lập", balance: "Thanh toán phần còn lại giả lập" } as Record<string, string>)[purpose]}
+        </button>
+      )}
+      {mockPayment && purpose && payment && (
+        <div className="form-grid">
+          <Image src="/images/demo-payment-qr.png" width={180} height={180} alt="Mã QR chỉ chứa thông báo giả lập" />
+          <p>Số tiền mô phỏng <strong>{money(payment.amount)}</strong></p>
+          <button className="btn" disabled={busy} onClick={() => void run(async () => {
+            const result = await post<{ booking: Booking }>("/payments/" + payment.id + "/mock-confirm", {});
+            setBooking(result.booking);
+            setPayment(null);
+          })}>Xác nhận thanh toán giả lập</button>
+        </div>
+      )}
+      {mockPayment && booking.paid_amount !== "0" && (
+        <div>
+          <h3>Email/SMS giả lập</h3>
+          {previews.length < expected && <p role="status">Đang tạo bản xem trước.</p>}
+          {previews.map((p) => (
+            <details key={p.id}>
+              <summary>{p.channel === "email" ? "Email" : "SMS"} giả lập · {p.template_code === "balance_paid" ? "Thanh toán phần còn lại" : "Xác nhận đặt tour"}</summary>
+              {p.subject && <p><strong>{p.subject}</strong></p>}
+              <p>{p.body}</p>
+            </details>
+          ))}
+        </div>
+      )}
+      <button disabled={busy} onClick={() => void run(async () => {
+        setBooking(await api<Booking>(bookingPath));
+        setPayment(null);
+        setPollCycle((n) => n + 1);
+      })}>Cập nhật trạng thái đơn</button>
       {error && <p role="alert">{error}</p>}
-      <Link className="text-action" href="/lookup">
-        Tra cứu đơn
-      </Link>
+      <Link className="text-action" href="/lookup">Tra cứu đơn</Link>
     </section>
   );
 }
@@ -161,6 +264,7 @@ export default function Checkout({
   surcharges,
   mock,
   siteKey,
+  mockPayment,
 }: {
   departure: string;
   title: string;
@@ -173,6 +277,7 @@ export default function Checkout({
   }[];
   mock: boolean;
   siteKey: string;
+  mockPayment: boolean;
 }) {
   const [codes, setCodes] = useState<string[]>([]);
   const [counts, setCounts] = useState<Counts>({
@@ -286,7 +391,7 @@ export default function Checkout({
       setBusy(false);
     }
   }
-  if (booking) return <BookingResult initial={booking} />;
+  if (booking) return <BookingResult initial={booking} csrf={csrf} mockPayment={mockPayment} />;
   return (
     <>
       <ol className="checkout-steps" aria-label="Các bước đặt tour">
