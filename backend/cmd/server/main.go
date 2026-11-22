@@ -69,6 +69,9 @@ func main() {
 	workerCtx, stopWorker := context.WithCancel(context.Background())
 	defer stopWorker()
 	go app.BookingServer().RunWorker(workerCtx)
+	if c.Env != "production" && c.MockNotification {
+		go app.BookingServer().RunNotifications(workerCtx)
+	}
 	srv := &http.Server{Addr: c.Address, Handler: app.Router(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)

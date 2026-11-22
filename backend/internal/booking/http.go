@@ -46,7 +46,7 @@ func respondError(c *gin.Context, e error) {
 		status = 403
 	case "VALIDATION_ERROR", "PASSENGER_MISMATCH", "IDEMPOTENCY_KEY_REQUIRED":
 		status = 422
-	case "SOLD_OUT", "QUOTE_EXPIRED", "PRICE_CHANGED", "QUOTE_ALREADY_USED", "SALES_CLOSED", "PAYMENT_OPTION_UNAVAILABLE", "IDEMPOTENCY_CONFLICT", "REQUEST_IN_PROGRESS", "VERSION_CONFLICT", "INVALID_TRANSITION":
+	case "HOLD_EXPIRED", "PAYMENT_EXPIRED", "PAYMENT_IN_PROGRESS", "INVALID_STATE", "REFUND_UNAVAILABLE", "SOLD_OUT", "QUOTE_EXPIRED", "PRICE_CHANGED", "QUOTE_ALREADY_USED", "SALES_CLOSED", "PAYMENT_OPTION_UNAVAILABLE", "IDEMPOTENCY_CONFLICT", "REQUEST_IN_PROGRESS", "VERSION_CONFLICT", "INVALID_TRANSITION":
 	default:
 		status = 503
 		code = "SERVICE_UNAVAILABLE"
@@ -90,7 +90,7 @@ func (s *Server) createHTTP(staff bool) gin.HandlerFunc {
 	}
 }
 
-const baseJSON = `(to_jsonb(b)-'guest_session_id'-'created_by_staff_id')||jsonb_build_object('total_amount',b.total_amount::text,'deposit_amount',b.deposit_amount::text,'paid_amount',b.paid_amount::text,'balance_amount',(b.total_amount-b.paid_amount)::text,'server_time',clock_timestamp())`
+const baseJSON = `(to_jsonb(b)-'guest_session_id'-'created_by_staff_id')||jsonb_build_object('total_amount',b.total_amount::text,'deposit_amount',b.deposit_amount::text,'paid_amount',b.paid_amount::text,'refunded_amount',b.refunded_amount::text,'net_received',(b.paid_amount-b.refunded_amount)::text,'balance_amount',(b.total_amount-b.paid_amount)::text,'server_time',clock_timestamp())`
 
 func bookingJSON(ctx context.Context, tx pgx.Tx, id string, detail bool) (json.RawMessage, error) {
 	sql := "SELECT " + baseJSON
@@ -300,9 +300,9 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 		}
 		var status string
 		var version, seats int
-		var paid int64
+		var paid, refunded int64
 		var ended bool
-		if e = tx.QueryRow(ctx, "SELECT b.status,b.version,b.seat_count,b.paid_amount,d.ends_at<=clock_timestamp() FROM bookings b JOIN departures d ON d.id=b.departure_id WHERE b.id=$1", c.Param("id")).Scan(&status, &version, &seats, &paid, &ended); e != nil {
+		if e = tx.QueryRow(ctx, "SELECT b.status,b.version,b.seat_count,b.paid_amount,b.refunded_amount,d.ends_at<=clock_timestamp() FROM bookings b JOIN departures d ON d.id=b.departure_id WHERE b.id=$1", c.Param("id")).Scan(&status, &version, &seats, &paid, &refunded, &ended); e != nil {
 			respondError(c, e)
 			return
 		}
@@ -350,7 +350,7 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 			return
 		}
 		if target == "cancelled" {
-			out, _ = json.Marshal(gin.H{"booking": out, "refund_required_amount": fmt.Sprint(paid)})
+			out, _ = json.Marshal(gin.H{"booking": out, "refund_required_amount": fmt.Sprint(paid - refunded)})
 			if e = remember(ctx, tx, p, route, key, out); e != nil {
 				respondError(c, e)
 				return

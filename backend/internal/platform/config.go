@@ -9,11 +9,13 @@ import (
 type Config struct {
 	Env, Address, DatabaseURL, JWTSecret, CSRFSecret, TurnstileSecret string
 	Origins, Hostnames                                                []string
-	MockCaptcha, Secure                                               bool
+	MockPayment, MockNotification, MockCaptcha, Secure                bool
 }
 
 func LoadConfig() (Config, error) {
 	c := Config{Env: os.Getenv("APP_ENV"), Address: os.Getenv("HOST") + ":" + os.Getenv("PORT"), DatabaseURL: os.Getenv("DATABASE_URL"), JWTSecret: os.Getenv("JWT_SIGNING_SECRET"), CSRFSecret: os.Getenv("CSRF_SECRET"), TurnstileSecret: os.Getenv("TURNSTILE_SECRET_KEY"), Origins: strings.Split(os.Getenv("CORS_ALLOWED_ORIGINS"), ","), Hostnames: strings.Split(os.Getenv("TURNSTILE_ALLOWED_HOSTNAMES"), ","), MockCaptcha: os.Getenv("TURNSTILE_MODE") == "mock", Secure: os.Getenv("COOKIE_SECURE") == "true"}
+	c.MockPayment = os.Getenv("PAYMENT_PROVIDER") == "mock"
+	c.MockNotification = os.Getenv("EMAIL_PROVIDER") == "mock" && os.Getenv("SMS_PROVIDER") == "mock"
 	if c.Env != "local" && c.Env != "test" && c.Env != "demo" && c.Env != "production" {
 		return c, errors.New("APP_ENV invalid")
 	}
