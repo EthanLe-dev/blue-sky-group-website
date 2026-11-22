@@ -28,8 +28,8 @@ export async function generateMetadata({
   const { slug } = await params;
   const t = await get(slug);
   return {
-    title: t.title,
-    description: t.summary,
+    title: t.seo_title || t.title,
+    description: t.seo_description || t.summary,
     alternates: { canonical: "/tours/" + t.slug },
     openGraph: {
       title: t.title,
@@ -48,7 +48,15 @@ export default async function Detail({
   const departures = await read<Departure[]>(
     "/tours/" + encodeURIComponent(slug) + "/departures",
   );
-  const reviews=await read<{id:string;display_name:string;rating:number;body:string;is_demo:boolean}[]>("/tours/"+encodeURIComponent(slug)+"/reviews");
+  const reviews = await read<
+    {
+      id: string;
+      display_name: string;
+      rating: number;
+      body: string;
+      is_demo: boolean;
+    }[]
+  >("/tours/" + encodeURIComponent(slug) + "/reviews");
   const schema = {
     "@context": "https://schema.org",
     "@type": "TouristTrip",
@@ -172,7 +180,25 @@ export default async function Detail({
               ))}
             </ul>
           </section>
-          <section className="detail-section"><h2>Đánh giá hành trình</h2>{reviews.length?reviews.map(r=><article key={r.id}><h3>{r.display_name}</h3><p>{r.rating}/5 {r.is_demo?"· Đánh giá demo":""}</p><div className="prose" dangerouslySetInnerHTML={{__html:r.body}}/></article>):<p>Chưa có đánh giá được xác thực cho hành trình này.</p>}</section>
+          <section className="detail-section">
+            <h2>Đánh giá hành trình</h2>
+            {reviews.length ? (
+              reviews.map((r) => (
+                <article key={r.id}>
+                  <h3>{r.display_name}</h3>
+                  <p>
+                    {r.rating}/5 {r.is_demo ? "· Đánh giá demo" : ""}
+                  </p>
+                  <div
+                    className="prose"
+                    dangerouslySetInnerHTML={{ __html: r.body }}
+                  />
+                </article>
+              ))
+            ) : (
+              <p>Chưa có đánh giá được xác thực cho hành trình này.</p>
+            )}
+          </section>
           <button disabled title="Có trong giai đoạn M6">
             Tải PDF lịch trình — sắp có
           </button>

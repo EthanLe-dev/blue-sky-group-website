@@ -82,7 +82,7 @@ export default function SearchForm({
         />
       </label>
       <label>
-        Số khách
+        Số chỗ cần đặt
         <input
           name="travellers"
           type="number"
