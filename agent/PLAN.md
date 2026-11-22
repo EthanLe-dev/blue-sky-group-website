@@ -162,3 +162,10 @@ Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0
 - Logo dùng file JPG công ty chỉ định. Ảnh điểm đến public domain ghi nguồn trong docs/media-credits.md; poster gốc được nhúng không cắt chữ. Dữ liệu bổ sung có nhãn demo, sửa qua Admin.
 - Đã cho phép chạy local kiểm thử rồi dừng trong đợt này. Không bootstrap lại, không đổi mật khẩu hay xoá volume.
 - Module UI/CMS/booking đã có code, đang kiểm browser/contract/taste gate và CI; chưa coi toàn bộ DONE. M4 thanh toán/thông báo và M5 form khách đoàn chưa bật.
+
+### Kết thúc phần chức năng M2/M3 — 22/11/2026
+
+- M2/T201–T218 và M3/T301–T308 đã triển khai và có evidence trong PROGRESS. Nguồn code kiểm chứng `0ee97b82`: [CI44998866529 PASS](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/44998866529), PR#3 tích hợp vào develop; commit bàn giao tài liệu cũng chờ CI trước merge. Không đưa code sang main hoặc deploy cloud trong đợt này.
+- Local cuối: frontend/admin lint/typecheck/unit/build PASS (1 warning stylesheet vendor); Go vet/test-race/build PASS, platform80.297s; browser6/6 PASS13.6s; nginx-t và redaction signed query PASS. Docker Compose đã down, ps rỗng, không -v; dữ liệu/mật khẩu Admin giữ nguyên.
+- Nghiệm thu UI/T703 còn mở: taste OPEN19 từ vòng3, có bổ sung chức năng sau đó nên cần review UI tiếp ở M7. Chi tiết/waiver/perf trong docs/ui-qa-m2-m3.md; không gọi là UAT hoặc hoàn tất thẩm mỹ.
+- Tiếp theo là M4 payment/notification giả lập, sau khi người dùng giao tiếp. M3 hiện chỉ tạo pending hold; không có xác nhận thu tiền hoặc gửi email/SMS. M5 form báo giá, M6 export/PDF và M7 deploy/UAT vẫn chưa triển khai.

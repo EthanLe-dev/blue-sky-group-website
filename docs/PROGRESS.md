@@ -214,3 +214,11 @@ M2 bổ sung theo MVP: Leaflet tải sau click với markers/attribution/cleanup
 - Chưa triển khai M4/M5/M6, chưa deploy cloud. Seed/local giữ mật khẩu hiện tại, volume và sửa đổi người dùng. Khi bàn giao dừng toàn bộ service kiểm thử, không dùng down -v. Trạng thái CI/merge thực tế xem PR#3; main giữ nguyên.
 
 T215 log privacy: Nginx access log chỉ ghi method/uri không query, media location tắt error log có thể chứa signed URL khi upstream lỗi. Backend không log body/query/token. Kiểm nginx -t và query redaction trong vòng kiểm thử cuối.
+
+### Bàn giao kiểm chứng cuối
+
+- Code0ee97b82 CI44998866529 **PASS toàn bộ6 jobs**: docs/config, public quality, admin quality, Go+PostgreSQL, container/browser, aggregate CI result.
+- Local trên bản tích hợp cuối: `go vet ./... && go test -race -count=1 ./... && go build ./...` PASS (platform80.297s); lint/typecheck frontend/admin, frontend1unit/admin4unit và Docker builds PASS; Playwright6/6 PASS13.6s. Một warning stylesheet vendor đã ghi rõ, không tắt check để báo xanh.
+- `nginx -t` cả hai proxy PASS; request signed query giả qua8088/5173 không xuất hiện trong log. Không in/log token thật.
+- Đã dừng bằng `docker compose --profile app --profile production-tools down` (không -v), `compose ps` không còn service. Không khởi động lại sau bàn giao; người dùng tự `bluesky run` / `bluesky off`.
+- PR#3 chứa cả dependency catalog và booking, dùng develop làm nhánh tích hợp. Kết quả merge/SHA cuối xem PR trực tiếp; main không nhận đợt này. Commit bàn giao docs không đổi code đã kiểm chứng, vẫn chờ CI theo quy trình.
