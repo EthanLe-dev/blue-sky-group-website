@@ -148,3 +148,7 @@ Có thể tiếp tục M2: T201/T202 UI tokens/layout, T203 catalog. T108b chỉ
 ### Lệnh tắt bluesky run/off
 
 Người dùng yêu cầu lệnh mở/tắt app. Đã thêm scripts/bluesky.cmd và install_shortcuts.ps1, cài launcher vào LOCALAPPDATA/BlueSky/bin, user PATH và refresh PATH trong profile PowerShell7/Windows PowerShell, giữ nội dung/encoding profile cũ. Run kiểm Docker có sẵn rồi up -d --build; off down cả app/Redis không -v. `python scripts/test_shortcuts.py` PASS bằng Docker giả (dispatch run/off, invalid action, daemon lỗi); `bluesky help` và command discovery PASS. Không chạy app hoặc service mới. Nhánh chore/bluesky-shortcuts từ develop, độc lập PR #2.
+
+### Đặt lại mật khẩu Admin local theo yêu cầu người dùng
+
+Đã đổi hash mật khẩu tài khoản bootstrap hiện có theo giá trị tạm người dùng yêu cầu; thu hồi các phiên/token reset cũ và ghi audit. Giá trị chỉ lưu tham chiếu trong .env ignored, không ghi vào Git. Kiểm login qua Admin5173 và API8080 đều200, logout các phiên kiểm tra. Không khởi động/restart app; thao tác trên PostgreSQL và API đã chạy sẵn. Chính sách mật khẩu tối thiểu12bytes của bootstrap/reset API giữ nguyên; tài khoản local hiện tại đã đổi trực tiếp, không chạy lại bootstrap với mật khẩu tạm ngắn.
