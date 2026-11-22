@@ -170,6 +170,8 @@ Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0
 - Nghiệm thu UI/T703 còn mở: taste OPEN19 từ vòng3, có bổ sung chức năng sau đó nên cần review UI tiếp ở M7. Chi tiết/waiver/perf trong docs/ui-qa-m2-m3.md; không gọi là UAT hoặc hoàn tất thẩm mỹ.
 - Tiếp theo là M4 payment/notification giả lập, sau khi người dùng giao tiếp. M3 hiện chỉ tạo pending hold; không có xác nhận thu tiền hoặc gửi email/SMS. M5 form báo giá, M6 export/PDF và M7 deploy/UAT vẫn chưa triển khai.
 
-### M4 — Đang triển khai
+### M4 — Thanh toán và thông báo giả lập
 
-T401–T406 sẽ dùng chung transaction và thứ tự khóa của booking. Thanh toán, hoàn tiền và bản xem trước email/SMS chỉ chạy với cấu hình giả lập. CI kiểm tra PostgreSQL và trình duyệt.
+T401–T406 dùng chung transaction và thứ tự khóa của booking. Checkout hỗ trợ toàn bộ, cọc và phần còn lại. Admin đối soát, ghi hoàn tiền và xem nhật ký theo quyền. Mọi giao dịch và thông báo M4 dùng dữ liệu giả lập. CI đầu tiên trên PR #4 đã đạt 6/6 job, gồm Go/PostgreSQL và Playwright. PR sẽ chỉ nhập `develop` sau CI của bản cập nhật.
+
+M5 tiếp tục với form báo giá và gọi lại khi được giao. Nghiệm thu UI T703 vẫn mở.

@@ -83,12 +83,12 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T401 | Payment/refund/outbox/log migrations và intent service | T301 | Một pending intent; purpose/full/deposit/balance và amount do server quyết định |
-| T402 | Mock confirm transaction và production route guard | T401,T304 | Confirm cạnh tranh expire/cancel, duplicate; cọc confirmed+partially_paid |
-| T403 | Refund mock/đối soát ledger/admin audit | T402,T306 | Refund cạnh tranh không quá paid; refund không tự trả chỗ |
-| T404 | Outbox lease/retry/dedupe và email/SMS mock preview | T402 | Crash trước/sau log, retry 5 lần, không double notification, không gửi thật |
-| T405 | Payment QR giả/confirmation/notification preview UI | T307,T402,T404 | QR không chuyển tiền thật; không thông báo gửi thật; poll bounded, double-click |
-| T406 | Admin payment/refund/log UI | T308,T403,T404 | Sales không refund; accountant đúng quyền; API lỗi không báo thành công |
+| T401 · DONE | Payment/refund/outbox/log migrations và intent service | T301 | Một pending intent; purpose/full/deposit/balance và amount do server quyết định |
+| T402 · DONE | Mock confirm transaction và production route guard | T401,T304 | Confirm cạnh tranh expire/cancel, duplicate; cọc confirmed+partially_paid |
+| T403 · DONE | Refund mock/đối soát ledger/admin audit | T402,T306 | Refund cạnh tranh không quá paid; refund không tự trả chỗ |
+| T404 · DONE | Outbox lease/retry/dedupe và email/SMS mock preview | T402 | Crash trước/sau log, retry 5 lần, không double notification, không gửi thật |
+| T405 · DONE | Payment QR giả/confirmation/notification preview UI | T307,T402,T404 | QR không chuyển tiền thật; không thông báo gửi thật; poll bounded, double-click |
+| T406 · DONE | Admin payment/refund/log UI | T308,T403,T404 | Sales không refund; accountant đúng quyền; API lỗi không báo thành công |
 
 ## M5 — Sales/khách đoàn (FR-40–45,61,85–88)
 

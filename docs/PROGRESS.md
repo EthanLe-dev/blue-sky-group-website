@@ -222,3 +222,10 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - `nginx -t` cả hai proxy PASS; request signed query giả qua8088/5173 không xuất hiện trong log. Không in/log token thật.
 - Đã dừng bằng `docker compose --profile app --profile production-tools down` (không -v), `compose ps` không còn service. Không khởi động lại sau bàn giao; người dùng tự `bluesky run` / `bluesky off`.
 - PR#3 chứa cả dependency catalog và booking, dùng develop làm nhánh tích hợp. Kết quả merge/SHA cuối xem PR trực tiếp; main không nhận đợt này. Commit bàn giao docs không đổi code đã kiểm chứng, vẫn chờ CI theo quy trình.
+
+### M4 — Thanh toán và thông báo giả lập
+
+- Nhánh `feature/payment`, PR #4 vào `develop`. Thêm migration ledger, intent thanh toán, xác nhận toàn bộ/cọc/phần còn lại, hoàn tiền, đối soát từng đơn, worker và nhật ký xem trước email/SMS.
+- Dùng QR chứa dòng chữ demo. Bản xem trước giữ mã đơn và nội dung mẫu, không gọi nhà cung cấp. Người tạo đơn có thể mở lại bằng liên kết trên cùng phiên trình duyệt.
+- CI bản đầu `821b345` đạt 6/6 job tại run 45005020537. PostgreSQL kiểm tra cọc, phần còn lại, xác nhận lặp, không thu khi hết hạn, quyền sales/kế toán, hoàn cạnh tranh và lease/retry. Playwright kiểm tra QR, trạng thái đã thu, preview, tra cứu, hủy và hoàn tiền.
+- Bản cập nhật thêm kiểm tra confirm cạnh tranh hủy, mở lại đơn cùng phiên, chặn bấm xác nhận hai lần và nhật ký toàn hệ thống. CI PR là bằng chứng kiểm tra của từng bản. Không khởi động app trên máy người dùng trong lần làm M4.
