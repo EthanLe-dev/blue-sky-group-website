@@ -116,7 +116,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 - Tạo `.env` từ mẫu, chạy `docker compose --env-file .env config --quiet`, `docker compose up -d postgres`. Không commit `.env`; `down` giữ volume, `down -v` xoá dữ liệu.
 - Backend trên host dùng `127.0.0.1`; khi container hoá đổi host thành service `postgres`. Migration dùng DB owner riêng ở production; app dùng role tối thiểu. Không tự chạy migration đồng thời trong mỗi replica.
 - CI chạy kiểm tra tài liệu/Compose ngay. Khi có manifest, không skip các script chất lượng; service PostgreSQL riêng cho integration. Có workflow hook deploy demo, chưa có deployment ứng dụng hoặc secret production.
-- CD demo dùng `.github/workflows/deploy.yml`: chỉ chạy sau CI thành công của push lên `main`, với đúng SHA đã kiểm tra. Khi cả ba app và backend Dockerfile tồn tại, workflow đòi ba deploy hook trong GitHub environment `demo` (`RENDER_DEPLOY_HOOK_URL`, `VERCEL_PUBLIC_DEPLOY_HOOK_URL`, `VERCEL_ADMIN_DEPLOY_HOOK_URL`), gọi Render trước rồi Vercel. Hiện thiếu app nên ghi skip có chủ đích; chưa deploy. Hook chỉ xác nhận đã nhận yêu cầu, không chứng minh ứng dụng đã healthy. Cần tạo project Render/Vercel, Neon, cấu hình env và migration/health check trước khi bật deploy thật.
+- CD demo dùng `.github/workflows/deploy.yml` với công tắc `DEMO_DEPLOY_ENABLED` và environment demo. Chỉ chạy sau CI của push main. Render nhận đúng SHA, Vercel dựng nguồn từ SHA đã kiểm tra. Workflow chờ readiness và chạy smoke trên URL ổn định. Cấu hình và rollback xem docs/demo-release.md.
 - Khi scaffold phải thêm kiểm tra migration up trên DB sạch, rollback có kiểm soát, OpenAPI contract, build Docker và E2E trước M7; CI ban đầu không tuyên bố đã có các check này.
 
 ## 5. Rủi ro và thông tin cần cung cấp
@@ -182,4 +182,6 @@ T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. 
 
 ### M7 — Đang triển khai
 
-Nhánh feature/mvp-release. Tiếp tục T701–T707 trong repo và CI. Vercel, Render và Neon dành cho demo; xác minh dịch vụ thật, UAT và quyền tài khoản làm sau khi có hỗ trợ.
+Nhánh feature/mvp-release, PR #7. Fixture demo có tour quốc tế, chỗ sắp hết và hết chỗ, tiền cọc/toàn bộ và đơn hết hạn. CI bổ sung hành trình mất phản hồi thanh toán, đơn tại quầy, đa trình duyệt, khôi phục DB riêng và kiểm tra SHA demo. Hạ tầng mẫu và bàn giao tại docs/demo-release.md, checklist tại docs/uat-mvp.md.
+
+Vercel, Render và Neon dành cho demo. Deploy thật, khởi động lạnh, private file trên R2, Turnstile cloud, GA4/Search Console, rollback cloud và UAT độc lập chờ quyền tài khoản/URL/người thử. T703 còn review thẩm mỹ, không dùng screenshot CI để đánh dấu nghiệm thu thị giác.

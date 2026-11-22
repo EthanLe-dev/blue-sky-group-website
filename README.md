@@ -67,3 +67,7 @@ Browser smoke local: từ admin chạy `npx playwright install chromium`, `npm r
 `develop` là nhánh tích hợp, nhánh module `feature/<module>`; task hoàn tất được commit và push. PR module → develop, bản nghiệm thu → main. CI chạy chung cho main/develop/PR; CD main hiện là hook, chưa chứng minh provider deploy đúng revision/readiness, xem T705. Không deploy chỉ vì CI xanh.
 
 Tài liệu chính: [TASKS](agent/TASKS.md), [PLAN](agent/PLAN.md), [PROGRESS](docs/PROGRESS.md), [API](docs/api-spec.md), [schema](docs/database-schema.md).
+
+### Phát hành demo
+
+Xem [hướng dẫn Vercel, Render và Neon](docs/demo-release.md) và [phiếu nghiệm thu MVP](docs/uat-mvp.md).

@@ -205,6 +205,19 @@ jobs:
         run: |
           RELEASE_BROWSER=firefox npm run test:e2e -- --output=test-results-firefox
           RELEASE_BROWSER=webkit npm run test:e2e -- --output=test-results-webkit
+      - name: Rehearse PostgreSQL backup and restore into a separate database
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose exec -T postgres sh -ec 'pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" --format=custom' > "$RUNNER_TEMP/demo.dump"
+          docker compose exec -T postgres sh -ec 'createdb -U "$POSTGRES_USER" demo_restore_test'
+          docker compose exec -T postgres sh -ec 'pg_restore --exit-on-error --no-owner --no-privileges -U "$POSTGRES_USER" -d demo_restore_test' < "$RUNNER_TEMP/demo.dump"
+          counts='SELECT (SELECT count(*) FROM tours),(SELECT count(*) FROM bookings),(SELECT count(*) FROM group_requests),(SELECT count(*) FROM schema_migrations)'
+          original=$(docker compose exec -T postgres sh -ec 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -Atc "$1"' sh "$counts")
+          restored=$(docker compose exec -T postgres sh -ec 'psql -U "$POSTGRES_USER" -d demo_restore_test -Atc "$1"' sh "$counts")
+          test -n "$original"
+          test "$original" = "$restored"
+          rm -f "$RUNNER_TEMP/demo.dump"
       - name: Save public responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4
