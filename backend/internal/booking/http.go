@@ -283,7 +283,7 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 		key := c.GetHeader("Idempotency-Key")
 		route := target + ":" + c.Param("id")
 		if target == "cancelled" {
-			cached, err := claim(ctx, tx, p, route, key, b)
+			cached, err := Claim(ctx, tx, p, route, key, b)
 			if err != nil {
 				respondError(c, err)
 				return
@@ -351,7 +351,7 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 		}
 		if target == "cancelled" {
 			out, _ = json.Marshal(gin.H{"booking": out, "refund_required_amount": fmt.Sprint(paid - refunded)})
-			if e = remember(ctx, tx, p, route, key, out); e != nil {
+			if e = Remember(ctx, tx, p, route, key, out); e != nil {
 				respondError(c, e)
 				return
 			}
@@ -378,7 +378,7 @@ func (s *Server) patch(c *gin.Context) {
 	if !httpx.Body(c, &b) {
 		return
 	}
-	if b.Contact != nil && !validContact(b.Contact) || b.Requests != nil && len(*b.Requests) > 5000 || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
+	if b.Contact != nil && !NormalizeContact(b.Contact) || b.Requests != nil && len(*b.Requests) > 5000 || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
 		respondError(c, problem("VALIDATION_ERROR"))
 		return
 	}
@@ -511,7 +511,7 @@ func (s *Server) lookup(c *gin.Context) {
 	}
 	contact := strings.ToLower(strings.TrimSpace(b.Contact))
 	if !strings.Contains(contact, "@") {
-		contact = normalizePhone(contact)
+		contact = NormalizePhone(contact)
 	}
 	var id, dep string
 	ctx := c.Request.Context()

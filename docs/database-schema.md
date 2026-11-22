@@ -125,7 +125,7 @@ MVP outbox consumer nằm trong Go process, claim batch bằng `FOR UPDATE SKIP 
 | `group_quotes` | `group_request_id FK, version int, title text, itinerary text, inclusions text, exclusions text, total_amount bigint, currency char(3), valid_until date, status text(draft/issued/accepted/rejected), document_media_id FK?, created_by_staff_id FK` | UQ(group_request_id,version); version>0; issued immutable, thay đổi tạo version mới; accepted là nhân viên ghi nhận, không e-sign |
 | `group_request_notes` | `group_request_id FK, staff_id FK, body text` | index(group_request_id,created_at) |
 | `group_request_attachments` | `group_request_id FK, media_id FK, uploaded_by_staff_id FK` | PK(group_request_id,media_id); private only; chưa nhận Excel danh sách khách public |
-| `callback_requests` | `name varchar(120)?, phone varchar(20), preferred_time text?, tour_id FK?, message text?, status text(new/contacted/closed), assigned_to FK staff_users?, follow_up_due_at timestamptz?, consent_version text, consent_at timestamptz` | index(status,follow_up_due_at) |
+| `callback_requests` | `code varchar(24), name varchar(120)?, phone varchar(20), preferred_time varchar(120)?, tour_id FK?, message text?, status text(new/contacted/closed), assigned_to FK staff_users?, follow_up_due_at timestamptz?, consent_version text, consent_at timestamptz` | UQ code; index(status,assigned_to,follow_up_due_at) |
 | `callback_notes` | `callback_request_id FK, staff_id FK, body text` | index(callback_request_id,created_at) |
 
 ## 8. Nội dung và media
@@ -162,7 +162,7 @@ Thứ tự đề xuất:
 1. `000001_identity`: staff/RBAC/sessions/customers/guest/rate limit/audit.
 2. `000002_content_catalog`: media/content/tours/departures/prices/quotes.
 3. `000003_booking`: booking/hold/passengers/items/events/notes/idempotency/lookup.
-4. `000004_sales`: group/callback/quote/attachments.
+4. `000006_sales.sql`: group/callback/quote/attachments, sau `000004_booking.sql` và `000005_payment_notification.sql`. Không cần backfill. Khi phải quay lại bản M4, giữ nguyên bảng sau khi sao lưu và quay lại revision ứng dụng trước M5.
 5. `000005_payment_notification`: payment/refund/events/outbox/notification.
 6. `000006_indexes_seed_roles`: indexes và permissions mặc định; demo seed chạy lệnh riêng, không trong migration production.
 

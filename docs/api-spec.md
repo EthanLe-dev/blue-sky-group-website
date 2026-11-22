@@ -164,7 +164,7 @@ Guest session + CSRF + Turnstile + Idempotency-Key. 201 LeadReceipt, xác nhận
 | POST `/group-requests` | `group_type(school/company),organization_name,contact_name,contact_email,contact_phone,participant_count(1..10000),destination_text,consent{accepted:true,policy_version},turnstile_token` | `preferred_start_date,preferred_end_date,budget_per_person,requirements` |
 | POST `/callback-requests` | `phone,consent{accepted:true,policy_version},turnstile_token` | `name,preferred_time,tour_id,message` |
 
-Date không quá khứ, end>=start; budget nếu có là Money. SLA thông báo lấy site_settings do công ty duyệt, không hardcode cam kết chưa xác nhận. Không public upload danh sách đoàn, GET trạng thái báo giá hoặc newsletter submit ở MVP.
+Ngày tính theo Việt Nam. Ngày bắt đầu không ở quá khứ; ngày kết thúc yêu cầu ngày bắt đầu và phải bằng hoặc sau ngày đó. Ngân sách là số nguyên VND đến 1.000.000.000.000. Hai form dùng phiên bản đồng ý `sales-v1`, với Turnstile action lần lượt `group-request` và `callback-request`. Nội dung SLA lấy từ `response_sla` trong Cài đặt Admin tại thời điểm tiếp nhận. Không public upload danh sách đoàn, GET trạng thái báo giá hoặc newsletter submit ở MVP.
 
 ## 7. Auth/admin và CRUD chuẩn
 
@@ -234,13 +234,15 @@ Huỷ có phí: MVP nhân viên xem policy_snapshot và nhập số tiền refun
 | POST `/admin/group-quotes/{id}/decision` | `{status:"accepted"|"rejected",reason}`; ghi nhận kết quả offline; accepted cập nhật request won |
 | GET `/admin/group-quotes/{id}/document.pdf` | lead.write; private PDF |
 | POST `/admin/group-requests/{id}/attachments` | `{media_id}` private ready →attachment |
+| POST `/admin/group-requests/{id}/attachments/{media_id}/download-url` | lead.write + media.private.write; kiểm tra liên kết file với yêu cầu trước khi cấp URL 5 phút |
 | GET `/admin/callback-requests`, GET `/{id}`, PATCH `/{id}` | lead.write; filters status/assigned_to; PATCH `{status?,assigned_to?,follow_up_due_at?}`; new→contacted→closed |
 | POST `/admin/callback-requests/{id}/notes` | lead.write; `{body}` |
+| GET `/admin/lead-assignees` | lead.write; danh sách `{id,name}` của nhân viên đủ quyền nhận việc |
 | GET/POST `/admin/staff`, GET/PATCH `/admin/staff/{id}` | admin; create `{email,full_name,password,role_codes[]}`, patch `{full_name?,status?,role_codes[]}`; không trả hash/password; không disable/xoá quyền admin cuối cùng |
 | GET `/admin/roles`, GET `/admin/permissions` | admin; danh sách quyền seed; không role editor tuỳ ý MVP |
 | GET `/admin/audit-logs` | admin; filters actor_staff_id/entity_type/entity_id/from/to/page; chỉ redacted diff, không API xoá/sửa |
 
-Assignment chỉ staff active có lead.write. Response_sla dựa settings; `follow_up_due_at` cho danh sách quá hạn, chưa có scheduler nhắn thật.
+Chỉ giao việc cho nhân viên đang hoạt động có `lead.write`. Gửi `null` để bỏ người phụ trách hoặc hạn theo dõi. Phát hành báo giá chuyển yêu cầu sang `quoted`, xác nhận ngoại tuyến chuyển sang `won`. Lý do mở lại được lưu thành ghi chú nội bộ. Đính kèm yêu cầu `media.private.write` và file đã tải lên bởi người thao tác. `follow_up_due_at` dùng để nhận biết hồ sơ quá hạn trong Admin.
 
 ## 8. Upload, export và báo cáo
 

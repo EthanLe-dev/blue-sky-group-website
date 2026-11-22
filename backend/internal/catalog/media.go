@@ -265,8 +265,32 @@ func (s *Server) downloadURL(c *gin.Context) {
 		httpx.Error(c, 404, "NOT_FOUND")
 		return
 	}
+	s.signedDownload(c, c.Param("id"))
+}
+
+func (s *Server) LeadAttachmentURL(c *gin.Context) {
+	if !validID(c, "id") || !validID(c, "media_id") {
+		return
+	}
+	var allowed bool
+	id := c.Param("media_id")
+	err := s.DB.QueryRow(c.Request.Context(), `SELECT EXISTS(SELECT 1 FROM group_request_attachments a
+		JOIN media_assets m ON m.id=a.media_id WHERE a.group_request_id=$1 AND m.id=$2
+		AND m.visibility='private' AND m.status='ready')`, c.Param("id"), id).Scan(&allowed)
+	if err != nil {
+		httpx.Error(c, 503, "SERVICE_UNAVAILABLE")
+		return
+	}
+	if !allowed {
+		httpx.Error(c, 404, "NOT_FOUND")
+		return
+	}
+	s.signedDownload(c, id)
+}
+
+func (s *Server) signedDownload(c *gin.Context, id string) {
 	expires := time.Now().Add(5 * time.Minute).Unix()
-	url := fmt.Sprintf("/api/v1/media/%s?expires=%d&signature=%s", c.Param("id"), expires, s.Media.signature(c.Param("id"), strconv.FormatInt(expires, 10)))
+	url := fmt.Sprintf("/api/v1/media/%s?expires=%d&signature=%s", id, expires, s.Media.signature(id, strconv.FormatInt(expires, 10)))
 	httpx.OK(c, 200, gin.H{"url": url, "expires_at": time.Unix(expires, 0).UTC()})
 }
 func (s *Server) patchMedia(c *gin.Context) {
@@ -292,7 +316,7 @@ func (s *Server) archiveMedia(c *gin.Context) {
 	if !validID(c, "id") {
 		return
 	}
-	tag, e := s.DB.Exec(c.Request.Context(), `UPDATE media_assets m SET status='archived' WHERE id=$1 AND (visibility='public' OR uploaded_by_staff_id=$2) AND NOT EXISTS(SELECT 1 FROM tours WHERE cover_media_id=m.id OR poster_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM tour_media WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM posts WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM destinations WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM banners WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM reviews WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM site_settings WHERE key='company_profile' AND value->'document_media_ids' @> jsonb_build_array(m.id::text))`, c.Param("id"), s.UserID(c))
+	tag, e := s.DB.Exec(c.Request.Context(), `UPDATE media_assets m SET status='archived' WHERE id=$1 AND (visibility='public' OR uploaded_by_staff_id=$2) AND NOT EXISTS(SELECT 1 FROM tours WHERE cover_media_id=m.id OR poster_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM tour_media WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM posts WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM destinations WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM banners WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM reviews WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM group_request_attachments WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM site_settings WHERE key='company_profile' AND value->'document_media_ids' @> jsonb_build_array(m.id::text))`, c.Param("id"), s.UserID(c))
 	if e != nil {
 		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return

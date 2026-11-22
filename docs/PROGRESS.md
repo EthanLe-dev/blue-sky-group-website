@@ -229,3 +229,9 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - Dùng QR chứa dòng chữ demo. Bản xem trước giữ mã đơn và nội dung mẫu, không gọi nhà cung cấp. Người tạo đơn có thể mở lại bằng liên kết trên cùng phiên trình duyệt.
 - CI bản đầu `821b345` đạt 6/6 job tại run 45005020537. PostgreSQL kiểm tra cọc, phần còn lại, xác nhận lặp, không thu khi hết hạn, quyền sales/kế toán, hoàn cạnh tranh và lease/retry. Playwright kiểm tra QR, trạng thái đã thu, preview, tra cứu, hủy và hoàn tiền.
 - Bản cập nhật thêm kiểm tra confirm cạnh tranh hủy, mở lại đơn cùng phiên, chặn bấm xác nhận hai lần và nhật ký toàn hệ thống. CI PR là bằng chứng kiểm tra của từng bản. Không khởi động app trên máy người dùng trong lần làm M4.
+
+### T501 — API tiếp nhận và xử lý yêu cầu
+
+- `feature/sales` xuất phát từ `develop` tại bản hợp nhất PR #4 (`ff59d0f`). Migration `000006_sales.sql` thêm yêu cầu đoàn, gọi lại, ghi chú, phiên bản báo giá và tệp đính kèm riêng tư.
+- API dùng phiên khách, CSRF, giới hạn gửi và Turnstile. Gửi lại cùng khóa trả biên nhận đã lưu. Admin chỉ giao việc cho nhân viên đủ quyền đang hoạt động. Báo giá đã phát hành giữ nguyên nội dung và kết quả trao đổi được ghi nhận trong Admin.
+- Go vet và các test chạy được của booking/platform đã đạt trên bản kiểm tra ban đầu. Bộ test Go toàn bộ gặp giới hạn socket loopback của sandbox ở test R2 có sẵn. PostgreSQL và browser chờ CI, gồm kiểm tra gửi trùng, quyền xem, chuyển trạng thái và phiên bản báo giá.

@@ -78,6 +78,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 
 ### M5 — Sales, khách đoàn, khách hàng (3–5 ngày công)
 
+- Đang triển khai T501–T504 trên `feature/sales` từ PR #4 đã hợp nhất. Kiểm thử PostgreSQL và trình duyệt chạy trên CI.
 - [ ] Form báo giá school/company, callback, xác nhận đã nhận + SLA cấu hình, Turnstile/rate limit (FR-41, 61, 86).
 - [ ] Admin assignment/status/notes/follow-up due; đề xuất báo giá versioned và attachment riêng tư, danh sách khách/lịch sử đơn/notes (FR-85, 88).
 - [ ] Không tự gộp khách chỉ vì trùng SĐT/email; chỉ nhân viên được quyền xác nhận gắn contact.
