@@ -154,3 +154,5 @@ Người dùng yêu cầu cài GSAP cho animation. T101 scaffold Next.js App Rou
 ### Bàn giao M1
 
 README và docs/platform-runbook.md là nguồn lệnh chạy hiện tại. Docker profile app thực thi migration trước API, bootstrap tách riêng; credentials trong .env ignored. PR #1 vào develop chứa M0/M1. Main giữ nguyên cho tới release nghiệm thu. CI remote là cổng merge, xem trạng thái trực tiếp trên PR.
+
+Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0bbb9 ngày22/11/2026. Main chưa nhận M1. M0/M1 nền tảng đã bàn giao, tiếp tục M2; source code chưa có catalog/booking/payment.
