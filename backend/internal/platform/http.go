@@ -105,6 +105,10 @@ func (a *App) Router() *gin.Engine {
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
 	a.registerSales(v, admin)
 	a.registerCustomers(admin)
+	admin.GET("/reports/tours", a.permission("report.read"), a.reportTours)
+	admin.GET("/reports/revenue", a.permission("report.read"), a.revenueReport)
+	admin.GET("/reports/occupancy", a.permission("report.read"), a.occupancyReport)
+	admin.GET("/reports/group-quotes", a.permission("report.read"), a.quoteReport)
 	bookingServer := a.BookingServer()
 	bookingServer.Register(v, admin, a.guestAccess, a.origin, a.limit("lookup", 5, 900), a.limit("checkout", 10, 600), a.permission("booking.read"), a.permission("booking.write"))
 	if a.Config.Env != "production" && a.Config.MockPayment {

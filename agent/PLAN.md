@@ -175,3 +175,7 @@ Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0
 T401–T406 dùng chung transaction và thứ tự khóa của booking. Checkout hỗ trợ toàn bộ, cọc và phần còn lại. Admin đối soát, ghi hoàn tiền và xem nhật ký theo quyền. Mọi giao dịch và thông báo M4 dùng dữ liệu giả lập. CI đầu tiên trên PR #4 đã đạt 6/6 job, gồm Go/PostgreSQL và Playwright. PR sẽ chỉ nhập `develop` sau CI của bản cập nhật.
 
 M5 tiếp tục với form báo giá và gọi lại khi được giao. Nghiệm thu UI T703 vẫn mở.
+
+### M6 — Đang triển khai
+
+T601–T605 thực hiện trên nhánh feature/reporting. CI dùng PostgreSQL và Playwright.
