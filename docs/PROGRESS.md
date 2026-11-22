@@ -282,3 +282,8 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 ### Menu dọc Admin
 
 Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cuộn trên desktop. Trên mobile, nút Menu mở danh sách dọc, Escape trả focus về nút mở và chọn mục đưa focus tới nội dung. Thứ tự mục theo quyền hiện có. Ca Playwright Admin kiểm vị trí, mục đang chọn, điều hướng bàn phím và không tràn ngang ở 390px. App local không khởi động.
+
+### Làm mới giao diện Admin
+
+- T703b trên `feature/admin-refresh`: Nunito Sans, sidebar desktop có biểu tượng, menu mobile dạng Sheet, cập nhật màn đăng nhập, tiêu đề và form. Danh sách đơn tách nhãn trạng thái, tên và tổng tiền, hiển thị riêng đang tải, lỗi có nút thử lại và kết quả trống.
+- Ca Playwright hiện có kiểm menu, focus, font tiếng Việt và trạng thái danh sách đơn. Ảnh desktop/mobile được lưu qua CI. App local không được khởi động.

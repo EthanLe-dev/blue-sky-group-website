@@ -1,6 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import type { FormEvent } from "react";
+import * as Dialog from "@radix-ui/react-dialog";
+import { Bell, ChartNoAxesCombined, ClipboardList, Image, Map, Menu, Settings as SettingsIcon, Users, MessagesSquare } from "lucide-react";
 import "./App.css";
+import { SheetContent } from "./ui";
 import Captcha from "./Captcha";
 import Settings from "./Settings";
 import Catalog from "./Catalog";
@@ -17,10 +20,12 @@ import {
 } from "./lib/session";
 
 type User = { full_name: string; permissions: string[] };
+const desktopAdmin = "(min-width: 801px)";
+
 export default function App() {
   const [tab, setTab] = useState("catalog");
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuToggle = useRef<HTMLButtonElement>(null);
+  const focusContentOnClose = useRef(false);
   const content = useRef<HTMLElement>(null);
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState("");
@@ -40,6 +45,18 @@ export default function App() {
       active = false;
     };
   }, []);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const screen = window.matchMedia(desktopAdmin);
+    const closeOnDesktop = (event: MediaQueryListEvent) => {
+      if (event.matches) {
+        focusContentOnClose.current = true;
+        setMenuOpen(false);
+      }
+    };
+    screen.addEventListener("change", closeOnDesktop);
+    return () => screen.removeEventListener("change", closeOnDesktop);
+  }, [menuOpen]);
   const onToken = useCallback((token: string) => setCaptcha(token), []);
   async function login(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -67,14 +84,14 @@ export default function App() {
   }
   const permissions = user?.permissions ?? [];
   const tabs = [
-    { id: "bookings", label: "Đơn tour", allowed: permissions.includes("booking.read") },
-    { id: "reports", label: "Báo cáo", allowed: permissions.includes("report.read") },
-    { id: "catalog", label: "Tour & Nội dung", allowed: permissions.includes("catalog.write") || permissions.includes("content.write") },
-    { id: "media", label: "Media", allowed: permissions.includes("media.write") },
-    { id: "sales", label: "Yêu cầu tư vấn", allowed: permissions.includes("lead.write") },
-    { id: "customers", label: "Khách hàng", allowed: permissions.includes("customer.write") },
-    { id: "notifications", label: "Nhật ký thông báo", allowed: permissions.includes("notification.read") },
-    { id: "settings", label: "Cài đặt", allowed: permissions.includes("settings.write") },
+    { id: "bookings", label: "Đơn tour", icon: ClipboardList, allowed: permissions.includes("booking.read") },
+    { id: "reports", label: "Báo cáo", icon: ChartNoAxesCombined, allowed: permissions.includes("report.read") },
+    { id: "catalog", label: "Tour & Nội dung", icon: Map, allowed: permissions.includes("catalog.write") || permissions.includes("content.write") },
+    { id: "media", label: "Media", icon: Image, allowed: permissions.includes("media.write") },
+    { id: "sales", label: "Yêu cầu tư vấn", icon: MessagesSquare, allowed: permissions.includes("lead.write") },
+    { id: "customers", label: "Khách hàng", icon: Users, allowed: permissions.includes("customer.write") },
+    { id: "notifications", label: "Nhật ký thông báo", icon: Bell, allowed: permissions.includes("notification.read") },
+    { id: "settings", label: "Cài đặt", icon: SettingsIcon, allowed: permissions.includes("settings.write") },
   ].filter(entry => entry.allowed);
   const activeTab = tabs.some(entry => entry.id === tab) ? tab : tabs[0]?.id;
   const brand = (
@@ -83,44 +100,46 @@ export default function App() {
       <span>Blue Sky Group <small>Quản trị</small></span>
     </a>
   );
+  function navigation(mobile: boolean) {
+    return (
+      <nav className="admin-nav" aria-label="Module quản trị">
+        {tabs.map(({ id, label, icon: Icon }) => (
+          <button key={id} type="button" aria-pressed={activeTab === id} onClick={() => {
+            setTab(id);
+            if (mobile) {
+              focusContentOnClose.current = true;
+              setMenuOpen(false);
+            }
+          }}>
+            <Icon size={19} aria-hidden="true" />
+            {label}
+          </button>
+        ))}
+      </nav>
+    );
+  }
 
   return user ? (
     <div className="admin-shell">
-      <aside className="admin-sidebar" onKeyDown={(event) => {
-        if (event.key === "Escape" && menuOpen && menuToggle.current?.getClientRects().length) {
-          setMenuOpen(false);
-          menuToggle.current.focus();
-        }
-      }}>
+      <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
           {brand}
-          <button
-            ref={menuToggle}
-            className="admin-menu-toggle"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-controls="admin-navigation"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            Menu
-          </button>
+          <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
+            <Dialog.Trigger className="admin-menu-toggle" type="button">
+              <Menu size={20} aria-hidden="true" />
+              Menu
+            </Dialog.Trigger>
+            <SheetContent onCloseAutoFocus={(event) => {
+              if (!focusContentOnClose.current) return;
+              focusContentOnClose.current = false;
+              event.preventDefault();
+              content.current?.focus({ preventScroll: true });
+            }}>
+              {navigation(true)}
+            </SheetContent>
+          </Dialog.Root>
         </div>
-        <nav id="admin-navigation" className="admin-nav" data-expanded={menuOpen} aria-label="Module quản trị">
-          {tabs.map(({ id, label }) => (
-            <button
-              key={id}
-              type="button"
-              aria-pressed={activeTab === id}
-              onClick={() => {
-                setTab(id);
-                setMenuOpen(false);
-                if (menuToggle.current?.getClientRects().length) content.current?.focus();
-              }}
-            >
-              {label}
-            </button>
-          ))}
-        </nav>
+        {navigation(false)}
       </aside>
       <main className="admin-content" ref={content} tabIndex={-1}>
         <header className="admin-topbar">
