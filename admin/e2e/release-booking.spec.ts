@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import { test, expect } from "@playwright/test";
 
 const site = "http://localhost:3000";
@@ -55,33 +54,4 @@ test("private release routes reject anonymous requests", async ({ request }) => 
     expect(response.status(), path).toBe(401);
     expect(response.headers()["cache-control"]).toContain("no-store");
   }
-});
-
-test("Admin creates a counter order and confirms the server's full amount", async ({ page }) => {
-  const env = Object.fromEntries(readFileSync("../.env", "utf8").split(/\r?\n/)
-    .filter(line => /^BOOTSTRAP_ADMIN_(EMAIL|PASSWORD)=/.test(line))
-    .map(line => [line.slice(0, line.indexOf("=")), line.slice(line.indexOf("=") + 1)]));
-  await page.goto("/");
-  await page.getByLabel("Email", { exact: true }).fill(env.BOOTSTRAP_ADMIN_EMAIL);
-  await page.getByLabel("Mật khẩu", { exact: true }).fill(env.BOOTSTRAP_ADMIN_PASSWORD);
-  await page.getByRole("button", { name: "Đăng nhập", exact: true }).click();
-  await page.getByRole("button", { name: "Đơn tour", exact: true }).click();
-  await page.getByRole("button", { name: "Tạo đơn thủ công", exact: true }).click();
-  await page.getByLabel("Tour", { exact: true }).selectOption("ninh-chu-2-ngay-1-dem");
-  await expect(page.getByRole("button", { name: "Lấy báo giá", exact: true })).toBeEnabled();
-  await page.getByRole("button", { name: "Lấy báo giá", exact: true }).click();
-  await page.getByLabel("Họ tên liên hệ", { exact: true }).fill("Khách tại quầy demo");
-  await page.getByLabel("Email liên hệ", { exact: true }).fill("quay-m7@blue-sky.example");
-  await page.getByLabel("Số điện thoại liên hệ", { exact: true }).fill("0900000000");
-  await page.getByLabel("Họ tên hành khách 1", { exact: true }).fill("Khách tại quầy demo");
-  await page.getByLabel("Ngày sinh hành khách 1", { exact: true }).fill("1990-01-01");
-  await page.getByLabel("Nguồn đơn").selectOption("counter");
-  await page.getByRole("checkbox", { name: /Khách đã đồng ý/ }).check();
-  await page.getByRole("button", { name: "Tạo đơn thủ công và giữ chỗ" }).click();
-  await expect(page.getByRole("heading", { name: /^Đơn BS/ })).toBeVisible();
-  await page.getByRole("button", { name: "Tạo mã thanh toán · Toàn bộ" }).click();
-  await page.getByLabel("Lý do xác nhận").fill("Kiểm thử đặt tour tại quầy");
-  await page.getByRole("button", { name: "Xác nhận thanh toán giả lập", exact: true }).click();
-  await expect(page.getByText("Sổ thu và hoàn khớp với đơn.")).toBeVisible();
-  await expect(page.getByText("Còn nợ 0 đ", { exact: false })).toBeVisible();
 });

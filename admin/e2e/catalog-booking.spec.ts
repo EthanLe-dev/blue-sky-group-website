@@ -253,8 +253,27 @@ test("home search, blog facets and media filters", async ({ page }) => {
   await expect(page.locator(".gallery-grid img").first()).toBeVisible();
 });
 
-test("report filters and real Excel/CSV downloads", async ({ page }) => {
+test("counter booking and report Excel/CSV exports", async ({ page }) => {
   await login(page);
+  await page.getByRole("button", { name: "Đơn tour", exact: true }).click();
+  await page.getByRole("button", { name: "Tạo đơn thủ công", exact: true }).click();
+  await page.getByLabel("Tour", { exact: true }).selectOption("ninh-chu-2-ngay-1-dem");
+  await expect(page.getByRole("button", { name: "Lấy báo giá", exact: true })).toBeEnabled();
+  await page.getByRole("button", { name: "Lấy báo giá", exact: true }).click();
+  await page.getByLabel("Họ tên liên hệ", { exact: true }).fill("Khách tại quầy demo");
+  await page.getByLabel("Email liên hệ", { exact: true }).fill("quay-m7@blue-sky.example");
+  await page.getByLabel("Số điện thoại liên hệ", { exact: true }).fill("0900000000");
+  await page.getByLabel("Họ tên hành khách 1", { exact: true }).fill("Khách tại quầy demo");
+  await page.getByLabel("Ngày sinh hành khách 1", { exact: true }).fill("1990-01-01");
+  await page.getByLabel("Nguồn đơn").selectOption("counter");
+  await page.getByRole("checkbox", { name: /Khách đã đồng ý/ }).check();
+  await page.getByRole("button", { name: "Tạo đơn thủ công và giữ chỗ" }).click();
+  await expect(page.getByRole("heading", { name: /^Đơn BS/ })).toBeVisible();
+  await page.getByRole("button", { name: "Tạo mã thanh toán · Toàn bộ" }).click();
+  await page.getByLabel("Lý do xác nhận").fill("Kiểm thử đặt tour tại quầy");
+  await page.getByRole("button", { name: "Xác nhận thanh toán giả lập", exact: true }).click();
+  await expect(page.getByText("Sổ thu và hoàn khớp với đơn.")).toBeVisible();
+  await expect(page.getByText("Còn nợ 0 đ", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: "Báo cáo", exact: true }).click();
   await page.getByLabel("Từ ngày", { exact: true }).fill("2000-01-01");
   await page.getByLabel("Đến ngày", { exact: true }).fill("2000-01-30");

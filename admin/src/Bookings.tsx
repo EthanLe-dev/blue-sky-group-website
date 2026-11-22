@@ -40,6 +40,16 @@ type Quote = {
     balance_after_deposit: string;
   };
 };
+const bookingStatuses: Record<string, string> = {
+  pending: "Đang giữ chỗ",
+  confirmed: "Đã xác nhận",
+  expired: "Đã hết hạn",
+  cancelled: "Đã hủy",
+  completed: "Đã hoàn thành",
+};
+const bookingSources: Record<string, string> = {
+  web: "Website", phone: "Điện thoại", counter: "Tại quầy",
+};
 const money = (v: string) => Number(v).toLocaleString("vi-VN") + " đ";
 export default function Bookings({ write, canPay, canReadNotifications, canExport }: { write: boolean; canPay: boolean; canReadNotifications: boolean; canExport: boolean }) {
   const [rows, setRows] = useState<Booking[]>([]);
@@ -108,11 +118,9 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
             }}
           >
             <option value="">Tất cả</option>
-            {["pending", "confirmed", "expired", "cancelled", "completed"].map(
-              (s) => (
-                <option key={s}>{s}</option>
-              ),
-            )}
+            {Object.entries(bookingStatuses).map(([value, label]) => (
+              <option key={value} value={value}>{label}</option>
+            ))}
           </select>
         </label>
         <label>
@@ -143,8 +151,8 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
               {b.code} · {b.tour_snapshot.title}
             </strong>
             <span>
-              {b.status} · {b.contact.name} · {money(b.total_amount)} ·{" "}
-              {b.source}
+              {bookingStatuses[b.status] || b.status} · {b.contact.name} · {money(b.total_amount)} ·{" "}
+              {bookingSources[b.source] || b.source}
             </span>
           </button>
         ))
@@ -176,7 +184,7 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
             {new Date(record.tour_snapshot.starts_at).toLocaleString("vi-VN")}
           </p>
           <p>
-            {record.status} · Phiên bản {record.version} · Hạn giữ chỗ{" "}
+            {bookingStatuses[record.status] || record.status} · Phiên bản {record.version} · Hạn giữ chỗ{" "}
             {new Date(record.expires_at).toLocaleString("vi-VN")}
           </p>
           <p>
@@ -469,6 +477,7 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
       <label>
         Tour
         <select
+          aria-label="Tour"
           value={tour}
           onChange={(e) => {
             setTour(e.target.value);
@@ -618,7 +627,7 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
           <People value={passengers} onChange={setPassengers} />
           <label>
             Nguồn đơn
-            <select value={source} onChange={(e) => setSource(e.target.value)}>
+            <select aria-label="Nguồn đơn" value={source} onChange={(e) => setSource(e.target.value)}>
               <option value="phone">Điện thoại</option>
               <option value="counter">Tại quầy</option>
             </select>
