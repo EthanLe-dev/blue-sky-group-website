@@ -14,6 +14,8 @@
 
 ## Làm mới Trang chủ
 
+- T703d trên `feature/homepage-video`: thêm video biển 9 giây dạng WebM và MP4, tự phát lặp ở chế độ tắt tiếng, có nút tạm dừng. Video nghỉ ngoài khung nhìn và khi chuyển tab. Chế độ giảm chuyển động và lỗi phát dùng ảnh Vĩnh Hy hiện có. Nguồn và giấy phép trong trang credit.
+
 - T703a trên `feature/homepage-refresh`: phần đầu trang giới thiệu dịch vụ Blue Sky Group và ô tìm tour. Khối tour bên dưới dùng dữ liệu hiện có, kể cả danh sách trống. Thêm Nunito Sans theo phạm vi trang chủ, bố cục thẻ ảnh và hai chuyển động GSAP có chế độ tĩnh.
 - Mở rộng ca Playwright hiện có để kiểm tiêu đề, tiếng Việt, menu và ảnh ở 320, 390, 768, 1024, 1440 px. Ảnh responsive sinh từ CI. App local không được khởi động.
 

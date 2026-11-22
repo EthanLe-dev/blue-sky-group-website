@@ -8,3 +8,4 @@
 Đã kiểm trang license ngày22/11/2026. Hình điểm đến dùng trong dữ liệu demo; công ty có thể thay ảnh thật qua Admin. Credit tổng hợp trong footer, chi tiết tại trang nguồn ảnh.
 
 - Ảnh Singapore trong dữ liệu M7 dùng bản 1280px của [Skyscrapers of Singapore as seen from Marina Bay](https://commons.wikimedia.org/wiki/File:Skyscrapers_of_Singapore_as_seen_from_Marina_Bay.jpg), Kistara, CC0 1.0.
+- Video nền Trang chủ: [Bay landscape, aerial shot](https://mixkit.co/free-stock-video/bay-landscape-aerial-shot-1940/), [Mixkit Stock Video Free License](https://mixkit.co/license/modal/videoFree/). Các tệp `frontend/public/images/home-coast.*` là đoạn 9 giây, VP9 và H.264, 1280×720, bỏ âm thanh. Dùng làm cảnh biển minh họa.

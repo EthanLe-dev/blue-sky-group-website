@@ -118,6 +118,10 @@ export default async function ContentPage({
               Nguồn ảnh Ninh Chữ
             </a>
           </li>
+          <li>
+            Video nền: <a href="https://mixkit.co/free-stock-video/bay-landscape-aerial-shot-1940/">Bay landscape, aerial shot</a> từ Mixkit,
+            đã cắt ngắn và bỏ âm thanh. <a href="https://mixkit.co/license/modal/videoFree/">Mixkit Stock Video Free License</a>.
+          </li>
         </ul>
       </>
     );
