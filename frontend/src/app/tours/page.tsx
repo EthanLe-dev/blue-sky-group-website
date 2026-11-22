@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import SearchForm from "@/components/SearchForm";
 import TourCard from "@/components/TourCard";
-import { read, type Tour } from "@/lib/catalog";
+import { read, type Tour, type Content } from "@/lib/catalog";
 export const metadata = {
   title: "Khám phá tour",
   alternates: { canonical: "/tours" },
@@ -17,9 +17,15 @@ export default async function Tours({
   for (const [k, v] of Object.entries(params))
     if (typeof v === "string" && v) query.set(k, v);
   let tours: Tour[] = [];
+  let destinations: Content[] = [],
+    categories: Content[] = [];
   let error = false;
   try {
-    tours = await read("/tours?" + query);
+    [tours, destinations, categories] = await Promise.all([
+      read<Tour[]>("/tours?" + query),
+      read<Content[]>("/destinations?page_size=100"),
+      read<Content[]>("/tour-categories?page_size=100"),
+    ]);
   } catch {
     error = true;
   }
@@ -32,7 +38,11 @@ export default async function Tours({
         dùng cho demo.
       </p>
       <Suspense>
-        <SearchForm />
+        <SearchForm
+          key={query.toString()}
+          destinations={destinations}
+          categories={categories}
+        />
       </Suspense>
       {error ? (
         <div className="state" role="alert">

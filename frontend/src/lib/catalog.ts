@@ -1,6 +1,8 @@
 import "server-only";
 export type Media = { id: string; url: string; alt_text: string; kind: string };
 export type Tour = {
+  seo_title: string | null;
+  seo_description: string | null;
   id: string;
   slug: string;
   title: string;
@@ -26,6 +28,13 @@ export type Tour = {
   faqs: { id: string; question: string; answer: string }[];
 };
 export type Content = {
+  seo_title?: string | null;
+  seo_description?: string | null;
+  category?: { id: string; slug: string; name: string } | null;
+  tags?: { id: string; slug: string; name: string }[];
+  related_posts?: Content[];
+  latitude?: number | null;
+  longitude?: number | null;
   id: string;
   slug: string;
   title: string;
@@ -37,7 +46,15 @@ export type Content = {
   answer: string;
   cover_media_id: string | null;
 };
+export type Surcharge = {
+  code: string;
+  label: string;
+  amount: string;
+  unit: string;
+  required: boolean;
+};
 export type Departure = {
+  surcharges: Surcharge[];
   id: string;
   starts_at: string;
   ends_at: string;
