@@ -125,7 +125,7 @@ MVP outbox consumer nằm trong Go process, claim batch bằng `FOR UPDATE SKIP 
 | `group_quotes` | `group_request_id FK, version int, title text, itinerary text, inclusions text, exclusions text, total_amount bigint, currency char(3), valid_until date, status text(draft/issued/accepted/rejected), document_media_id FK?, created_by_staff_id FK` | UQ(group_request_id,version); version>0; issued immutable, thay đổi tạo version mới; accepted là nhân viên ghi nhận, không e-sign |
 | `group_request_notes` | `group_request_id FK, staff_id FK, body text` | index(group_request_id,created_at) |
 | `group_request_attachments` | `group_request_id FK, media_id FK, uploaded_by_staff_id FK` | PK(group_request_id,media_id); private only; chưa nhận Excel danh sách khách public |
-| `callback_requests` | `name varchar(120)?, phone varchar(20), preferred_time text?, tour_id FK?, message text?, status text(new/contacted/closed), assigned_to FK staff_users?, follow_up_due_at timestamptz?, consent_version text, consent_at timestamptz` | index(status,follow_up_due_at) |
+| `callback_requests` | `code varchar(24), name varchar(120)?, phone varchar(20), preferred_time varchar(120)?, tour_id FK?, message text?, status text(new/contacted/closed), assigned_to FK staff_users?, follow_up_due_at timestamptz?, consent_version text, consent_at timestamptz` | UQ code; index(status,assigned_to,follow_up_due_at) |
 | `callback_notes` | `callback_request_id FK, staff_id FK, body text` | index(callback_request_id,created_at) |
 
 ## 8. Nội dung và media
@@ -157,14 +157,17 @@ Public media dùng CDN URL từ object_key đã ready; file báo giá/export ph�
 
 ## 10. Migration, seed và dữ liệu nhạy cảm
 
-Thứ tự đề xuất:
+Thứ tự migration đã triển khai đến M5:
 
-1. `000001_identity`: staff/RBAC/sessions/customers/guest/rate limit/audit.
-2. `000002_content_catalog`: media/content/tours/departures/prices/quotes.
-3. `000003_booking`: booking/hold/passengers/items/events/notes/idempotency/lookup.
-4. `000004_sales`: group/callback/quote/attachments.
-5. `000005_payment_notification`: payment/refund/events/outbox/notification.
-6. `000006_indexes_seed_roles`: indexes và permissions mặc định; demo seed chạy lệnh riêng, không trong migration production.
+1. `000001_identity.sql` tạo staff, RBAC, sessions, customers, guest, rate limit và audit.
+2. `000002_settings.sql` tạo cài đặt và giá trị demo.
+3. `000003_catalog.sql` tạo media, nội dung, tour, lịch khởi hành, giá và báo giá lẻ.
+4. `000004_booking.sql` tạo đơn, giữ chỗ, hành khách, nhật ký, idempotency và tra cứu.
+5. `000005_payment_notification.sql` tạo ledger thanh toán, hoàn tiền, outbox và thông báo.
+6. `000006_sales.sql` tạo yêu cầu đoàn, gọi lại, báo giá và tệp đính kèm.
+7. `000007_customer_verification.sql` thêm `customer_verified_at`, `customer_verified_by_staff_id` và index lịch sử. Liên kết cũ được giữ nguyên và cần nhân viên xác minh trước khi hiện trong CRM.
+
+Khi cần quay lại M4, sao lưu và giữ các bảng/cột của M5 rồi chạy revision ứng dụng trước M5. Dữ liệu demo chạy bằng lệnh seed riêng.
 
 Mỗi migration có up và kế hoạch down/restore; migration đã dùng không sửa. Tạo constraints/indexes trong migration, chạy test với PostgreSQL cùng major. Không bật seed demo khi `APP_ENV=production`. Bootstrap admin không ghi password vào migration.
 

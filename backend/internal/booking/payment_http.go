@@ -147,7 +147,7 @@ func (s *Server) paymentAction(staff bool, action string, status int) gin.Handle
 		}
 		defer tx.Rollback(ctx)
 		route, key := "payment."+action+":"+id, c.GetHeader("Idempotency-Key")
-		out, err := claim(ctx, tx, principal, route, key, []any{purpose, amount, reason})
+		out, err := Claim(ctx, tx, principal, route, key, []any{purpose, amount, reason})
 		if err != nil {
 			respondError(c, err)
 			return
@@ -169,7 +169,7 @@ func (s *Server) paymentAction(staff bool, action string, status int) gin.Handle
 			}
 		}
 		if err == nil {
-			err = remember(ctx, tx, principal, route, key, out)
+			err = Remember(ctx, tx, principal, route, key, out)
 		}
 		if err == nil {
 			err = tx.Commit(ctx)

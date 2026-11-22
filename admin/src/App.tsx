@@ -7,6 +7,8 @@ import Catalog from "./Catalog";
 import Media from "./Media";
 import Bookings from "./Bookings";
 import NotificationLog from "./NotificationLog";
+import Sales from "./Sales";
+import Customers from "./Customers";
 import {
   login as loginSession,
   logout as logoutSession,
@@ -91,6 +93,8 @@ export default function App() {
               ["bookings", "Đơn tour"],
               ["catalog", "Tour & Nội dung"],
               ["media", "Media"],
+              ...(user.permissions.includes("lead.write") ? [["sales", "Yêu cầu tư vấn"]] : []),
+              ...(user.permissions.includes("customer.write") ? [["customers", "Khách hàng"]] : []),
               ...(user.permissions.includes("notification.read") ? [["notifications", "Nhật ký thông báo"]] : []),
               ["settings", "Cài đặt"],
             ].map(([id, label]) => (
@@ -107,6 +111,10 @@ export default function App() {
             <Bookings write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
           )}{" "}
           {tab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
+          {tab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
+          {tab === "customers" && user.permissions.includes("customer.write") && (
+            <Customers canReadBookings={user.permissions.includes("booking.read")} canLink={user.permissions.includes("booking.write")} />
+          )}
           {tab === "catalog" && <Catalog permissions={user.permissions} />}{" "}
           {tab === "media" && user.permissions.includes("media.write") && (
             <Media />

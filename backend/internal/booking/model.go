@@ -52,15 +52,16 @@ type Consent struct {
 	Version  string `json:"policy_version"`
 }
 type CreateInput struct {
-	Quote      string      `json:"quote_id"`
-	Contact    Contact     `json:"contact"`
-	Passengers []Passenger `json:"passengers"`
-	Option     string      `json:"payment_option"`
-	Requests   string      `json:"special_requests"`
-	Consent    Consent     `json:"consent"`
-	Captcha    string      `json:"turnstile_token"`
-	Source     string      `json:"source"`
-	Customer   *string     `json:"customer_id"`
+	Quote            string      `json:"quote_id"`
+	Contact          Contact     `json:"contact"`
+	Passengers       []Passenger `json:"passengers"`
+	Option           string      `json:"payment_option"`
+	Requests         string      `json:"special_requests"`
+	Consent          Consent     `json:"consent"`
+	Captcha          string      `json:"turnstile_token"`
+	Source           string      `json:"source"`
+	Customer         *string     `json:"customer_id"`
+	CustomerVerified bool        `json:"customer_link_verified,omitempty"`
 }
 type Line struct {
 	Code     string        `json:"code"`
@@ -132,19 +133,21 @@ func problem(code string) error { return errors.New(code) }
 
 var phonePattern = regexp.MustCompile(`^\+[1-9][0-9]{7,14}$`)
 
-func normalizePhone(p string) string {
+func ValidPhone(p string) bool { return phonePattern.MatchString(p) }
+
+func NormalizePhone(p string) string {
 	p = strings.NewReplacer(" ", "", "-", "", "(", "", ")", "").Replace(p)
 	if strings.HasPrefix(p, "0") {
 		p = "+84" + p[1:]
 	}
 	return p
 }
-func validContact(c *Contact) bool {
+func NormalizeContact(c *Contact) bool {
 	c.Name = strings.TrimSpace(c.Name)
 	c.Email = strings.ToLower(strings.TrimSpace(c.Email))
-	c.Phone = normalizePhone(c.Phone)
+	c.Phone = NormalizePhone(c.Phone)
 	a, e := mail.ParseAddress(c.Email)
-	return e == nil && a.Address == c.Email && len(c.Email) <= 254 && len([]rune(c.Name)) >= 2 && len([]rune(c.Name)) <= 120 && phonePattern.MatchString(c.Phone)
+	return e == nil && a.Address == c.Email && len(c.Email) <= 254 && len([]rune(c.Name)) >= 2 && len([]rune(c.Name)) <= 120 && ValidPhone(c.Phone)
 }
 func validatePassengers(list []Passenger, q Quote) bool {
 	if len(list) != q.Counts.Total() {

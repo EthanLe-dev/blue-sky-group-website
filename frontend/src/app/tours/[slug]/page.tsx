@@ -256,6 +256,9 @@ export default async function Detail({
           <Link href="/contact" className="text-action">
             Liên hệ hỗ trợ
           </Link>
+          <Link href={`/contact?tour=${t.id}#goi-lai`} className="text-action">
+            Yêu cầu gọi lại
+          </Link>
         </aside>
       </div>
       <div className="mobile-booking">

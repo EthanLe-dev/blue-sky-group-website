@@ -267,7 +267,7 @@ func digest(v any) string {
 	h := sha256.Sum256(raw)
 	return hex.EncodeToString(h[:])
 }
-func claim(ctx context.Context, tx pgx.Tx, p Principal, route, key string, payload any) (json.RawMessage, error) {
+func Claim(ctx context.Context, tx pgx.Tx, p Principal, route, key string, payload any) (json.RawMessage, error) {
 	if uuid.Validate(key) != nil {
 		return nil, problem("IDEMPOTENCY_KEY_REQUIRED")
 	}
@@ -293,15 +293,15 @@ func claim(ctx context.Context, tx pgx.Tx, p Principal, route, key string, paylo
 	}
 	return response, nil
 }
-func remember(ctx context.Context, tx pgx.Tx, p Principal, route, key string, response json.RawMessage) error {
+func Remember(ctx context.Context, tx pgx.Tx, p Principal, route, key string, response json.RawMessage) error {
 	_, e := tx.Exec(ctx, "UPDATE idempotency_keys SET response=$4 WHERE principal=$1 AND route=$2 AND key=$3", p.Key(), route, key, response)
 	return e
 }
 func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateInput) (json.RawMessage, error) {
-	if uuid.Validate(b.Quote) != nil || !validContact(&b.Contact) || len(b.Requests) > 5000 || !b.Consent.Accepted || b.Consent.Version != "booking-v1" || b.Option != "full" && b.Option != "deposit" || !p.Staff && b.Source != "" && b.Source != "web" || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
+	if uuid.Validate(b.Quote) != nil || !NormalizeContact(&b.Contact) || len(b.Requests) > 5000 || !b.Consent.Accepted || b.Consent.Version != "booking-v1" || b.Option != "full" && b.Option != "deposit" || !p.Staff && b.Source != "" && b.Source != "web" || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
 		return nil, problem("VALIDATION_ERROR")
 	}
-	if !p.Staff && b.Customer != nil {
+	if b.CustomerVerified != (b.Customer != nil) || !p.Staff && b.Customer != nil {
 		return nil, problem("VALIDATION_ERROR")
 	}
 	if p.Staff {
@@ -321,7 +321,7 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	if _, e = tx.Exec(ctx, "SET LOCAL lock_timeout='5s'"); e != nil {
 		return nil, e
 	}
-	cached, e := claim(ctx, tx, p, "create-booking", key, b)
+	cached, e := Claim(ctx, tx, p, "create-booking", key, b)
 	if e != nil {
 		return nil, e
 	}
@@ -330,6 +330,11 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	}
 	if !p.Staff && (s.Captcha == nil || !s.Captcha(ctx, captcha, "checkout")) {
 		return nil, problem("CAPTCHA_FAILED")
+	}
+	if b.Customer != nil {
+		if e = authorizeCustomerLink(ctx, tx, p, *b.Customer); e != nil {
+			return nil, e
+		}
 	}
 	q, e := loadQuote(ctx, tx, p, b.Quote)
 	if e != nil {
@@ -403,11 +408,16 @@ func (s *Server) Create(ctx context.Context, p Principal, key string, b CreateIn
 	if _, e = tx.Exec(ctx, "INSERT INTO booking_events(booking_id,event_type,actor_staff_id) VALUES($1,'created',$2)", id, staff); e != nil {
 		return nil, e
 	}
+	if b.Customer != nil {
+		if e = recordCustomerLink(ctx, tx, id, *b.Customer, p.ID); e != nil {
+			return nil, e
+		}
+	}
 	out, e := bookingJSON(ctx, tx, id, true)
 	if e != nil {
 		return nil, e
 	}
-	if e = remember(ctx, tx, p, "create-booking", key, out); e != nil {
+	if e = Remember(ctx, tx, p, "create-booking", key, out); e != nil {
 		return nil, e
 	}
 	return out, tx.Commit(ctx)

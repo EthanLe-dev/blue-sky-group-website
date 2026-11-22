@@ -42,7 +42,7 @@ func respondError(c *gin.Context, e error) {
 	switch code {
 	case "NOT_FOUND", "BOOKING_NOT_FOUND":
 		status = 404
-	case "CAPTCHA_FAILED":
+	case "CAPTCHA_FAILED", "FORBIDDEN":
 		status = 403
 	case "VALIDATION_ERROR", "PASSENGER_MISMATCH", "IDEMPOTENCY_KEY_REQUIRED":
 		status = 422
@@ -90,7 +90,7 @@ func (s *Server) createHTTP(staff bool) gin.HandlerFunc {
 	}
 }
 
-const baseJSON = `(to_jsonb(b)-'guest_session_id'-'created_by_staff_id')||jsonb_build_object('total_amount',b.total_amount::text,'deposit_amount',b.deposit_amount::text,'paid_amount',b.paid_amount::text,'refunded_amount',b.refunded_amount::text,'net_received',(b.paid_amount-b.refunded_amount)::text,'balance_amount',(b.total_amount-b.paid_amount)::text,'server_time',clock_timestamp())`
+const baseJSON = `(to_jsonb(b)-'guest_session_id'-'created_by_staff_id'-'customer_id'-'customer_verified_at'-'customer_verified_by_staff_id')||jsonb_build_object('total_amount',b.total_amount::text,'deposit_amount',b.deposit_amount::text,'paid_amount',b.paid_amount::text,'refunded_amount',b.refunded_amount::text,'net_received',(b.paid_amount-b.refunded_amount)::text,'balance_amount',(b.total_amount-b.paid_amount)::text,'server_time',clock_timestamp())`
 
 func bookingJSON(ctx context.Context, tx pgx.Tx, id string, detail bool) (json.RawMessage, error) {
 	sql := "SELECT " + baseJSON
@@ -283,7 +283,7 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 		key := c.GetHeader("Idempotency-Key")
 		route := target + ":" + c.Param("id")
 		if target == "cancelled" {
-			cached, err := claim(ctx, tx, p, route, key, b)
+			cached, err := Claim(ctx, tx, p, route, key, b)
 			if err != nil {
 				respondError(c, err)
 				return
@@ -351,7 +351,7 @@ func (s *Server) transition(target string) gin.HandlerFunc {
 		}
 		if target == "cancelled" {
 			out, _ = json.Marshal(gin.H{"booking": out, "refund_required_amount": fmt.Sprint(paid - refunded)})
-			if e = remember(ctx, tx, p, route, key, out); e != nil {
+			if e = Remember(ctx, tx, p, route, key, out); e != nil {
 				respondError(c, e)
 				return
 			}
@@ -369,16 +369,18 @@ func (s *Server) patch(c *gin.Context) {
 		return
 	}
 	var b struct {
-		Version    int          `json:"expected_version"`
-		Contact    *Contact     `json:"contact"`
-		Passengers *[]Passenger `json:"passengers"`
-		Requests   *string      `json:"special_requests"`
-		Customer   *string      `json:"customer_id"`
+		Version          int          `json:"expected_version"`
+		Contact          *Contact     `json:"contact"`
+		Passengers       *[]Passenger `json:"passengers"`
+		Requests         *string      `json:"special_requests"`
+		Customer         *string      `json:"customer_id"`
+		CustomerVerified bool         `json:"customer_link_verified"`
 	}
 	if !httpx.Body(c, &b) {
 		return
 	}
-	if b.Contact != nil && !validContact(b.Contact) || b.Requests != nil && len(*b.Requests) > 5000 || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
+	if b.Contact != nil && !NormalizeContact(b.Contact) || b.Requests != nil && len(*b.Requests) > 5000 ||
+		b.CustomerVerified != (b.Customer != nil) || b.Customer != nil && uuid.Validate(*b.Customer) != nil {
 		respondError(c, problem("VALIDATION_ERROR"))
 		return
 	}
@@ -403,9 +405,19 @@ func (s *Server) patch(c *gin.Context) {
 		respondError(c, problem("VERSION_CONFLICT"))
 		return
 	}
-	if status != "pending" && status != "confirmed" {
+	linkOnly := b.Customer != nil && b.Contact == nil && b.Passengers == nil && b.Requests == nil
+	if status != "pending" && status != "confirmed" && !linkOnly {
 		respondError(c, problem("INVALID_TRANSITION"))
 		return
+	}
+	if b.Customer != nil {
+		if e = authorizeCustomerLink(ctx, tx, p, *b.Customer); e == nil {
+			e = recordCustomerLink(ctx, tx, c.Param("id"), *b.Customer, p.ID)
+		}
+		if e != nil {
+			respondError(c, e)
+			return
+		}
 	}
 	if b.Passengers != nil {
 		var snapshot, counts []byte
@@ -429,7 +441,7 @@ func (s *Server) patch(c *gin.Context) {
 	if b.Contact != nil {
 		contact, _ = json.Marshal(b.Contact)
 	}
-	_, e = tx.Exec(ctx, "UPDATE bookings SET contact=COALESCE($2,contact),special_requests=COALESCE($3,special_requests),customer_id=COALESCE($4,customer_id),version=version+1,updated_at=clock_timestamp() WHERE id=$1", c.Param("id"), contact, b.Requests, b.Customer)
+	_, e = tx.Exec(ctx, "UPDATE bookings SET contact=COALESCE($2,contact),special_requests=COALESCE($3,special_requests),version=version+1,updated_at=clock_timestamp() WHERE id=$1", c.Param("id"), contact, b.Requests)
 	if e == nil {
 		_, e = tx.Exec(ctx, "INSERT INTO booking_events(booking_id,event_type,actor_staff_id) VALUES($1,'updated',$2)", c.Param("id"), p.ID)
 	}
@@ -511,7 +523,7 @@ func (s *Server) lookup(c *gin.Context) {
 	}
 	contact := strings.ToLower(strings.TrimSpace(b.Contact))
 	if !strings.Contains(contact, "@") {
-		contact = normalizePhone(contact)
+		contact = NormalizePhone(contact)
 	}
 	var id, dep string
 	ctx := c.Request.Context()

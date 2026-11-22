@@ -164,7 +164,7 @@ Guest session + CSRF + Turnstile + Idempotency-Key. 201 LeadReceipt, xác nhận
 | POST `/group-requests` | `group_type(school/company),organization_name,contact_name,contact_email,contact_phone,participant_count(1..10000),destination_text,consent{accepted:true,policy_version},turnstile_token` | `preferred_start_date,preferred_end_date,budget_per_person,requirements` |
 | POST `/callback-requests` | `phone,consent{accepted:true,policy_version},turnstile_token` | `name,preferred_time,tour_id,message` |
 
-Date không quá khứ, end>=start; budget nếu có là Money. SLA thông báo lấy site_settings do công ty duyệt, không hardcode cam kết chưa xác nhận. Không public upload danh sách đoàn, GET trạng thái báo giá hoặc newsletter submit ở MVP.
+Ngày tính theo Việt Nam. Ngày bắt đầu không ở quá khứ; ngày kết thúc yêu cầu ngày bắt đầu và phải bằng hoặc sau ngày đó. Ngân sách là số nguyên VND đến 1.000.000.000.000. Hai form dùng phiên bản đồng ý `sales-v1`, với Turnstile action lần lượt `group-request` và `callback-request`. Nội dung SLA lấy từ `response_sla` trong Cài đặt Admin tại thời điểm tiếp nhận. Không public upload danh sách đoàn, GET trạng thái báo giá hoặc newsletter submit ở MVP.
 
 ## 7. Auth/admin và CRUD chuẩn
 
@@ -204,8 +204,8 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | GET `/admin/bookings` | `status,payment_status,tour_id,departure_id,source,from,to,q,page,page_size` | booking.read; Booking list bỏ passengers/special_requests, contact theo quyền |
 | GET `/admin/bookings/{id}` | — | booking.read; Booking + events/notes theo quyền sales/admin |
 | POST `/admin/booking-quotes` | Cùng quote public | booking.write; quote gắn staff principal |
-| POST `/admin/bookings` | Cùng booking public, bỏ Turnstile, thêm `source:phone|counter,customer_id?` | booking.write + Idempotency-Key; cùng inventory service, không bỏ hold/chỗ |
-| PATCH `/admin/bookings/{id}` | `expected_version,contact?,passengers?,special_requests?,customer_id?` | booking.write; không đổi counts/departure/giá; thay passengers phải khớp snapshot/nhóm tuổi |
+| POST `/admin/bookings` | Cùng booking public, bỏ Turnstile, thêm `source:phone|counter,customer_id?,customer_link_verified?` | booking.write + Idempotency-Key; cùng inventory service, không bỏ hold/chỗ |
+| PATCH `/admin/bookings/{id}` | `expected_version,contact?,passengers?,special_requests?,customer_id?,customer_link_verified?` | booking.write; không đổi counts/departure/giá; thay passengers phải khớp snapshot/nhóm tuổi |
 | POST `/admin/bookings/{id}/notes` | `{body}` | booking.write; note nội bộ |
 | POST `/admin/bookings/{id}/cancel` | `{expected_version,reason}` | booking.write + Idempotency-Key; CancelResult `{booking,refund_required_amount}`, không tự refund |
 | POST `/admin/bookings/{id}/complete` | `{expected_version}` | booking.write; sau ends_at, trả Booking |
@@ -218,6 +218,8 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | GET/PATCH `/admin/customers/{id}` | PATCH partial CustomerWrite | customer.write; Customer |
 | GET `/admin/customers/{id}/bookings` | `page,page_size` | customer.write + booking.read; lịch sử chỉ booking đã linked xác minh |
 | GET `/admin/notifications` | `booking_id,channel,status,page,page_size` | notification.read; `{logs,jobs}` |
+
+Gắn `customer_id` yêu cầu thêm quyền `customer.write` và `customer_link_verified:true` sau khi nhân viên đối chiếu chủ đơn. Lịch sử chỉ hiện đơn có thời điểm và người xác minh. Với đơn đã kết thúc, PATCH chỉ nhận thao tác xác minh liên kết. Một đơn đã xác minh cho một hồ sơ trả 409 nếu gắn sang hồ sơ khác. Hồ sơ có thể trùng email hoặc số điện thoại.
 
 Huỷ có phí: MVP nhân viên xem policy_snapshot và nhập số tiền refund có lý do, không tự tính mức phạt chưa được BA chốt. Refund không tự cancel booking; muốn trả chỗ phải action cancel trước. Chuyến cancelled thực hiện workflow huỷ từng đơn rồi đóng departure khi không còn active booking (MVP xử lý qua admin, không bulk update bỏ transaction).
 
@@ -234,13 +236,15 @@ Huỷ có phí: MVP nhân viên xem policy_snapshot và nhập số tiền refun
 | POST `/admin/group-quotes/{id}/decision` | `{status:"accepted"|"rejected",reason}`; ghi nhận kết quả offline; accepted cập nhật request won |
 | GET `/admin/group-quotes/{id}/document.pdf` | lead.write; private PDF |
 | POST `/admin/group-requests/{id}/attachments` | `{media_id}` private ready →attachment |
+| POST `/admin/group-requests/{id}/attachments/{media_id}/download-url` | lead.write + media.private.write; kiểm tra liên kết file với yêu cầu trước khi cấp URL 5 phút |
 | GET `/admin/callback-requests`, GET `/{id}`, PATCH `/{id}` | lead.write; filters status/assigned_to; PATCH `{status?,assigned_to?,follow_up_due_at?}`; new→contacted→closed |
 | POST `/admin/callback-requests/{id}/notes` | lead.write; `{body}` |
+| GET `/admin/lead-assignees` | lead.write; danh sách `{id,name}` của nhân viên đủ quyền nhận việc |
 | GET/POST `/admin/staff`, GET/PATCH `/admin/staff/{id}` | admin; create `{email,full_name,password,role_codes[]}`, patch `{full_name?,status?,role_codes[]}`; không trả hash/password; không disable/xoá quyền admin cuối cùng |
 | GET `/admin/roles`, GET `/admin/permissions` | admin; danh sách quyền seed; không role editor tuỳ ý MVP |
 | GET `/admin/audit-logs` | admin; filters actor_staff_id/entity_type/entity_id/from/to/page; chỉ redacted diff, không API xoá/sửa |
 
-Assignment chỉ staff active có lead.write. Response_sla dựa settings; `follow_up_due_at` cho danh sách quá hạn, chưa có scheduler nhắn thật.
+Chỉ giao việc cho nhân viên đang hoạt động có `lead.write`. Gửi `null` để bỏ người phụ trách hoặc hạn theo dõi. Phát hành báo giá chuyển yêu cầu sang `quoted`, xác nhận ngoại tuyến chuyển sang `won`. Lý do mở lại được lưu thành ghi chú nội bộ. Đính kèm yêu cầu `media.private.write` và file đã tải lên bởi người thao tác. `follow_up_due_at` dùng để nhận biết hồ sơ quá hạn trong Admin.
 
 ## 8. Upload, export và báo cáo
 

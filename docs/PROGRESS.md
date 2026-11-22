@@ -229,3 +229,33 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - Dùng QR chứa dòng chữ demo. Bản xem trước giữ mã đơn và nội dung mẫu, không gọi nhà cung cấp. Người tạo đơn có thể mở lại bằng liên kết trên cùng phiên trình duyệt.
 - CI bản đầu `821b345` đạt 6/6 job tại run 45005020537. PostgreSQL kiểm tra cọc, phần còn lại, xác nhận lặp, không thu khi hết hạn, quyền sales/kế toán, hoàn cạnh tranh và lease/retry. Playwright kiểm tra QR, trạng thái đã thu, preview, tra cứu, hủy và hoàn tiền.
 - Bản cập nhật thêm kiểm tra confirm cạnh tranh hủy, mở lại đơn cùng phiên, chặn bấm xác nhận hai lần và nhật ký toàn hệ thống. CI PR là bằng chứng kiểm tra của từng bản. Không khởi động app trên máy người dùng trong lần làm M4.
+
+### T501 — API tiếp nhận và xử lý yêu cầu
+
+- `feature/sales` xuất phát từ `develop` tại bản hợp nhất PR #4 (`ff59d0f`). Migration `000006_sales.sql` thêm yêu cầu đoàn, gọi lại, ghi chú, phiên bản báo giá và tệp đính kèm riêng tư.
+- API dùng phiên khách, CSRF, giới hạn gửi và Turnstile. Gửi lại cùng khóa trả biên nhận đã lưu. Admin chỉ giao việc cho nhân viên đủ quyền đang hoạt động. Báo giá đã phát hành giữ nguyên nội dung và kết quả trao đổi được ghi nhận trong Admin.
+- [CI 45008730188](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45008730188) đạt 6/6 job trên `bac6332`, gồm Go race/PostgreSQL và container/browser. Bộ test Go toàn bộ gặp giới hạn socket loopback của sandbox ở test R2 khi chạy local.
+
+### T502 — Biểu mẫu tư vấn công khai
+
+- Form báo giá trên trang trường học và doanh nghiệp, form gọi lại trên trang liên hệ, có lối vào từ trang tour. Biên nhận hiển thị mã và thời gian phản hồi lấy từ Cài đặt Admin. Biểu mẫu giữ nội dung khi gửi lỗi và giữ cùng khóa khi thử lại dữ liệu cũ.
+- Lint frontend qua với một cảnh báo stylesheet có sẵn, TypeScript và unit test đạt. Turbopack local dừng ở tiến trình xử lý stylesheet Leaflet. CI kiểm tra build và luồng Playwright gồm captcha lỗi, giữ nội dung, bấm gửi hai lần và biên nhận.
+
+### T503 — Hàng chờ Sales và báo giá đoàn
+
+- Admin có hàng chờ báo giá và gọi lại, bộ lọc trạng thái/người phụ trách, hạn theo dõi theo giờ Việt Nam, ghi chú nội bộ và thông báo quá hạn trong danh sách.
+- Nhân viên có thể tạo và sửa bản nháp, phát hành, tạo phiên bản từ báo giá cũ và ghi nhận kết quả trao đổi ngoại tuyến. Tệp đính kèm riêng tư dùng lưu trữ media hiện có và liên kết có hạn.
+- Admin lint, TypeScript, 4 unit test và build đạt. Playwright đã nhận diện kịch bản phân công, phát hành, chốt báo giá và kiểm tra tải tệp; chạy kịch bản trên CI.
+
+### T504 — CRM và lịch sử đơn đã xác minh
+
+- Admin cho phép tạo, tìm và sửa hồ sơ khách cùng ghi chú. Hồ sơ có thể dùng cùng email hoặc số điện thoại. Lịch sử yêu cầu quyền đọc đơn và chỉ hiện liên kết đã được nhân viên xác minh.
+- Nhân viên đối chiếu đúng mã và thông tin liên hệ của đơn trước khi xác nhận gắn. Liên kết giữ dấu thời gian và người xác minh, đồng thời ghi sự kiện trong cùng giao dịch. Liên kết cũ chờ xác minh trước khi hiện trong CRM.
+- Go kiểm tra trùng thông tin liên hệ, quyền, liên kết trước M5, phiên bản cũ và gắn chéo hồ sơ. Kịch bản browser tạo hồ sơ trùng email với đơn và kiểm tra đơn chỉ hiện sau bước xác nhận. Kết quả tích hợp lấy từ CI.
+
+### Kiểm chứng M5
+
+- Nhánh `feature/sales` đã push commit theo task. T501 `bac6332`, T502 `50115ba`, T503 `716180d`, T504 `9170c07`. Commit `b76c2f0` bổ sung chốt chuyển trạng thái theo hợp đồng API và kiểm tra từ chối đổi sang “Không chốt” trước khi phát hành báo giá.
+- CI bản đầy đủ `9170c07` và bản chốt `b76c2f0` đều đạt 6/6 job. Bản chốt kiểm tra build public/Admin, Go vet/race với PostgreSQL, container và 8 kịch bản Chromium. [CI bản đầy đủ](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009350708) · [CI bản chốt](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009896743)
+- Kiểm thử tích hợp chạy trên CI. Tệp báo giá có thể đính kèm trong Admin. Xuất PDF tự động thuộc T604, nghiệm thu giao diện toàn site thuộc T703.
+- Theo dõi lần kiểm chứng và hợp nhất vào `develop` trên [PR #5](https://github.com/EthanLe-dev/blue-sky-group-website/pull/5).

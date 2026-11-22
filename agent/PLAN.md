@@ -78,10 +78,10 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 
 ### M5 — Sales, khách đoàn, khách hàng (3–5 ngày công)
 
-- [ ] Form báo giá school/company, callback, xác nhận đã nhận + SLA cấu hình, Turnstile/rate limit (FR-41, 61, 86).
-- [ ] Admin assignment/status/notes/follow-up due; đề xuất báo giá versioned và attachment riêng tư, danh sách khách/lịch sử đơn/notes (FR-85, 88).
-- [ ] Không tự gộp khách chỉ vì trùng SĐT/email; chỉ nhân viên được quyền xác nhận gắn contact.
-- Nghiệm thu: sales thao tác đúng quyền, không xem route admin bằng guest; không có public tracking/upload đoàn/ký hợp đồng ở MVP.
+- [x] Form báo giá trường học/doanh nghiệp và gọi lại, biên nhận theo SLA cấu hình, Turnstile và giới hạn gửi (FR-41, 61, 86).
+- [x] Admin phân công, chuyển trạng thái, ghi chú và theo dõi hạn. Báo giá có phiên bản, tệp đính kèm riêng tư và ghi nhận kết quả ngoại tuyến (FR-85).
+- [x] CRM có hồ sơ, ghi chú và lịch sử đơn sau xác minh (FR-88). Nhân viên xác nhận gắn từng đơn, kể cả khi trùng thông tin liên hệ.
+- CI trên `b76c2f0` đạt 6/6 job, gồm Go race/PostgreSQL và Playwright. Chi tiết T501–T504 nằm trong [tiến độ](../docs/PROGRESS.md). [GitHub Actions 45009896743](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45009896743)
 
 ### M6 — Báo cáo, export, analytics (3–5 ngày công)
 
