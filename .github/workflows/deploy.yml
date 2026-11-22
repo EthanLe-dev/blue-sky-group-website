@@ -15,60 +15,72 @@ concurrency:
 jobs:
   deploy:
     if: >-
+      vars.DEMO_DEPLOY_ENABLED == 'true' &&
       github.event.workflow_run.conclusion == 'success' &&
       github.event.workflow_run.event == 'push' &&
       github.event.workflow_run.head_branch == 'main' &&
       github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     environment: demo
-    timeout-minutes: 10
+    timeout-minutes: 35
+    env:
+      RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
+      GH_TOKEN: ${{ github.token }}
+      RENDER_URL: ${{ vars.RENDER_URL }}
+      PUBLIC_DEMO_URL: ${{ vars.PUBLIC_DEMO_URL }}
+      ADMIN_DEMO_URL: ${{ vars.ADMIN_DEMO_URL }}
+      RENDER_SERVICE_ID: ${{ vars.RENDER_SERVICE_ID }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID }}
+      VERCEL_PUBLIC_PROJECT_ID: ${{ vars.VERCEL_PUBLIC_PROJECT_ID }}
+      VERCEL_ADMIN_PROJECT_ID: ${{ vars.VERCEL_ADMIN_PROJECT_ID }}
     steps:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.event.workflow_run.head_sha }}
           persist-credentials: false
-      - name: Ensure all applications exist
-        id: apps
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify release revision and stage Vercel source
         shell: bash
-        run: |
-          if [ -f frontend/package.json ] && [ -f admin/package.json ] && [ -f backend/go.mod ] && [ -f backend/Dockerfile ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "Applications are not scaffolded; no deployment requested." >> "$GITHUB_STEP_SUMMARY"
-          fi
-      - name: Check deployment hooks
-        if: steps.apps.outputs.ready == 'true'
         env:
-          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
-          VERCEL_PUBLIC_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_PUBLIC_DEPLOY_HOOK_URL }}
-          VERCEL_ADMIN_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_ADMIN_DEPLOY_HOOK_URL }}
-        shell: bash
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -euo pipefail
-          for key in RENDER_DEPLOY_HOOK_URL VERCEL_PUBLIC_DEPLOY_HOOK_URL VERCEL_ADMIN_DEPLOY_HOOK_URL; do
+          for key in RENDER_URL PUBLIC_DEMO_URL ADMIN_DEMO_URL RENDER_SERVICE_ID VERCEL_ORG_ID VERCEL_PUBLIC_PROJECT_ID VERCEL_ADMIN_PROJECT_ID RENDER_API_KEY VERCEL_TOKEN; do
             if [ -z "${!key}" ]; then
-              echo "Missing $key in GitHub environment demo" >> "$GITHUB_STEP_SUMMARY"
+              echo "Missing $key in GitHub environment demo" >&2
               exit 1
             fi
           done
-      - name: Deploy backend first
-        if: steps.apps.outputs.ready == 'true'
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)" = "$RELEASE_SHA"
+          mkdir "$RUNNER_TEMP/demo-source"
+          git archive "$RELEASE_SHA" frontend admin | tar -x -C "$RUNNER_TEMP/demo-source"
+          python3 scripts/demo_release.py prepare --root "$RUNNER_TEMP/demo-source"
+      - name: Deploy and verify exact backend revision
         env:
-          DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: python3 scripts/demo_release.py render
+      - name: Build both Vercel projects and promote them after checking main
         shell: bash
-        run: curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 -X POST "$DEPLOY_HOOK_URL" > /dev/null
-      - name: Deploy public frontend
-        if: steps.apps.outputs.ready == 'true'
         env:
-          DEPLOY_HOOK_URL: ${{ secrets.VERCEL_PUBLIC_DEPLOY_HOOK_URL }}
-        shell: bash
-        run: curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 -X POST "$DEPLOY_HOOK_URL" > /dev/null
-      - name: Deploy admin frontend
-        if: steps.apps.outputs.ready == 'true'
-        env:
-          DEPLOY_HOOK_URL: ${{ secrets.VERCEL_ADMIN_DEPLOY_HOOK_URL }}
-        shell: bash
-        run: curl --fail --silent --show-error --retry 3 --retry-all-errors --max-time 30 -X POST "$DEPLOY_HOOK_URL" > /dev/null
-      - name: Note deployment boundary
-        if: steps.apps.outputs.ready == 'true'
-        run: echo "Deploy hooks accepted the request. Verify provider build, migrations, readiness and URLs before considering deployment complete." >> "$GITHUB_STEP_SUMMARY"
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+        run: |
+          set -euo pipefail
+          npm install --global vercel@66.6.0
+          deploy_app() {
+            export VERCEL_PROJECT_ID="$2"
+            cd "$RUNNER_TEMP/demo-source/$1"
+            vercel deploy --prod --skip-domain --yes --token "$VERCEL_TOKEN" --meta "releaseSha=$RELEASE_SHA"
+          }
+          public="$(deploy_app frontend "$VERCEL_PUBLIC_PROJECT_ID")"
+          admin="$(deploy_app admin "$VERCEL_ADMIN_PROJECT_ID")"
+          test "$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/main" --jq .object.sha)" = "$RELEASE_SHA"
+          test -n "$public"
+          test -n "$admin"
+          (cd "$RUNNER_TEMP/demo-source/frontend"; VERCEL_PROJECT_ID="$VERCEL_PUBLIC_PROJECT_ID" vercel promote "$public" --yes --token "$VERCEL_TOKEN")
+          (cd "$RUNNER_TEMP/demo-source/admin"; VERCEL_PROJECT_ID="$VERCEL_ADMIN_PROJECT_ID" vercel promote "$admin" --yes --token "$VERCEL_TOKEN")
+      - name: Verify stable demo URLs and private API behavior
+        run: python3 scripts/demo_release.py smoke

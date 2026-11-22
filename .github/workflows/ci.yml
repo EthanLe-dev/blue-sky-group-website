@@ -36,6 +36,8 @@ jobs:
         run: |
           python3 scripts/init_local.py
           docker compose --profile production-tools --profile app config --quiet
+      - name: Verify release staging and revision guards
+        run: python3 -m unittest discover -s scripts -p test_demo_release.py
       - name: Reject tracked environment secrets
         shell: bash
         run: |
