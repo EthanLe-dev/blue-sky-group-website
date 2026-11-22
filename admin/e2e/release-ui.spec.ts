@@ -26,6 +26,20 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     const photo = page.locator("img.hero-photo");
     await expect.poll(() => photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     await expect(page.locator(".hero h1")).toHaveCSS("opacity", "1");
+    const contrast = await page.locator(".hero input").evaluate(input => {
+      const luminance = (color: string) => {
+        const values = (color.match(/[0-9]+(?:\.[0-9]+)?/g) || []).slice(0, 3).map(Number);
+        return values.reduce((sum, value, i) => {
+          const channel = value / 255;
+          const linear = channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+          return sum + linear * [.2126, .7152, .0722][i];
+        }, 0);
+      };
+      const text = luminance(getComputedStyle(input, "::placeholder").color);
+      const background = luminance(getComputedStyle(input).backgroundColor);
+      return (Math.max(text, background) + .05) / (Math.min(text, background) + .05);
+    });
+    expect(contrast).toBeGreaterThanOrEqual(4.5);
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
   }

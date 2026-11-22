@@ -14,7 +14,7 @@ Dùng bản demo có nhãn và các địa chỉ `.example`. Kiểm tra trên đ
 | 8 | Người quản trị GA4 | Cho phép analytics, xem tour, đặt demo và gửi yêu cầu | Sự kiện giả trong Playwright | DebugView/GA4 thật và Search Console cần tài khoản |
 | 9 | Admin / Sales / Kế toán | Sửa tour, đặt tại quầy, hoàn tiền đúng quyền, export và truy cập bị chặn | Playwright và RBAC integration | Nhân viên dùng thử theo vai trò |
 | 10 | Khách | Turnstile hợp lệ cho phép gửi, token sai bị từ chối | Adapter test/local và kiểm tra form | Widget thật trên hostname công khai |
-| 11 | Chủ dự án | Mở URL public/Admin, khởi động lạnh, lưu file TMP qua R2 đúng quyền | Cấu hình và script smoke theo SHA | Tài khoản host, URL và lần deploy thật |
+| 11 | Chủ dự án | Mở URL public/Admin, khởi động lạnh, thử lưu và tải lại file R2 đúng quyền | Cấu hình và script smoke theo SHA | Tài khoản host, URL và lần deploy thật |
 
 Khi có URL, mời ít nhất một người mua tour thuộc nhóm 30+, một đại diện trường/doanh nghiệp và một người có vai trò Admin dùng thử bằng dữ liệu mẫu. Ghi bước họ mất thời gian hoặc không tự hoàn thành, sửa lỗi cản trở, rồi xác nhận chỉ xuất bản các ảnh/nội dung được duyệt. Tải file thất bại, chuyển trạng thái tiền sai, lộ dữ liệu private hoặc form gửi được khi captcha sai là lỗi chặn phát hành.
 
