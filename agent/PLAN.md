@@ -7,6 +7,7 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 ## Đợt làm mới giao diện sau MVP
 
 - T703a: Trang chủ ưu tiên thương hiệu và công cụ tìm kiếm. Danh sách tour từ CMS nằm bên dưới. Dùng Nunito Sans, bố cục thẻ ảnh theo số tour và GSAP cho phần đầu trang và một cụm ảnh. Kiểm qua Playwright và CI của nhánh `feature/homepage-refresh`.
+- T703c: Refactor riêng Trang chủ theo hướng danh mục du lịch. Phần đầu dùng thương hiệu và bộ lọc có sẵn. Banner, lưới tour và tour theo đoàn nằm bên dưới. Dùng CMS/API hiện tại và kiểm chứng qua CI của nhánh `feature/homepage-catalog`.
 
 ## 1. Nguồn và quyết định thiết kế
 

@@ -1,6 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 const links = [
   ["/tours", "Khám phá tour"],
@@ -9,7 +10,17 @@ const links = [
   ["/blog", "Cẩm nang"],
   ["/lookup", "Tra cứu đơn"],
 ];
-export function Header() {
+type HomeContact = { hotline: string; phoneHref: string } | null;
+
+export function SiteHeader() {
+  return usePathname() === "/" ? null : <Header />;
+}
+
+export function SiteFooter() {
+  return usePathname() === "/" ? null : <Footer />;
+}
+
+export function Header({ home = false, contact = null }: { home?: boolean; contact?: HomeContact }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const [open, setOpen] = useState(false);
@@ -18,11 +29,24 @@ export function Header() {
     setOpen(false);
     trigger.current?.focus();
   }
+  const navigation = home
+    ? [links[0], ["/destinations", "Điểm đến"], ...links.slice(1)]
+    : links;
+  const contactLabel = home ? "Liên hệ" : "Liên hệ ↗";
   return (
-    <header className="site-header nav">
+    <header className={home ? "site-header nav home-header" : "site-header nav"}>
       <a className="skip-link" href="#main">
         Bỏ qua đến nội dung
       </a>
+      {home && (
+        <div className="home-support">
+          <div className="wrap">
+            {contact
+              ? <a href={contact.phoneHref}>Hỗ trợ: {contact.hotline}</a>
+              : <Link prefetch={false} href="/contact">Hỗ trợ chuyến đi</Link>}
+          </div>
+        </div>
+      )}
       <div className="wrap nav-centre">
         <Link prefetch={false}
           className="brand"
@@ -40,14 +64,14 @@ export function Header() {
           <span>BLUE SKY GROUP</span>
         </Link>
         <nav aria-label="Điều hướng chính">
-          {links.map(([href, label]) => (
+          {navigation.map(([href, label]) => (
             <Link prefetch={false} href={href} key={href}>
               {label}
             </Link>
           ))}
         </nav>
         <Link prefetch={false} className="header-contact" href="/contact">
-          Liên hệ ↗
+          {contactLabel}
         </Link>
         <button
           ref={trigger}
@@ -73,7 +97,7 @@ export function Header() {
             Đóng menu ×
           </button>
           <nav aria-label="Điều hướng di động">
-            {[...links, ["/contact", "Liên hệ"]].map(([href, label]) => (
+            {[...navigation, ["/contact", "Liên hệ"]].map(([href, label]) => (
               <Link prefetch={false} key={href} href={href} onClick={close}>
                 {label}
               </Link>

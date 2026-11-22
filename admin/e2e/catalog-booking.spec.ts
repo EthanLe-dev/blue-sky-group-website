@@ -231,7 +231,7 @@ test("responsive menu and public content pages", async ({ page }) => {
 
 test("home search, blog facets and media filters", async ({ page }) => {
   await page.goto("http://localhost:3000/");
-  await page.getByLabel("Bạn muốn đi đâu?", { exact: true }).fill("Ninh Chữ");
+  await page.getByLabel("Từ khóa", { exact: true }).fill("Ninh Chữ");
   await page.locator(".hero").getByRole("button", { name: "Tìm tour" }).click();
   await expect(page).toHaveURL(/q=/);
   await expect(page.locator(".tour-card").first()).toBeVisible();

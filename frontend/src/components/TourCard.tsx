@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Tour } from "@/lib/catalog";
 import { money } from "@/lib/catalog";
-export default function TourCard({ tour, imageSizes }: { tour: Tour; imageSizes?: string }) {
+export default function TourCard({ tour, imageSizes, home = false }: { tour: Tour; imageSizes?: string; home?: boolean }) {
   return (
     <article className="card tour-card">
       <Link prefetch={false} className="m-zoom" href={"/tours/" + tour.slug}>
@@ -26,12 +26,15 @@ export default function TourCard({ tour, imageSizes }: { tour: Tour; imageSizes?
             {tour.is_demo ? " / Tour demo" : ""}
           </p>
           <h3>{tour.title}</h3>
+          {home && tour.origin_name && <p className="home-tour-origin">Khởi hành: {tour.origin_name}</p>}
           <p>{tour.summary}</p>
           <div className="card-price">
             <span>
-              Từ <strong>{money(tour.price_from)}</strong> / khách
+              {home && tour.price_from == null
+                ? <strong>Liên hệ</strong>
+                : <>Từ <strong>{money(tour.price_from)}</strong> / khách</>}
             </span>
-            <span aria-hidden="true">↗</span>
+            <span aria-hidden="true">{home ? "Xem chi tiết ↗" : "↗"}</span>
           </div>
         </div>
       </Link>

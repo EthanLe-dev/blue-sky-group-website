@@ -47,7 +47,7 @@ Palette **đề xuất ban đầu**, cần đối chiếu logo `blue-sky-group-l
 
 Đo contrast trên giao diện thật: chữ thường ≥4.5:1, chữ lớn ≥3:1, control/focus ≥3:1. Màu không phải tín hiệu duy nhất. Text trên ảnh dùng vùng nền đặc/scrim trung tính đủ tương phản, tránh chữ đè lên chi tiết ảnh.
 
-Font đề xuất: **Be Vietnam Pro** cho heading/body; fallback `Noto Sans`, `system-ui`, `sans-serif`. Khi tích hợp phải lấy bản font có glyph/subset Vietnamese và giấy phép, self-host WOFF2 hoặc dùng cơ chế Next font tương đương; kiểm tra thực tế thay vì tin tên font. Không dùng font display thiếu dấu, chữ body quá mảnh hoặc quá nhiều family. Chỉ tải weight 400/500/600/700 cần dùng, `font-display: swap`; preload font quan trọng có chủ đích, kiểm CLS khi đổi font.
+Trang chủ và Admin dùng **Nunito Sans Variable**. Các trang public khác dùng **Be Vietnam Pro**. Tự lưu trữ WOFF2 có bộ ký tự tiếng Việt và giấy phép, dùng `font-display: swap` và font hệ thống dự phòng. Kiểm dấu và độ dịch chuyển bố cục trong trình duyệt trước khi đổi font.
 
 - Body 17–18px mobile, 16–18px desktop, line-height 1.6; label tối thiểu16px, metadata tối thiểu14px không dùng cho giá/điều khoản chính.
 - H1 mobile 32–40px, desktop 48–64px bằng clamp; H2 26–40px, H3 20–24px. Line-height heading 1.2–1.3 để không cắt dấu. Không letter-spacing âm mạnh, không viết HOA cả đoạn tiếng Việt.
@@ -56,6 +56,8 @@ Font đề xuất: **Be Vietnam Pro** cho heading/body; fallback `Noto Sans`, `s
 - Radius button/input8px, card12px, dialog16px; shadow nhẹ chỉ cho phần nổi/menu/sticky. Button tối thiểu44×44px, primary thường48px; khoảng cách target ≥8px. Chỉ một primary CTA trong một nhóm hành động.
 
 ## 4. Luồng và cấu trúc màn hình
+
+Trang chủ: thanh hỗ trợ và điều hướng, ảnh biển với form tìm tour, banner CMS nếu có, lưới tour, dịch vụ theo đoàn, giới thiệu Blue Sky Group, cẩm nang và đánh giá nếu có, footer. Phần ảnh đầu trang nói về thương hiệu, giữ tên, giá, lịch và poster của từng tour ở các phần bên dưới.
 
 | Trang | Nội dung và tương tác cần có |
 | --- | --- |

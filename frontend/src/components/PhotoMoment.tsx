@@ -1,6 +1,5 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -33,30 +32,10 @@ export default function PhotoMoment() {
     return () => media.revert();
   }, { scope: ref });
   return (
-    <section className="section coast-section">
-      <div className="wrap">
-        <div className="section-head">
-          <h2>Ninh Chữ, từ bờ cát đến làng nghề.</h2>
-          <Link prefetch={false} className="text-action" href="/destinations">
-            Xem các điểm đến ↗
-          </Link>
-        </div>
-        <figure
-          ref={ref}
-          className="frame frame--photo coast-photo"
-        >
-          <Image
-            src="/images/ninh-chu.jpg"
-            sizes="100vw"
-            alt="Bờ biển Ninh Chữ trải dài dưới bầu trời xanh"
-            width="1280"
-            height="960"
-            loading="lazy"
-            data-source="Wikimedia Commons / Phương Huy / Public domain"
-            data-subject="Bãi biển Ninh Chữ"
-          />
-        </figure>
-      </div>
-    </section>
+    <figure ref={ref} className="home-about-photo">
+      <Image src="/images/ninh-chu.jpg" sizes="(max-width:850px) 100vw, 50vw"
+        alt="Bờ biển Ninh Chữ trải dài dưới bầu trời xanh" width="1280" height="960"
+        loading="lazy" data-source="Wikimedia Commons / Phương Huy / Public domain" />
+    </figure>
   );
 }
