@@ -1,0 +1,120 @@
+.home {
+  --home-sea: #075a91;
+  --home-sand: #f4c84c;
+  font-family: "Nunito Sans Variable", system-ui, sans-serif;
+}
+
+.home .hero-copy {
+  max-width: 620px;
+  border-radius: 24px;
+  border-block-start: 5px solid var(--home-sand);
+  background: #fffefa;
+  box-shadow: 0 14px 36px #06283f26;
+}
+
+.home .hero h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3.8rem);
+  font-weight: 800;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: pretty;
+  margin-top: 0;
+  margin-bottom: 18px;
+}
+
+.home .hero-search {
+  gap: 10px;
+  max-width: 100%;
+}
+
+.home .hero-search input {
+  min-width: 0;
+  border-color: #a7bdcc;
+}
+
+.home .hero-search label,
+.home .hero-search .btn {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.home .hero-search .btn {
+  background: var(--home-sea);
+}
+
+.home .hero-search .btn:hover {
+  background: #034773;
+}
+
+.home .home-tours {
+  background: #eff7fa;
+}
+
+.home .home-tour-grid .tour-card {
+  border-radius: 18px;
+  border-color: #cbdde7;
+  box-shadow: 0 8px 20px #143b5410;
+}
+
+.home .home-tour-grid .tour-card a:focus-visible {
+  outline-offset: -4px;
+}
+
+.home .home-tour-grid .card-body p:not(.eyebrow) {
+  font-size: 1rem;
+}
+
+.home .home-tour-grid .card-price {
+  font-size: .9375rem;
+}
+
+.home .coast-photo {
+  isolation: isolate;
+  border-radius: 22px;
+}
+
+@media (min-width: 851px) {
+  .home .home-tour-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .home .home-tour-grid > * {
+    grid-column: span 2;
+  }
+
+  .home .home-tour-grid > :first-child:not(:only-child) {
+    grid-column: span 3;
+    grid-row: span 2;
+  }
+
+  .home .home-tour-grid > :first-child:not(:only-child) > a {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .home .home-tour-grid > :first-child:not(:only-child) .card-image {
+    flex: 1 0 280px;
+    position: relative;
+  }
+
+  .home .home-tour-grid > :first-child:not(:only-child) .card-image img {
+    position: absolute;
+    inset: 0;
+  }
+
+  .home .home-tour-grid > :only-child {
+    grid-column: span 3;
+  }
+}
+
+@media (max-width: 540px) {
+  .home .hero-copy {
+    max-width: none;
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .home .hero-search {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

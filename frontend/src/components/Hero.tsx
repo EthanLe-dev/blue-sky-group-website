@@ -3,7 +3,6 @@ import Image from "next/image";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import Link from "next/link";
 gsap.registerPlugin(useGSAP);
 export default function Hero() {
   const scope = useRef<HTMLElement>(null);
@@ -11,18 +10,14 @@ export default function Hero() {
     () => {
       const mm = gsap.matchMedia();
       mm.add("(prefers-reduced-motion: no-preference)", () => {
-        gsap.from("[data-enter-text]", {
-          y: 22,
-          opacity: 0,
-          duration: 0.7,
-          stagger: 0.09,
-          ease: "power3.out",
-        });
-        gsap.from(".hero-photo", {
-          scale: 1.04,
-          duration: 1.1,
-          ease: "power2.out",
-        });
+        gsap.timeline({ defaults: { ease: "power3.out" } })
+          .from(".hero-photo", { scale: 1.045, duration: 1.1 })
+          .from("[data-enter-text]", {
+            y: 14,
+            opacity: 0.25,
+            duration: 0.58,
+            stagger: 0.11,
+          }, 0);
       });
       return () => mm.revert();
     },
@@ -42,36 +37,23 @@ export default function Hero() {
       />
       <div className="wrap">
         <div className="hero-copy">
-          <p className="eyebrow" data-enter-text="">
-            BLUE SKY GROUP · DU LỊCH & TRẢI NGHIỆM
-          </p>
           <h1 data-enter-text="">
-            Tour Ninh Chữ.
-            <br />
-            Hai ngày bên biển.
+            Khám phá những hành trình cùng Blue Sky Group
           </h1>
           <p data-enter-text="">
-            Từ làng gốm Bàu Trúc đến bờ biển Mỹ Hòa. Xem lịch khởi hành và chọn
-            chuyến đi vừa với bạn.
+            Tìm chuyến đi cho gia đình hoặc khám phá các chương trình dành cho
+            trường học và doanh nghiệp.
           </p>
-          <div data-enter-text="">
-            <form className="hero-search" action="/tours">
-              <label htmlFor="hero-q">Bạn muốn đi đâu?</label>
-              <input
-                id="hero-q"
-                name="q"
-                maxLength={100}
-                placeholder="Ninh Chữ, Vĩnh Hy…"
-              />
-              <button className="btn">Tìm tour ↗</button>
-            </form>
-            <Link prefetch={false} className="text-action" href="/tours/ninh-chu-2-ngay-1-dem">
-              Xem hành trình Ninh Chữ
-            </Link>
-          </div>
-          <p className="hero-fact" data-enter-text="">
-            2 ngày 1 đêm · Giá và lịch demo có thể điều chỉnh
-          </p>
+          <form className="hero-search" action="/tours">
+            <label htmlFor="hero-q">Bạn muốn đi đâu?</label>
+            <input
+              id="hero-q"
+              name="q"
+              maxLength={100}
+              placeholder="Nhập điểm đến bạn muốn khám phá"
+            />
+            <button className="btn">Tìm tour ↗</button>
+          </form>
         </div>
       </div>
     </section>

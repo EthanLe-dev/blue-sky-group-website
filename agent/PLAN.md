@@ -4,6 +4,10 @@ Ngày: 22/11/2026. Trạng thái: **M0 hoàn tất cho demo, M1 nền tảng đ�
 
 Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `develop` là nhánh tích hợp code chính. Mỗi module lớn có nhánh `feature/<module>` từ `develop`; task DONE được commit rõ ID và push ngay, module qua CI thì PR vào `develop`, đợt phát hành qua UAT mới PR vào `main`. CI cùng cấu hình cho push/PR hai nhánh; CD demo chỉ chạy trên push `main`. Xem [AGENTS](../AGENTS.md).
 
+## Đợt làm mới giao diện sau MVP
+
+- T703a: Trang chủ ưu tiên thương hiệu và công cụ tìm kiếm. Danh sách tour từ CMS nằm bên dưới. Dùng Nunito Sans, bố cục thẻ ảnh theo số tour và GSAP cho phần đầu trang và một cụm ảnh. Kiểm qua Playwright và CI của nhánh `feature/homepage-refresh`.
+
 ## 1. Nguồn và quyết định thiết kế
 
 Nguồn: [MVP](../docs/mvp-requirements.md), [Final](../docs/final-requirements.md), [Architecture](../docs/architecture.md), [Database](../docs/database-schema.md), [API](../docs/api-spec.md), [AGENTS](../AGENTS.md).
