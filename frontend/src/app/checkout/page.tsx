@@ -25,6 +25,7 @@ export default async function Page({
         departure={departure}
         title={t.title}
         prices={d.prices}
+        surcharges={d.surcharges || []}
         mock={
           ["local", "test"].includes(process.env.APP_ENV || "local") &&
           process.env.TURNSTILE_MODE !== "real"

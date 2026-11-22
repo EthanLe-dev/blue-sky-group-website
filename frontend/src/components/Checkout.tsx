@@ -3,6 +3,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import Link from "next/link";
 import { api, ApiError } from "@/lib/api";
 import Captcha from "./Captcha";
+import type { Surcharge } from "@/lib/catalog";
 type Counts = { adult: number; child: number; infant: number };
 type Person = {
   passenger_type: string;
@@ -81,12 +82,34 @@ function Timer({ expires, server }: { expires: string; server: string }) {
 export function BookingResult({ initial }: { initial: Booking }) {
   const [booking, setBooking] = useState(initial);
   const [error, setError] = useState("");
+  useEffect(() => {
+    let active = true;
+    api<Booking>("/bookings/" + initial.id)
+      .then((b) => {
+        if (active) setBooking(b);
+      })
+      .catch(() => {
+        if (active)
+          setError(
+            "Chưa cập nhật được giờ máy chủ. Bấm cập nhật trạng thái để thử lại.",
+          );
+      });
+    return () => {
+      active = false;
+    };
+  }, [initial.id]);
   return (
     <section className="summary">
       <h2>
         {booking.status === "pending"
           ? "Đã tạo đơn giữ chỗ"
-          : "Trạng thái đơn: " + booking.status}
+          : "Trạng thái đơn: " +
+            ({
+              expired: "Đã hết hạn giữ chỗ",
+              cancelled: "Đã huỷ",
+              confirmed: "Đã xác nhận",
+              completed: "Đã hoàn thành",
+            }[booking.status] || booking.status)}
       </h2>
       <p>
         Mã đơn <strong>{booking.code}</strong>. Lưu mã này để tra cứu bằng email
@@ -135,11 +158,13 @@ export default function Checkout({
   departure,
   title,
   prices,
+  surcharges,
   mock,
   siteKey,
 }: {
   departure: string;
   title: string;
+  surcharges: Surcharge[];
   prices: {
     passenger_type: string;
     min_age: number;
@@ -149,6 +174,7 @@ export default function Checkout({
   mock: boolean;
   siteKey: string;
 }) {
+  const [codes, setCodes] = useState<string[]>([]);
   const [counts, setCounts] = useState<Counts>({
     adult: 1,
     child: 0,
@@ -189,7 +215,7 @@ export default function Checkout({
         body: JSON.stringify({
           departure_id: departure,
           counts,
-          surcharge_codes: [],
+          surcharge_codes: codes,
         }),
       });
       setQuote(q);
@@ -313,6 +339,30 @@ export default function Checkout({
               />
             </label>
           ))}
+          {surcharges.length > 0 && (
+            <fieldset>
+              <legend>Phụ thu và dịch vụ thêm</legend>
+              {surcharges.map((extra) => (
+                <label className="check" key={extra.code}>
+                  <input
+                    type="checkbox"
+                    disabled={extra.required||busy}
+                    checked={extra.required || codes.includes(extra.code)}
+                    onChange={(e) =>
+                      setCodes(
+                        e.target.checked
+                          ? [...codes, extra.code]
+                          : codes.filter((c) => c !== extra.code),
+                      )
+                    }
+                  />
+                  {extra.label} · {money(extra.amount)} /{" "}
+                  {extra.unit === "per_person" ? "người" : "đơn"}{" "}
+                  {extra.required ? "(bắt buộc)" : ""}
+                </label>
+              ))}
+            </fieldset>
+          )}
           <button className="btn" disabled={busy}>
             {busy ? "Đang tính giá…" : "Xem báo giá"}
           </button>
@@ -467,6 +517,10 @@ export default function Checkout({
                 </option>
               ))}
             </select>
+          </label>
+          <label>
+            Mã giảm giá
+            <input disabled placeholder="Chưa hỗ trợ mã giảm giá trong demo" />
           </label>
           <h3>Chính sách huỷ</h3>
           <div

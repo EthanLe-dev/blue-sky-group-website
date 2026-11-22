@@ -425,6 +425,7 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
   const [departures, setDepartures] = useState<Row[]>([]);
   const [departure, setDeparture] = useState("");
   const [counts, setCounts] = useState({ adult: 1, child: 0, infant: 0 });
+  const [codes, setCodes] = useState<string[]>([]);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [contact, setContact] = useState<Contact>({
     name: "",
@@ -459,7 +460,13 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
       <p>Dùng cùng kho chỗ và quy tắc giữ chỗ như khách đặt trên web.</p>
       <label>
         Tour
-        <select value={tour} onChange={(e) => setTour(e.target.value)}>
+        <select
+          value={tour}
+          onChange={(e) => {
+            setTour(e.target.value);
+            setCodes([]);
+          }}
+        >
           <option value="">Chọn tour</option>
           {tours.map((t) => (
             <option key={String(t.id)} value={String(t.slug)}>
@@ -474,6 +481,7 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
           value={departure}
           onChange={(e) => {
             setDeparture(e.target.value);
+            setCodes([]);
             setQuote(null);
           }}
         >
@@ -500,6 +508,34 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
           />
         </label>
       ))}
+      {(
+        (departures.find((d) => d.id === departure)?.surcharges || []) as {
+          code: string;
+          label: string;
+          amount: string;
+          unit: string;
+          required: boolean;
+        }[]
+      ).map((extra) => (
+        <label key={extra.code}>
+          <input
+            type="checkbox"
+            disabled={extra.required}
+            checked={extra.required || codes.includes(extra.code)}
+            onChange={(e) => {
+              setQuote(null);
+              setCodes(
+                e.target.checked
+                  ? [...codes, extra.code]
+                  : codes.filter((c) => c !== extra.code),
+              );
+            }}
+          />
+          {extra.label} · {money(extra.amount)} /{" "}
+          {extra.unit === "per_person" ? "người" : "đơn"}{" "}
+          {extra.required ? "(bắt buộc)" : ""}
+        </label>
+      ))}
       <button
         disabled={!departure || busy}
         onClick={async () => {
@@ -510,7 +546,7 @@ function Manual({ onSaved }: { onSaved: (id: string) => Promise<void> }) {
               body: JSON.stringify({
                 departure_id: departure,
                 counts,
-                surcharge_codes: [],
+                surcharge_codes: codes,
               }),
             });
             setQuote(q);
