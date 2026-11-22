@@ -14,6 +14,8 @@
 
 ## Làm mới Trang chủ
 
+- T703g trên `feature/homepage-about-gallery`: phần giới thiệu có cụm ảnh Ninh Bình, Hội An, Ninh Chữ với nhãn địa danh. GSAP chạy một lần khi ảnh vào khung nhìn, dùng ảnh tĩnh theo thiết lập giảm chuyển động. Nội dung CMS và liên kết giới thiệu giữ nguyên.
+
 - T703f trên `feature/homepage-group-tours`: hai thẻ Tour theo đoàn có ảnh WebP, nhãn ảnh minh họa và nút báo giá. GSAP chạy một lần khi thẻ vào khung nhìn, theo thiết lập giảm chuyển động. Playwright kiểm ảnh và giữ kịch bản điều hướng hai form báo giá.
 
 - T703e trên `feature/homepage-tour-cards`: thẻ tour Trang chủ đưa thời lượng và nhãn demo lên ảnh, làm nổi khu vực giá và nút xem chi tiết, có hiệu ứng rê chuột và focus bàn phím. Giữ dữ liệu và đích liên kết hiện tại. Playwright xác nhận các thông tin và thao tác trên thẻ.
