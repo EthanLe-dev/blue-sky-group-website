@@ -67,7 +67,11 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
       await page.screenshot({ path: test.info().outputPath("homepage-full-" + width + ".png"), animations: "disabled", fullPage: true });
     }
   }
-  await page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]').click();
+  const tour = page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]');
+  await expect(tour.locator(".card-image").getByText("2 ngày · 1 đêm")).toBeVisible();
+  await expect(tour.locator(".card-image").getByText("Tour demo")).toBeVisible();
+  await expect(tour.getByText("Xem chi tiết")).toBeVisible();
+  await tour.click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
   await page.getByRole("button", { name: /Xem poster đầy đủ/ }).click();

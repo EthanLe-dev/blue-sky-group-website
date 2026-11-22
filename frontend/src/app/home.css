@@ -300,18 +300,87 @@ body:has(.home-shell) {
   font-weight: 750;
 }
 
-.home-tour-grid .tour-card { min-width: 0; border-color: var(--home-line); border-radius: 15px; }
+.home-tour-grid .tour-card {
+  min-width: 0;
+  border-color: #c5dbe6;
+  border-radius: 20px;
+  box-shadow: 0 5px 12px #123b560a;
+  transition: transform 180ms var(--home-ease), border-color 180ms, box-shadow 180ms;
+}
 .home-tour-grid .tour-card > a { display: flex; flex-direction: column; }
-.home-tour-grid .tour-card > a:focus-visible { outline-offset: -4px; }
-.home-tour-grid .card-image { height: auto; aspect-ratio: 4 / 3; }
-.home-tour-grid .card-image > span { display: grid; height: 100%; place-items: center; padding: 12px; }
-.home-tour-grid .card-body { display: flex; flex: 1; flex-direction: column; padding: 16px; }
-.home-tour-grid .card-body h3 { font-size: 1.22rem; margin: 0 0 8px; }
-.home-tour-grid .card-body p { margin-bottom: 9px; font-size: .9375rem; }
-.home-tour-grid .card-body .eyebrow { font-size: .8125rem; letter-spacing: .035em; }
-.home-tour-grid .card-price { margin-top: auto; padding-top: 12px; font-size: .875rem; flex-wrap: wrap; }
-.home-tour-grid .card-price span:last-child { color: #07517f; font-weight: 800; }
-.home-tour-grid .card-price strong { font-size: 1.1rem; }
+.home-tour-grid .tour-card:has(> a:focus-visible) { outline: 3px solid var(--home-sea); outline-offset: 3px; }
+.home-tour-grid .tour-card > a:focus-visible { outline: none; }
+.home-tour-grid .card-image { position: relative; height: auto; aspect-ratio: 4 / 3; }
+.home-tour-grid .tour-cover-empty { display: grid; height: 100%; place-items: center; padding: 46px 12px 12px; }
+.home-tour-badges {
+  position: absolute;
+  z-index: 1;
+  inset: 12px 12px auto;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px;
+}
+.home-tour-badges > span {
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: .875rem;
+  font-weight: 800;
+  box-shadow: 0 2px 8px #123b561f;
+}
+.home-tour-duration { background: #fff; color: var(--home-deep); }
+.home-tour-demo { background: #ffedb8; color: #523900; }
+.home-tour-grid .card-body { display: flex; flex: 1; flex-direction: column; padding: clamp(14px, 1.5vw, 20px); }
+.home-tour-grid .card-body h3 { font-size: clamp(1.25rem, 1.9vw, 1.475rem); font-weight: 850; margin: 0 0 10px; }
+.home-tour-grid .card-body p { margin-bottom: 12px; font-size: 1rem; }
+.home-tour-origin {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-weight: 750;
+}
+.home-tour-origin > span { flex: 0 0 7px; height: 7px; border-radius: 50%; background: var(--home-sea); }
+.home-tour-action {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin-top: auto;
+  padding: 10px 12px;
+  border-inline-start: 3px solid var(--home-sand);
+  border-radius: 10px;
+  background: #eff7fb;
+}
+.home-tour-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 6px; font-size: .875rem; }
+.home-tour-price > span:first-child { flex-basis: 100%; }
+.home-tour-price strong { color: var(--home-deep); font-size: 1.25rem; font-weight: 850; line-height: 1.25; }
+.home-tour-cta {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 6px;
+  margin-inline-start: auto;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--home-sea);
+  color: #fff;
+  font-size: .9375rem;
+  font-weight: 800;
+  transition: background 180ms var(--home-ease);
+}
+.home-tour-cta > span { transition: transform 180ms var(--home-ease); }
+.home-tour-grid .tour-card > a:focus-visible .home-tour-cta { background: #034771; }
+
+@media (hover: hover) and (pointer: fine) {
+  .home-tour-grid .tour-card:hover {
+    transform: translateY(-2px);
+    border-color: #9dbdce;
+    box-shadow: 0 10px 24px #123b561a;
+  }
+  .home-tour-grid .tour-card:hover .home-tour-cta { background: #034771; }
+  .home-tour-grid .tour-card:hover .home-tour-cta > span { transform: translateX(3px); }
+}
 .home-empty { background: #fff; border-radius: 14px; padding: 20px; }
 
 .home-group-card {
@@ -481,4 +550,5 @@ body:has(.home-shell) {
   .home-video-toggle { display: none; }
   .home-shell :is(.home-button, .home-outline):active { transform: none; }
   .home-tour-grid .tour-card:hover img { transform: none; scale: 1; }
+  .home-tour-grid .tour-card:hover .home-tour-cta > span { transform: none; }
 }
