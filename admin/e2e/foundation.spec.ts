@@ -32,6 +32,12 @@ test("admin login, settings save, reload and logout", async ({ page }) => {
   expect(reportPosition.x + reportPosition.width).toBeLessThan(workspace.x);
   expect(reportPosition.y).toBeLessThan(settingsPosition.y);
   await expect(settings).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByRole("main")).toHaveCSS("font-family", /Nunito Sans Variable/);
+  expect(await page.evaluate(async () => {
+    const faces = await document.fonts.load('700 24px "Nunito Sans Variable"', "Nguyễn Thị Ánh · Ắ Ằ Ẳ Ẵ Ặ · 1.250.000 ₫");
+    return faces.some(face => face.status === "loaded");
+  })).toBe(true);
+  await page.screenshot({ path: test.info().outputPath("admin-desktop.png"), animations: "disabled" });
   const hold = page.getByLabel("Thời gian giữ chỗ (phút)", { exact: true });
   await expect(hold).toBeVisible();
   await hold.fill("21");
@@ -51,6 +57,8 @@ test("admin login, settings save, reload and logout", async ({ page }) => {
   await expect(navigation).toBeHidden();
   await menu.click();
   await expect(settings).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "Điều hướng quản trị" })).toBeVisible();
+  await page.screenshot({ path: test.info().outputPath("admin-mobile.png"), animations: "disabled" });
   await settings.focus();
   await page.keyboard.press("Escape");
   await expect(menu).toBeFocused();
@@ -60,6 +68,26 @@ test("admin login, settings save, reload and logout", async ({ page }) => {
   await expect(navigation).toBeHidden();
   await expect(page.getByRole("main")).toBeFocused();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const bookingRequests = "**/api/v1/admin/bookings?*";
+  let respond!: () => void;
+  const pending = new Promise<void>(resolve => { respond = resolve; });
+  await page.route(bookingRequests, async route => {
+    await pending;
+    await route.fulfill({ status: 503, json: { success: false } });
+  });
+  try {
+    await menu.click();
+    await navigation.getByRole("button", { name: "Đơn tour", exact: true }).click();
+    await expect(page.getByText("Đang tải danh sách đơn…")).toBeVisible();
+  } finally {
+    respond();
+  }
+  await expect(page.getByRole("alert")).toHaveText("Không tải được danh sách đơn.");
+  await page.unroute(bookingRequests);
+  await page.route(bookingRequests, route => route.fulfill({ json: { success: true, data: [] } }));
+  await page.getByRole("button", { name: "Thử lại" }).click();
+  await expect(page.getByText("Chưa có đơn phù hợp.")).toBeVisible();
+  await page.unroute(bookingRequests);
   await page.getByRole("button", { name: "Đăng xuất" }).click();
   await expect(
     page.getByRole("heading", { name: "Đăng nhập quản trị" }),

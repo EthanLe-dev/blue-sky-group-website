@@ -10,6 +10,8 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## 1. Nguồn và quyết định thiết kế
 
+Nâng cấp Admin (T703b, nhánh `feature/admin-refresh`) dùng Nunito Sans, sidebar desktop và Sheet mobile theo quyền cũ. Màn Đơn tour có bộ lọc và trạng thái tải, lỗi, trống; giữ API và nghiệp vụ. Kiểm qua Playwright và CI.
+
 Nguồn: [MVP](../docs/mvp-requirements.md), [Final](../docs/final-requirements.md), [Architecture](../docs/architecture.md), [Database](../docs/database-schema.md), [API](../docs/api-spec.md), [AGENTS](../AGENTS.md).
 
 | Chủ đề | Quyết định dùng để triển khai / điều kiện chốt |

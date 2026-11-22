@@ -1,7 +1,8 @@
 import ExportButton from "./ExportButton";
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import BookingPayments from "./BookingPayments";
 import { authorized } from "./lib/session";
+import { Badge, Skeleton } from "./ui";
 type Row = Record<string, unknown>;
 type Contact = { name: string; email: string; phone: string };
 type Person = {
@@ -59,42 +60,32 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
   const [q, setQ] = useState("");
   const [page, setPage] = useState(1);
   const [manual, setManual] = useState(false);
-  async function load() {
+  const [listState, setListState] = useState<"loading" | "ready" | "error">("loading");
+  const listRequest = useRef({ path: null as string | null, revision: 0 });
+  const path = "/admin/bookings?page=" + page + "&status=" + status + "&q=" + encodeURIComponent(q);
+  const load = useCallback(async () => {
+    const state = listRequest.current;
+    if (!state.path) return;
+    const revision = ++state.revision;
+    setListState("loading");
     try {
-      setRows(
-        await authorized<Booking[]>(
-          "/admin/bookings?page=" +
-            page +
-            "&status=" +
-            status +
-            "&q=" +
-            encodeURIComponent(q),
-        ),
-      );
-    } catch (e) {
-      setMessage(String(e));
+      const result = await authorized<Booking[]>(state.path);
+      if (revision !== state.revision) return;
+      setRows(result);
+      setListState("ready");
+    } catch {
+      if (revision === state.revision) setListState("error");
     }
-  }
+  }, []);
   useEffect(() => {
-    let active = true;
-    authorized<Booking[]>(
-      "/admin/bookings?page=" +
-        page +
-        "&status=" +
-        status +
-        "&q=" +
-        encodeURIComponent(q),
-    )
-      .then((rows) => {
-        if (active) setRows(rows);
-      })
-      .catch((e) => {
-        if (active) setMessage(String(e));
-      });
+    const state = listRequest.current;
+    state.path = path;
+    void load();
     return () => {
-      active = false;
+      state.path = null;
+      state.revision++;
     };
-  }, [page, status, q]);
+  }, [load, path]);
   async function detail(id: string) {
     try {
       setRecord(await authorized<Booking>("/admin/bookings/" + id));
@@ -104,10 +95,12 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
     }
   }
   return (
-    <section className="workspace">
-      <h2>Quản lý đơn tour</h2>
-      {canExport && <ExportButton path={"/admin/bookings/export?" + new URLSearchParams({ status, q })} filename="danh-sach-don" label="danh sách đơn" />}
-      <div className="toolbar">
+    <section className="workspace booking-workspace">
+      <div className="booking-heading">
+        <h2>Quản lý đơn tour</h2>
+        {canExport && <ExportButton path={"/admin/bookings/export?" + new URLSearchParams({ status, q })} filename="danh-sach-don" label="danh sách đơn" />}
+      </div>
+      <div className="toolbar booking-filters">
         <label>
           Trạng thái
           <select
@@ -140,31 +133,39 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
         )}
       </div>
       <p role="status">{message}</p>
-      {rows.length ? (
-        rows.map((b) => (
-          <button
-            className="list-row"
-            key={b.id}
-            onClick={() => void detail(b.id)}
-          >
-            <strong>
-              {b.code} · {b.tour_snapshot.title}
-            </strong>
-            <span>
-              {bookingStatuses[b.status] || b.status} · {b.contact.name} · {money(b.total_amount)} ·{" "}
-              {bookingSources[b.source] || b.source}
-            </span>
-          </button>
-        ))
-      ) : (
-        <p>Chưa có đơn phù hợp.</p>
-      )}
+      <div className="data-list booking-list" aria-busy={listState === "loading"} aria-label="Danh sách đơn tour">
+        {listState === "loading" ? (
+          <>
+            <p>Đang tải danh sách đơn…</p>
+            <Skeleton />
+            <Skeleton />
+          </>
+        ) : listState === "error" ? (
+          <div className="booking-list-state">
+            <p role="alert">Không tải được danh sách đơn.</p>
+            <button type="button" onClick={() => void load()}>Thử lại</button>
+          </div>
+        ) : rows.length ? (
+          rows.map((b) => (
+            <button type="button" className="list-row booking-row" key={b.id} onClick={() => void detail(b.id)}>
+              <span className="booking-row-copy">
+                <strong>{b.code} · {b.tour_snapshot.title}</strong>
+                <span>{b.contact.name} · {bookingSources[b.source] || b.source}</span>
+              </span>
+              <Badge status={b.status}>{bookingStatuses[b.status] || b.status}</Badge>
+              <strong className="booking-total">{money(b.total_amount)}</strong>
+            </button>
+          ))
+        ) : (
+          <p className="booking-list-state">Chưa có đơn phù hợp.</p>
+        )}
+      </div>
       <div className="toolbar">
-        <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+        <button disabled={page === 1 || listState === "loading"} onClick={() => setPage(page - 1)}>
           Trang trước
         </button>
         <span>Trang {page}</span>
-        <button disabled={rows.length < 20} onClick={() => setPage(page + 1)}>
+        <button disabled={listState !== "ready" || rows.length < 20} onClick={() => setPage(page + 1)}>
           Trang tiếp
         </button>
       </div>

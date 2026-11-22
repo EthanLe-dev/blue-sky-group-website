@@ -218,12 +218,14 @@ jobs:
         run: |
           RELEASE_BROWSER=firefox npm run test:e2e -- --output=test-results-firefox
           RELEASE_BROWSER=webkit npm run test:e2e -- --output=test-results-webkit
-      - name: Save public responsive screenshots
+      - name: Save UI responsive screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: public-responsive
-          path: admin/test-results*/**/homepage-*.png
+          path: |
+            admin/test-results*/**/homepage-*.png
+            admin/test-results*/**/admin-*.png
           if-no-files-found: ignore
           retention-days: 7
       - name: Collect failure traces
