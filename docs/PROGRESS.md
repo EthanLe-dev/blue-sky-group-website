@@ -14,6 +14,8 @@
 
 ## Làm mới Trang chủ
 
+- T703e trên `feature/homepage-tour-cards`: thẻ tour Trang chủ đưa thời lượng và nhãn demo lên ảnh, làm nổi khu vực giá và nút xem chi tiết, có hiệu ứng rê chuột và focus bàn phím. Giữ dữ liệu và đích liên kết hiện tại. Playwright xác nhận các thông tin và thao tác trên thẻ.
+
 - T703d trên `feature/homepage-video`: thêm video biển 9 giây dạng WebM và MP4, tự phát lặp ở chế độ tắt tiếng, có nút tạm dừng. Video nghỉ ngoài khung nhìn và khi chuyển tab. Chế độ giảm chuyển động và lỗi phát dùng ảnh Vĩnh Hy hiện có. Nguồn và giấy phép trong trang credit.
 
 - T703a trên `feature/homepage-refresh`: phần đầu trang giới thiệu dịch vụ Blue Sky Group và ô tìm tour. Khối tour bên dưới dùng dữ liệu hiện có, kể cả danh sách trống. Thêm Nunito Sans theo phạm vi trang chủ, bố cục thẻ ảnh và hai chuyển động GSAP có chế độ tĩnh.

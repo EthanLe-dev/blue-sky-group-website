@@ -6,6 +6,8 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
+- T703e: Làm mới thẻ tour Trang chủ. Phân cấp lại ảnh, thời lượng, giá và thao tác xem chi tiết. Kiểm giao diện responsive qua CI trên nhánh `feature/homepage-tour-cards`.
+
 - T703d: Video nền Trang chủ. Dùng đoạn stock được phép sử dụng, bố trí nút phát/tạm dừng và ảnh tĩnh dự phòng. Kiểm phát và giảm chuyển động qua CI trên nhánh `feature/homepage-video`.
 
 - T703a: Trang chủ ưu tiên thương hiệu và công cụ tìm kiếm. Danh sách tour từ CMS nằm bên dưới. Dùng Nunito Sans, bố cục thẻ ảnh theo số tour và GSAP cho phần đầu trang và một cụm ảnh. Kiểm qua Playwright và CI của nhánh `feature/homepage-refresh`.
