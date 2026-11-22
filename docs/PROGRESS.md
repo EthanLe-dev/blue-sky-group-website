@@ -2,6 +2,8 @@
 
 ## Bàn giao nhanh — 22/11/2026
 
+- Đã cài `bluesky run` mở/build app và `bluesky off` dừng/giữ volume trên máy người dùng. Mở PowerShell mới, dùng từ bất kỳ thư mục; không khởi động app khi cài.
+
 - Cập nhật mới nhất: người dùng yêu cầu tự chạy app. Đã dừng toàn bộ Compose của dự án bằng down (không -v); dữ liệu volume giữ nguyên. Agent không tự khởi động lại app/Docker/service local nếu chưa được yêu cầu rõ. Hướng dẫn chạy trong README.
 - Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
 - Nhánh hiện tại `develop`. PR #1 đã qua CI và merge tại ce0bbb9; chứa cả tài liệu quyết định, frontend/GSAP/ponytail và nền tảng M0/M1. Main giữ nguyên f80a064.
@@ -142,3 +144,7 @@ Có thể tiếp tục M2: T201/T202 UI tokens/layout, T203 catalog. T108b chỉ
 ### Người dùng yêu cầu dừng app và tự chạy local
 
 Đã chạy `docker compose --profile app --profile production-tools down` không kèm `-v`; `compose ps` không còn service chạy. Không dừng ứng dụng/container khác ngoài dự án. Cập nhật AGENTS để không tự khởi động app/Docker/service local; kiểm thử cần service phải xin phép trước. README có hướng dẫn chạy lại bằng up, xem logs và down; .env/Admin/dữ liệu đã có không cần bootstrap lại. Các ghi chú “Docker vẫn chạy” ở mục lịch sử phía trên là trạng thái cũ.
+
+### Lệnh tắt bluesky run/off
+
+Người dùng yêu cầu lệnh mở/tắt app. Đã thêm scripts/bluesky.cmd và install_shortcuts.ps1, cài launcher vào LOCALAPPDATA/BlueSky/bin, user PATH và refresh PATH trong profile PowerShell7/Windows PowerShell, giữ nội dung/encoding profile cũ. Run kiểm Docker có sẵn rồi up -d --build; off down cả app/Redis không -v. `python scripts/test_shortcuts.py` PASS bằng Docker giả (dispatch run/off, invalid action, daemon lỗi); `bluesky help` và command discovery PASS. Không chạy app hoặc service mới. Nhánh chore/bluesky-shortcuts từ develop, độc lập PR #2.
