@@ -105,11 +105,13 @@ Bằng chứng M5 trên `b76c2f0` trong [GitHub Actions 45009896743](https://git
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T601 | Revenue/occupancy/quote metrics API | T403,T501 | Dataset known sums, midnight VN, refund khác ngày, không double JOIN |
-| T602 | Dashboard admin + filter/date/empty/error | T601,T102 | Số liệu khớp API; executive chỉ read; mock label |
-| T603 | Excel/CSV export report/booking/tour | T601,T306,T205 | Đọc file bằng parser + mở thực, formula injection, row cap, private access |
-| T604 | PDF tour và group quote | T210,T503 | Font Việt, page break, totals/version, private quote, renderer chặn SSRF |
-| T605 | GA4/Search Console integration | T405,T502,T216 | Không PII, purchase một lần và nhãn demo; DebugView khi có tài khoản |
+| T601 · DONE | Revenue/occupancy/quote metrics API | T403,T501 | Dataset known sums, midnight VN, refund khác ngày, không double JOIN |
+| T602 · DONE | Dashboard admin + filter/date/empty/error | T601,T102 | Số liệu khớp API; executive chỉ read; mock label |
+| T603 · DONE | Excel/CSV export report/booking/tour | T601,T306,T205 | Đọc file bằng parser + mở thực, formula injection, row cap, private access |
+| T604 · DONE | PDF tour và group quote | T210,T503 | Font Việt, page break, totals/version, private quote, renderer chặn SSRF |
+| T605 · DONE phần mã | GA4/Search Console integration | T405,T502,T216 | Không PII, purchase một lần và nhãn demo; DebugView khi có tài khoản |
+
+Bằng chứng M6 trên `aeaea662` trong [GitHub Actions 45022045577](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45022045577). T605 còn xác minh thuộc tính Google thật khi có tài khoản.
 
 ## M7 — Nghiệm thu và vận hành
 
