@@ -12,11 +12,11 @@ import (
 
 func createPayment(ctx context.Context, tx pgx.Tx, bookingID, purpose string, staffID any) (json.RawMessage, error) {
 	var status, option string
-	var total, deposit, paid, refunded int64
+	var total, deposit, paid int64
 	var holdUntil, now, starts time.Time
-	err := tx.QueryRow(ctx, `SELECT b.status,b.payment_option,b.total_amount,b.deposit_amount,b.paid_amount,b.refunded_amount,
+	err := tx.QueryRow(ctx, `SELECT b.status,b.payment_option,b.total_amount,b.deposit_amount,b.paid_amount,
 		b.expires_at,clock_timestamp(),d.starts_at FROM bookings b JOIN departures d ON d.id=b.departure_id WHERE b.id=$1`,
-		bookingID).Scan(&status, &option, &total, &deposit, &paid, &refunded, &holdUntil, &now, &starts)
+		bookingID).Scan(&status, &option, &total, &deposit, &paid, &holdUntil, &now, &starts)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func createPayment(ctx context.Context, tx pgx.Tx, bookingID, purpose string, st
 			amount = deposit
 		}
 		expires = minTime(expires, holdUntil)
-	case status == "confirmed" && purpose == "balance" && paid < total && refunded == 0 && now.Before(starts):
+	case status == "confirmed" && purpose == "balance" && paid < total && now.Before(starts):
 		amount = total - paid
 		expires = minTime(expires, starts)
 	default:

@@ -171,7 +171,7 @@ func (a *App) cookie(c *gin.Context, name, value string, age int) {
 func (a *App) limit(scope string, max, seconds int) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		principal := ""
-		if scope == "checkout" {
+		if scope == "checkout" || scope == "payment" {
 			principal = c.GetString("guest_id")
 		}
 		if scope == "lookup" {

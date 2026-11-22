@@ -184,6 +184,31 @@ func TestMockPaymentLedgerAndNotifications(t *testing.T) {
 	if expired.Code != 409 || !strings.Contains(expired.Body.String(), "HOLD_EXPIRED") {
 		t.Fatal("late confirm", expired.Body)
 	}
+	// Confirm and cancel can enter concurrently, but both lock the departure first.
+	exec("DELETE FROM staff_roles WHERE staff_id=$1", staff.ID)
+	exec("INSERT INTO staff_roles(staff_id,role_id) SELECT $1,id FROM roles WHERE code='admin'", staff.ID)
+	racing := newBooking(staff, "full")
+	racingID := must(admin("POST", "/bookings/"+racing+"/payments", `{"purpose":"full"}`, uuid.NewString()), 201)["id"].(string)
+	confirmResult := make(chan *httptest.ResponseRecorder, 1)
+	go func() {
+		confirmResult <- admin("POST", "/payments/"+racingID+"/mock-confirm", `{"reason":"Kiểm thử cạnh tranh"}`, uuid.NewString())
+	}()
+	cancelled := admin("POST", "/bookings/"+racing+"/cancel", `{"expected_version":1,"reason":"Kiểm thử cạnh tranh"}`, uuid.NewString())
+	confirmedResult := <-confirmResult
+	if !((cancelled.Code == 200 && confirmedResult.Code == 409) ||
+		(cancelled.Code == 409 && confirmedResult.Code == 200)) {
+		t.Fatalf("confirm/cancel: %d %s / %d %s", confirmedResult.Code, confirmedResult.Body, cancelled.Code, cancelled.Body)
+	}
+	var state string
+	var paidAmount int64
+	if err := a.DB.QueryRow(ctx, "SELECT status,paid_amount FROM bookings WHERE id=$1", racing).Scan(&state, &paidAmount); err != nil {
+		t.Fatal(err)
+	}
+	if cancelled.Code == 200 && (state != "cancelled" || paidAmount != 0) ||
+		confirmedResult.Code == 200 && (state != "confirmed" || paidAmount <= 0) {
+		t.Fatalf("confirm/cancel left state %s and paid %d", state, paidAmount)
+	}
+
 	a.Config.Env = "production"
 	if w := request(a, "POST", "/api/v1"+confirm, "{}", "", csrf, guest); w.Code != 404 {
 		t.Fatal("production mock route mounted", w.Body)
