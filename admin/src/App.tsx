@@ -6,6 +6,7 @@ import Settings from "./Settings";
 import Catalog from "./Catalog";
 import Media from "./Media";
 import Bookings from "./Bookings";
+import Reports from "./Reports";
 import NotificationLog from "./NotificationLog";
 import Sales from "./Sales";
 import Customers from "./Customers";
@@ -90,7 +91,8 @@ export default function App() {
           {error && <p role="alert">{error}</p>}
           <nav className="admin-tabs" aria-label="Module quản trị">
             {[
-              ["bookings", "Đơn tour"],
+              ...(user.permissions.includes("booking.read") ? [["bookings", "Đơn tour"]] : []),
+              ...(user.permissions.includes("report.read") ? [["reports", "Báo cáo"]] : []),
               ["catalog", "Tour & Nội dung"],
               ["media", "Media"],
               ...(user.permissions.includes("lead.write") ? [["sales", "Yêu cầu tư vấn"]] : []),
@@ -110,6 +112,7 @@ export default function App() {
           {tab === "bookings" && user.permissions.includes("booking.read") && (
             <Bookings write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
           )}{" "}
+          {tab === "reports" && user.permissions.includes("report.read") && <Reports />}
           {tab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
           {tab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
           {tab === "customers" && user.permissions.includes("customer.write") && (
