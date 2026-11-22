@@ -207,3 +207,9 @@ Không tạo trước schema cho tính năng chưa chốt để tránh ngầm m�
 - Idempotency `(principal,route,key)` claim, tài nguyên và response cùng transaction; lỗi rollback cả key. TTL tối thiểu24 giờ; hiện giữ lâu hơn24h, chưa tự xoá key/booking/PII. Dọn retention cần migration/job theo policy được duyệt, không truncate dữ liệu.
 - Worker trong process lấy batch500 departure có hold hết hạn, khoá từng departure; restart dựa hoàn toàn dữ liệu DB. Catalog/read và mọi mutation vẫn cleanup trực tiếp. Không tạo bảng payment trước M4.
 - Khôi phục thay down schema destructive: backup PostgreSQL trước migrate; nếu lỗi runner rollback migration chưa commit; đã commit thì roll forward hoặc restore backup đã kiểm chứng. Không xoá volume local khi rollback app.
+
+### Hiện trạng M4
+
+Migration `000005_payment_notification.sql` bổ sung số tiền hoàn và giờ xác nhận vào đơn. Ledger mock lưu khoản thu, khoản hoàn, event xác nhận, outbox và hai bản xem trước theo kênh. `payment_status` tiếp tục dùng cột từ M3, cập nhật cùng transaction với `paid_amount` và `refunded_amount`. Không có backfill khoản thu vì đơn M3 chưa có luồng thu tiền. Trường hợp cần quay lại ứng dụng M3 sau khi demo đã ghi nhận giao dịch, cần sao lưu và dùng bản dữ liệu trước M4 để tránh giao diện M3 xử lý đơn đã thu tiền như đơn chưa thu.
+
+Outbox chỉ lưu mã tham chiếu đơn và loại sự kiện. Worker tạo email/SMS trong cùng transaction đánh dấu xong, với khóa chống trùng theo event và kênh. Worker lấy lại lease hết hạn sau 30 giây, lần thử cũ mất quyền ghi. Lỗi được thử lại với backoff lũy tiến, tối đa 5 lần. Bản xem trước dùng mã đơn, không sao chép email, số điện thoại hoặc hành khách vào bảng log.

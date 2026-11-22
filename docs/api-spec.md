@@ -209,15 +209,15 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | POST `/admin/bookings/{id}/notes` | `{body}` | booking.write; note nội bộ |
 | POST `/admin/bookings/{id}/cancel` | `{expected_version,reason}` | booking.write + Idempotency-Key; CancelResult `{booking,refund_required_amount}`, không tự refund |
 | POST `/admin/bookings/{id}/complete` | `{expected_version}` | booking.write; sau ends_at, trả Booking |
-| GET `/admin/bookings/{id}/payments` | — | booking.read; Payment[] + refunds[] |
+| GET `/admin/bookings/{id}/payments` | — | booking.read; `{server_time,payments,refunds,reconciled}` |
 | POST `/admin/bookings/{id}/payments` | `{purpose}` | payment.write + Idempotency-Key; cho đơn thủ công, trả Payment |
 | POST `/admin/payments/{id}/mock-confirm` | `{reason}` | payment.write + Idempotency-Key; chỉ demo, trả payment+booking |
-| POST `/admin/payments/{id}/refunds` | `{amount,reason}` | payment.write + Idempotency-Key; MVP refund giả lập succeeded, không quá paid còn lại; trả Refund `{id,payment_id,amount,status,is_mock,completed_at}` |
+| POST `/admin/payments/{id}/refunds` | `{amount,reason}` | payment.write + Idempotency-Key; MVP refund giả lập succeeded, không quá paid còn lại; trả 201 Refund `{id,payment_id,amount,status,is_mock,completed_at}` |
 | GET `/admin/customers` | `q,page,page_size` | customer.write; Customer[] |
 | POST `/admin/customers` | `{full_name,email?,phone?,company_name?,notes?}` | customer.write; Customer |
 | GET/PATCH `/admin/customers/{id}` | PATCH partial CustomerWrite | customer.write; Customer |
 | GET `/admin/customers/{id}/bookings` | `page,page_size` | customer.write + booking.read; lịch sử chỉ booking đã linked xác minh |
-| GET `/admin/notifications` | `booking_id,channel,status,page,page_size` | notification.read; NotificationPreview[] |
+| GET `/admin/notifications` | `booking_id,channel,status,page,page_size` | notification.read; `{logs,jobs}` |
 
 Huỷ có phí: MVP nhân viên xem policy_snapshot và nhập số tiền refund có lý do, không tự tính mức phạt chưa được BA chốt. Refund không tự cancel booking; muốn trả chỗ phải action cancel trước. Chuyến cancelled thực hiện workflow huỷ từng đơn rồi đóng departure khi không còn active booking (MVP xử lý qua admin, không bulk update bỏ transaction).
 
@@ -319,3 +319,11 @@ OpenAPI `backend/internal/platform/openapi.json` mô tả endpoint đã mount M1
 - Payment/thông báo M4 chưa có endpoint trong runtime. UI ghi rõ chưa thanh toán và không gửi email/SMS thật.
 
 Bổ sung CMS: Post detail có category, tags, related_posts tối đa3 cùng category/tag, chỉ published; cover_media_id/media_id của nội dung công khai phải public-ready-image. Gallery kind/collection có pagination. Public/admin quote cùng nhận surcharge_codes; optional do khách/nhân viên chọn, required do server tự thêm. Lookup limiter scope IP+mã chuẩn hoá, body vẫn qua strict validation sau middleware.
+
+### Hợp đồng đã triển khai M4
+
+- `GET /bookings/{id}/payments` trả `{server_time,payments}`. Admin nhận thêm `refunds,reconciled`. Trường `reconciled` so khớp tổng thu và hoàn của sổ với đơn trong cùng một lượt đọc.
+- Intent có hạn 15 phút, giới hạn bởi hạn giữ chỗ hoặc giờ khởi hành. Phần còn lại được thu trước giờ khởi hành, kể cả quá ngày đến hạn hiển thị. Đơn huỷ, hết hạn hoặc hoàn thành không mở intent mới.
+- Confirm trả `{payment,booking}`. Trả cọc đổi đơn sang `confirmed` và thanh toán sang `partially_paid` nếu còn dư. Số tiền VND đi qua API dưới dạng chuỗi số nguyên. Refund thành công trả 201 và không đổi số ghế.
+- `GET /admin/notifications` trả `{logs,jobs}`. `logs` là bản xem trước theo kênh. `jobs` gồm các lượt tạo bản xem trước còn chờ, đang xử lý hoặc thất bại. Phân trang từng danh sách. Bộ lọc kênh áp dụng cho `logs`.
+- Các endpoint thanh toán chỉ mở khi `PAYMENT_PROVIDER=mock`. Bản xem trước chỉ mở khi `EMAIL_PROVIDER=mock` và `SMS_PROVIDER=mock`. Cả hai nhóm vắng trên production.

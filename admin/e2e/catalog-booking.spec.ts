@@ -22,7 +22,7 @@ async function login(page: Page) {
     page.getByRole("heading", { name: "Danh mục và nội dung" }),
   ).toBeVisible();
 }
-test("catalog, poster, favourites, checkout, private lookup and admin cancellation", async ({
+test("catalog, QR checkout, private lookup, cancellation and mock refund", async ({
   page,
 }) => {
   await page.goto("http://localhost:3000/tours?budget_max=1700000");
@@ -77,6 +77,17 @@ test("catalog, poster, favourites, checkout, private lookup and admin cancellati
     page.getByRole("heading", { name: "Đã tạo đơn giữ chỗ" }),
   ).toBeVisible();
   const code = await page.locator(".summary strong").first().innerText();
+  await page.getByRole("button", { name: "Thanh toán toàn bộ giả lập", exact: true }).click();
+  await expect(page.getByRole("img", { name: "Mã QR chỉ chứa thông báo giả lập" })).toBeVisible();
+  await page.getByRole("button", { name: "Xác nhận thanh toán giả lập", exact: true }).evaluate((node: HTMLButtonElement) => {
+    node.click();
+    node.click();
+  });
+  await expect(page.getByRole("heading", { name: "Đã xác nhận đặt tour" })).toBeVisible();
+  await expect(page.locator(".summary")).toContainText("Đã thanh toán đủ");
+  await expect(page.locator("summary").filter({ hasText: "Email giả lập · Xác nhận đặt tour" })).toBeVisible({ timeout: 15_000 });
+  await page.getByRole("link", { name: "Mở lại đơn trên trình duyệt này" }).click();
+  await expect(page.getByRole("heading", { name: "Đã xác nhận đặt tour" })).toBeVisible();
   await page.goto("http://localhost:3000/lookup");
   await page.getByLabel("Mã đơn", { exact: true }).fill(code);
   await page
@@ -95,6 +106,10 @@ test("catalog, poster, favourites, checkout, private lookup and admin cancellati
     .getByRole("button", { name: "Huỷ đơn và trả chỗ", exact: true })
     .click();
   await expect(page.getByRole("status").first()).toContainText("Đã huỷ đơn");
+  await page.getByLabel("Số tiền hoàn (₫)", { exact: true }).fill("1000");
+  await page.getByLabel("Lý do hoàn tiền", { exact: true }).fill("Hoàn thử 1.000 đồng");
+  await page.getByRole("button", { name: "Ghi nhận hoàn tiền giả lập", exact: true }).click();
+  await expect(page.getByText("Đã ghi nhận hoàn tiền giả lập.", { exact: true })).toBeVisible();
 });
 test("admin tour editor persists edits and verifies poster", async ({
   page,

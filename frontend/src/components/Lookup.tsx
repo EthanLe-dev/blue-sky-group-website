@@ -100,9 +100,13 @@ export default function Lookup({
           </p>
           <p>
             Thanh toán:{" "}
-            {booking.payment_status === "unpaid"
-              ? "Chưa thanh toán"
-              : booking.payment_status}
+            {({
+              unpaid: "Chưa thanh toán",
+              partially_paid: "Đã đặt cọc",
+              paid: "Đã thanh toán đủ",
+              refunded: "Đã hoàn tiền",
+              partially_refunded: "Đã hoàn một phần",
+            } as Record<string, string>)[booking.payment_status] || booking.payment_status}
           </p>
           <p>
             Tổng {Number(booking.total_amount).toLocaleString("vi-VN")} đ · Đã

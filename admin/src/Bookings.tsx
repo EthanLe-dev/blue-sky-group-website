@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import BookingPayments from "./BookingPayments";
 import { authorized } from "./lib/session";
 type Row = Record<string, unknown>;
 type Contact = { name: string; email: string; phone: string };
@@ -19,8 +20,11 @@ type Booking = {
   total_amount: string;
   deposit_amount: string;
   paid_amount: string;
+  refunded_amount: string;
+  payment_option: string;
   balance_amount: string;
   expires_at: string;
+  server_time: string;
   tour_snapshot: { title: string; starts_at: string };
   price_snapshot: { cancellation_policy: string };
   notes: { id: string; body: string; created_at: string }[];
@@ -36,7 +40,7 @@ type Quote = {
   };
 };
 const money = (v: string) => Number(v).toLocaleString("vi-VN") + " đ";
-export default function Bookings({ write }: { write: boolean }) {
+export default function Bookings({ write, canPay, canReadNotifications }: { write: boolean; canPay: boolean; canReadNotifications: boolean }) {
   const [rows, setRows] = useState<Booking[]>([]);
   const [record, setRecord] = useState<Booking | null>(null);
   const [message, setMessage] = useState("");
@@ -290,6 +294,8 @@ export default function Bookings({ write }: { write: boolean }) {
               </button>
             </div>
           )}
+          <BookingPayments key={record.id} booking={record} canPay={canPay}
+            canReadNotifications={canReadNotifications} onChanged={async () => { await detail(record.id); await load(); }} />
           <h3>Ghi chú nội bộ</h3>
           {record.notes.map((n) => (
             <p key={n.id}>
