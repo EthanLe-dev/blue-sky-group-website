@@ -65,7 +65,7 @@ export default function Hero() {
               />
               <button className="btn">Tìm tour ↗</button>
             </form>
-            <Link className="text-action" href="/tours/ninh-chu-2-ngay-1-dem">
+            <Link prefetch={false} className="text-action" href="/tours/ninh-chu-2-ngay-1-dem">
               Xem hành trình Ninh Chữ
             </Link>
           </div>

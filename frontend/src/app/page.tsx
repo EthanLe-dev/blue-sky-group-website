@@ -44,12 +44,12 @@ export default async function Home() {
               <p className="eyebrow">ĐI GẦN, KHÁM PHÁ NHIỀU</p>
               <h2>Tour Ninh Chữ & Vĩnh Hy</h2>
             </div>
-            <Link className="text-action" href="/tours">
+            <Link prefetch={false} className="text-action" href="/tours">
               Xem tất cả tour ↗
             </Link>
           </div>
           {data?.banners?.map((b) => (
-            <Link
+            <Link prefetch={false}
               key={b.id}
               href={b.target_url || "/tours"}
               className="home-banner"
@@ -77,7 +77,7 @@ export default async function Home() {
                   ? "Chúng tôi đang chuẩn bị những hành trình mới."
                   : "Chưa kết nối được danh mục. Vui lòng tải lại hoặc xem thông tin liên hệ."}
               </p>
-              <Link href="/tours" className="btn">
+              <Link prefetch={false} href="/tours" className="btn">
                 Xem danh mục tour
               </Link>
             </div>
@@ -94,7 +94,7 @@ export default async function Home() {
                 <div className="content-list">
                   {data?.destinations?.map((d) => (
                     <article key={d.id}>
-                      <Link
+                      <Link prefetch={false}
                         className="text-action"
                         href={"/destinations/" + d.slug}
                       >
@@ -103,7 +103,7 @@ export default async function Home() {
                     </article>
                   ))}
                 </div>
-                <Link className="text-action" href="/destinations">
+                <Link prefetch={false} className="text-action" href="/destinations">
                   Xem các điểm đến
                 </Link>
               </div>
@@ -112,14 +112,14 @@ export default async function Home() {
                 <div className="content-list">
                   {data?.latest_posts?.map((post) => (
                     <article key={post.id}>
-                      <Link className="text-action" href={"/blog/" + post.slug}>
+                      <Link prefetch={false} className="text-action" href={"/blog/" + post.slug}>
                         {post.title} ↗
                       </Link>
                       <p>{post.excerpt}</p>
                     </article>
                   ))}
                 </div>
-                <Link className="text-action" href="/blog">
+                <Link prefetch={false} className="text-action" href="/blog">
                   Xem cẩm nang
                 </Link>
               </div>
@@ -172,7 +172,7 @@ export default async function Home() {
                   dangerouslySetInnerHTML={{ __html: homeCopy.body }}
                 />
               )}
-              <Link href="/schools">
+              <Link prefetch={false} href="/schools">
                 <span>01 / Trường học</span>
                 <h3>Ngoại khoá học đường</h3>
                 <p>
@@ -181,7 +181,7 @@ export default async function Home() {
                 </p>
                 <span>Xem chương trình ↗</span>
               </Link>
-              <Link href="/companies">
+              <Link prefetch={false} href="/companies">
                 <span>02 / Doanh nghiệp</span>
                 <h3>Du lịch gắn kết đồng đội</h3>
                 <p>

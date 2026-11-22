@@ -72,7 +72,7 @@ export default async function Detail({
   return (
     <main data-analytics-tour={t.id} id="main" className="page wrap">
       <nav className="breadcrumb" aria-label="Đường dẫn">
-        <Link href="/tours">Khám phá tour</Link>
+        <Link prefetch={false} href="/tours">Khám phá tour</Link>
         <span> / {t.title}</span>
       </nav>
       <p className="eyebrow">
@@ -232,7 +232,7 @@ export default async function Detail({
                   ))}
                 </ul>
                 {d.status === "open" && d.remaining_seats > 0 ? (
-                  <Link
+                  <Link prefetch={false}
                     className="btn"
                     href={
                       "/checkout?tour=" +
@@ -253,10 +253,10 @@ export default async function Detail({
           ) : (
             <p>Chưa có lịch mở bán. Hãy liên hệ để được tư vấn.</p>
           )}
-          <Link href="/contact" className="text-action">
+          <Link prefetch={false} href="/contact" className="text-action">
             Liên hệ hỗ trợ
           </Link>
-          <Link href={`/contact?tour=${t.id}#goi-lai`} className="text-action">
+          <Link prefetch={false} href={`/contact?tour=${t.id}#goi-lai`} className="text-action">
             Yêu cầu gọi lại
           </Link>
         </aside>

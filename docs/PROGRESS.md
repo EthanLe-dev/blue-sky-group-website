@@ -268,3 +268,13 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - CI PR #6 là bằng chứng tích hợp. DebugView thật và xác minh Search Console cần tài khoản và địa chỉ site, chưa thực hiện.
 - CI bản `3ddd0f3` có tám ca trình duyệt đạt, gồm PDF và analytics. Ca tải CSV dừng tại nhãn select và fixture kiểm quyền PDF thiếu hai trường bắt buộc. Đã bổ sung nhãn truy cập rõ cho lựa chọn định dạng và điền đủ fixture. Build Windows chạy được với Webpack sau lỗi tiến trình Turbopack. Build Linux CI đạt.
 - Bản `aeaea662` đạt 6/6 job CI, gồm PostgreSQL và 9 ca Playwright. Xem [run 45022045577](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45022045577).
+
+### M7 — Chuẩn bị phát hành MVP
+
+- Nhánh feature/mvp-release, PR #7. T701 thêm fixture không trùng, không sửa đơn và lịch mẫu đã chỉnh, demo có vị trí minh họa. T702 thêm cọc rồi trả phần còn lại sau mất phản hồi, đặt tại quầy và chặn truy cập private. T703 có script viewport, bàn phím, ảnh public và reduced motion trên Chromium/Firefox/WebKit.
+- T704 có Render Blueprint, migration Neon direct, R2 và Turnstile thật bắt buộc cho demo. T705 CD có công tắc mặc định tắt, deploy đúng SHA và smoke sau khi promote. Unit Python kiểm revision lệch. T706 chuẩn bị phiếu 11 tiêu chí, T707 runbook và drill backup/restore trong database CI riêng.
+- Hoãn phần cần người dùng: tài khoản/credential, chạy trên URL cloud, diễn tập rollback trên host, xác minh GA4/Search Console và nghiệm thu với người thử độc lập. App trên máy người dùng không khởi động.
+- CI 45024473766 đạt Go/PostgreSQL và 11 ca Chromium. Luồng tại quầy cần tên truy cập rõ cho bộ chọn tour, còn đăng nhập lượt sáu chạm rate limit của app. Đã gộp ca tại quầy với báo cáo dùng cùng phiên Admin và giữ giới hạn đăng nhập.
+- CI 45025034406 đạt 12 ca Chromium và smoke Firefox. WebKit báo lỗi các request tải trước trang tour/Liên hệ. Đã tắt prefetch cho các liên kết liên quan và kiểm lại qua thao tác bấm link thật.
+- Run 45025522153 xác nhận thao tác bấm tour và Liên hệ trong WebKit, còn lỗi tải trước nền danh sách tour. Tắt prefetch trên các liên kết ở những trang kiểm tra thay vì bỏ assertion lỗi trình duyệt. Liên kết vẫn điều hướng khi bấm.
+- CI `783e6f86` đạt 6/6 job. Chromium 12 ca và smoke trên Firefox/WebKit đạt, có ảnh responsive. Diễn tập dump/restore PostgreSQL đạt cùng số tour, đơn và yêu cầu đoàn. [CI 45025910519](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45025910519).

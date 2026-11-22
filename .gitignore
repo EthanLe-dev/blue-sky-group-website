@@ -83,3 +83,5 @@ __pycache__/
 
 .taste-skill/build.done.json
 .taste-skill/gate/
+
+/admin/test-results-*/

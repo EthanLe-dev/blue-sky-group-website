@@ -65,3 +65,12 @@ func Migrate(ctx context.Context, p *pgxpool.Pool) error {
 	}
 	return tx.Commit(ctx)
 }
+
+func MigrateURL(ctx context.Context, url string) error {
+	p, err := Connect(ctx, url)
+	if err != nil {
+		return err
+	}
+	defer p.Close()
+	return Migrate(ctx, p)
+}

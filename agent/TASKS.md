@@ -117,13 +117,15 @@ Bằng chứng M6 trên `aeaea662` trong [GitHub Actions 45022045577](https://gi
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T701 | Seed demo có tất cả trạng thái cần test | T404,T501 | Seed idempotent, production chặn seed, không có khách thật |
-| T702 | E2E journey và CI browser tests | T405,T406,T503,T603,T604,T701 | Full/cọc/balance/lookup, manual booking, leads, export và access denied |
-| T703 | Taste gate + responsive/accessibility/motion review | T208–T214,T307,T405 | Screenshot/keyboard/reduced-motion, các ngoại lệ ghi rõ; không chỉ screenshot desktop |
-| T704 | Demo deploy host/env/proxy/DB/R2/Turnstile | T002,T111,T112,T701 | Migration/health/TLS/origin, cold start/restart, private files; không secret trong bundle |
-| T705 | Hoàn thiện CD gắn revision và kiểm tra deployment hoàn tất | T704 | Hook phải deploy SHA đã CI kiểm tra hoặc có cơ chế từ chối revision lệch; chờ host healthy và smoke; rollback diễn tập |
-| T706 | UAT với khách 30+, trường/doanh nghiệp và admin | T702,T703,T704,T605 | 11 tiêu chí mục8 MVP có evidence; ghi lỗi và sửa trước duyệt |
-| T707 | Runbook setup/seed/deploy/backup demo và bàn giao | T706,T705 | Người khác làm theo trên môi trường sạch, ghi remaining production gaps |
+| T701 · DONE | Seed demo có tất cả trạng thái cần test | T404,T501 | Seed idempotent, production chặn seed, không có khách thật |
+| T702 · DONE | E2E journey và CI browser tests | T405,T406,T503,T603,T604,T701 | Full/cọc/balance/lookup, manual booking, leads, export và access denied |
+| T703 · CI đạt, chờ duyệt thị giác | Taste gate + responsive/accessibility/motion review | T208–T214,T307,T405 | Screenshot/keyboard/reduced-motion, các ngoại lệ ghi rõ; không chỉ screenshot desktop |
+| T704 · Đã chuẩn bị, chờ cloud | Demo deploy host/env/proxy/DB/R2/Turnstile | T002,T111,T112,T701 | Migration/health/TLS/origin, cold start/restart, private files; không secret trong bundle |
+| T705 · Đã chuẩn bị, chờ deploy và rollback thật | Hoàn thiện CD gắn revision và kiểm tra deployment hoàn tất | T704 · Đã chuẩn bị, chờ cloud | Hook phải deploy SHA đã CI kiểm tra hoặc có cơ chế từ chối revision lệch; chờ host healthy và smoke; rollback diễn tập |
+| T706 · Đã chuẩn bị, chờ người thử | UAT với khách 30+, trường/doanh nghiệp và admin | T702,T703,T704,T605 | 11 tiêu chí mục8 MVP có evidence; ghi lỗi và sửa trước duyệt |
+| T707 · Runbook và drill CI đạt, chờ xác minh trên cloud | Runbook setup/seed/deploy/backup demo và bàn giao | T706,T705 | Người khác làm theo trên môi trường sạch, ghi remaining production gaps |
+
+Bằng chứng M7 trên `783e6f86` trong [CI 45025910519](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45025910519). Chi tiết phần cần hỗ trợ trong docs/demo-release.md và docs/uat-mvp.md.
 
 T208–T214 nghĩa toàn bộ các ID trong khoảng. T001/T002 đã hoàn tất quyết định demo. T003 đã có poster tham chiếu qua T003a, còn thiếu nội dung đầy đủ/quyền ảnh; không chặn scaffold bằng fixture. Bán thật cần thay và duyệt các thông tin demo.
 

@@ -36,6 +36,18 @@ func main() {
 		slog.Error("configuration rejected", "reason", e.Error())
 		os.Exit(1)
 	}
+	if c.Env == "demo" {
+		ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+		e = platform.MigrateURL(ctx, os.Getenv("DATABASE_MIGRATION_URL"))
+		cancel()
+		if e != nil {
+			slog.Error("demo migration failed")
+			os.Exit(1)
+		}
+		if len(os.Args) > 1 && os.Args[1] == "migrate" {
+			return
+		}
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	p, e := platform.Connect(ctx, c.DatabaseURL)
@@ -61,6 +73,10 @@ func main() {
 	if len(os.Args) > 1 && os.Args[1] == "seed-demo" {
 		if e = catalog.Seed(context.Background(), p, catalog.NewMediaStore(c.CSRFSecret), demoassets.Files); e != nil {
 			slog.Error("demo seed failed", "reason", e.Error())
+			os.Exit(1)
+		}
+		if e = platform.New(c, p).BookingServer().SeedDemoStates(context.Background()); e != nil {
+			slog.Error("demo scenarios seed failed", "reason", e.Error())
 			os.Exit(1)
 		}
 		return

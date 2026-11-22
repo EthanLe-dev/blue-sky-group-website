@@ -149,7 +149,7 @@ export default async function ContentPage({
           <p>Chưa có media phù hợp bộ lọc.</p>
         )}
         {images.length === 20 && (
-          <Link
+          <Link prefetch={false}
             className="text-action"
             href={
               "/gallery?" +
@@ -215,14 +215,14 @@ export default async function ContentPage({
             <>
               <p>
                 {item.category && (
-                  <Link href={"/blog?category=" + item.category.slug}>
+                  <Link prefetch={false} href={"/blog?category=" + item.category.slug}>
                     {item.category.name}
                   </Link>
                 )}
               </p>
               <div className="tools">
                 {item.tags?.map((tag) => (
-                  <Link href={"/blog?tag=" + tag.slug} key={tag.id}>
+                  <Link prefetch={false} href={"/blog?tag=" + tag.slug} key={tag.id}>
                     #{tag.name}
                   </Link>
                 ))}
@@ -233,7 +233,7 @@ export default async function ContentPage({
                   <ul>
                     {item.related_posts?.map((post) => (
                       <li key={post.id}>
-                        <Link href={"/blog/" + post.slug}>{post.title}</Link>
+                        <Link prefetch={false} href={"/blog/" + post.slug}>{post.title}</Link>
                       </li>
                     ))}
                   </ul>
@@ -255,7 +255,7 @@ export default async function ContentPage({
               />
             )}
           {key === "destinations" && (
-            <Link className="btn" href={"/tours?destination=" + item.slug}>
+            <Link prefetch={false} className="btn" href={"/tours?destination=" + item.slug}>
               Xem tour tại điểm đến
             </Link>
           )}
@@ -311,7 +311,7 @@ export default async function ContentPage({
               list.map((i) => (
                 <article key={i.id}>
                   <h2>
-                    <Link href={"/" + key + "/" + i.slug}>
+                    <Link prefetch={false} href={"/" + key + "/" + i.slug}>
                       {i.title || i.name} ↗
                     </Link>
                   </h2>
@@ -323,7 +323,7 @@ export default async function ContentPage({
             )}
           </div>
           {list.length === 20 && (
-            <Link
+            <Link prefetch={false}
               className="text-action"
               href={
                 "/" +
@@ -364,7 +364,7 @@ export default async function ContentPage({
         {["schools", "companies"].includes(key) && (
           <>
             <GroupTours audience={key === "schools" ? "school" : "company"} />
-            <Link className="btn" href="#bao-gia">
+            <Link prefetch={false} className="btn" href="#bao-gia">
               Yêu cầu báo giá
             </Link>
           </>
@@ -459,7 +459,10 @@ async function Company() {
         </ul>
       )}
       {p.office_coordinates && (
-        <Map points={[{ name: p.display_name, ...p.office_coordinates }]} />
+        <div>
+          {p.is_demo && <p>Vị trí minh họa. Vui lòng xác nhận địa chỉ trước khi đến.</p>}
+          <Map points={[{ name: p.is_demo ? "Vị trí minh họa" : p.display_name, ...p.office_coordinates }]} />
+        </div>
       )}
       {p.office_coordinates && (
         <a
@@ -472,7 +475,7 @@ async function Company() {
             p.office_coordinates.longitude
           }
         >
-          Xem văn phòng trên OpenStreetMap ↗
+          {p.is_demo ? "Xem vị trí minh họa trên OpenStreetMap" : "Xem văn phòng trên OpenStreetMap"} ↗
         </a>
       )}
     </section>

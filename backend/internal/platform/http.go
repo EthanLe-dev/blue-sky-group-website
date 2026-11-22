@@ -77,6 +77,9 @@ func (a *App) Router() *gin.Engine {
 			c.JSON(503, gin.H{"status": "not_ready"})
 			return
 		}
+		if a.Config.Revision != "" {
+			c.Header("X-App-Revision", a.Config.Revision)
+		}
 		c.JSON(200, gin.H{"status": "ready"})
 	})
 	v := r.Group("/api/v1")

@@ -5,7 +5,7 @@ import { money } from "@/lib/catalog";
 export default function TourCard({ tour }: { tour: Tour }) {
   return (
     <article className="card tour-card">
-      <Link className="m-zoom" href={"/tours/" + tour.slug}>
+      <Link prefetch={false} className="m-zoom" href={"/tours/" + tour.slug}>
         <div className="card-image">
           {tour.cover ? (
             <Image

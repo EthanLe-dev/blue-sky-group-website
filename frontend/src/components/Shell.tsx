@@ -24,7 +24,7 @@ export function Header() {
         Bỏ qua đến nội dung
       </a>
       <div className="wrap nav-centre">
-        <Link
+        <Link prefetch={false}
           className="brand"
           href="/"
           aria-label="Blue Sky Group — Trang chủ"
@@ -41,12 +41,12 @@ export function Header() {
         </Link>
         <nav aria-label="Điều hướng chính">
           {links.map(([href, label]) => (
-            <Link href={href} key={href}>
+            <Link prefetch={false} href={href} key={href}>
               {label}
             </Link>
           ))}
         </nav>
-        <Link className="header-contact" href="/contact">
+        <Link prefetch={false} className="header-contact" href="/contact">
           Liên hệ ↗
         </Link>
         <button
@@ -74,7 +74,7 @@ export function Header() {
           </button>
           <nav aria-label="Điều hướng di động">
             {[...links, ["/contact", "Liên hệ"]].map(([href, label]) => (
-              <Link key={href} href={href} onClick={close}>
+              <Link prefetch={false} key={href} href={href} onClick={close}>
                 {label}
               </Link>
             ))}
@@ -90,7 +90,7 @@ export function Footer() {
       <div className="wrap">
         <div className="close-type">
           <h2>Chọn hành trình tiếp theo của bạn.</h2>
-          <Link className="btn" href="/tours">
+          <Link prefetch={false} className="btn" href="/tours">
             Tìm tour ↗
           </Link>
         </div>
@@ -103,23 +103,23 @@ export function Footer() {
             </p>
           </div>
           <nav aria-label="Thông tin">
-            <Link href="/about">Về Blue Sky Group</Link>
-            <Link href="/destinations">Điểm đến</Link>
-            <Link href="/gallery">Thư viện ảnh</Link>
-            <Link href="/faq">Câu hỏi thường gặp</Link>
-            <Link href="/contact">Thông tin liên hệ</Link>
+            <Link prefetch={false} href="/about">Về Blue Sky Group</Link>
+            <Link prefetch={false} href="/destinations">Điểm đến</Link>
+            <Link prefetch={false} href="/gallery">Thư viện ảnh</Link>
+            <Link prefetch={false} href="/faq">Câu hỏi thường gặp</Link>
+            <Link prefetch={false} href="/contact">Thông tin liên hệ</Link>
           </nav>
           <nav aria-label="Chính sách">
-            <Link href="/policies/privacy">Bảo mật thông tin</Link>
-            <Link href="/policies/terms">Điều khoản sử dụng</Link>
-            <Link href="/policies/payment">Chính sách thanh toán</Link>
-            <Link href="/policies/cancellation">Chính sách huỷ tour</Link>
-            <Link href="/policies/preparation">Chuẩn bị trước chuyến đi</Link>
+            <Link prefetch={false} href="/policies/privacy">Bảo mật thông tin</Link>
+            <Link prefetch={false} href="/policies/terms">Điều khoản sử dụng</Link>
+            <Link prefetch={false} href="/policies/payment">Chính sách thanh toán</Link>
+            <Link prefetch={false} href="/policies/cancellation">Chính sách huỷ tour</Link>
+            <Link prefetch={false} href="/policies/preparation">Chuẩn bị trước chuyến đi</Link>
           </nav>
         </div>
         <div className="footer-bottom">
           <span>© {new Date().getFullYear()} Blue Sky Group</span>
-          <Link href="/credits">Nguồn ảnh và quyền sử dụng</Link>
+          <Link prefetch={false} href="/credits">Nguồn ảnh và quyền sử dụng</Link>
         </div>
       </div>
     </footer>

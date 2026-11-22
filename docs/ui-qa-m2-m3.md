@@ -48,3 +48,7 @@ Thiết kế và nguồn ảnh: [.taste-skill/plan.md](../.taste-skill/plan.md),
 - Hai FAIL oversized-image của lần đo đầu đã hết sau resize bằng Next Image; signed private URL có query bị image optimizer từ chối để không kéo dài TTL qua cache công khai. Tệp gốc giữ nguyên.
 - Bổ sung chức năng home/blog/media/surcharge diễn ra sau vòng taste3. Không chạy lại gate để vượt giới hạn3 vòng; 19 finding là bản ghi lần3, chưa phải danh sách nghiệm thu thẩm mỹ đầy đủ của giao diện cuối. T703 tiếp tục ở M7.
 - Một warning ESLint stylesheet là link tới CSS vendor taste-skill được giữ nguyên theo hướng dẫn skill; không sửa vendor để che warning. Native dialog, font Việt, focus và reduced motion có test browser. Chưa có visual UAT trên thiết bị vật lý.
+
+## Rà lại ở M7
+
+Đã xem ảnh trang chủ 390/768/1440 từ Chromium CI run 45024473766. Đã điều chỉnh tương phản chữ gợi ý ô nhập, cân dòng tiêu đề và canh skip link khi focus. Ca release-ui kiểm màn hình, phông hiển thị, ảnh hero, kiểm tra tương phản ô tìm tour, bàn phím, reduced motion và bản đồ liên hệ. Ảnh sinh trong CI chỉ là bằng chứng responsive. Giữ nguyên kết quả gate trước và đưa nghiệm thu thẩm mỹ độc lập vào phiếu UAT.
