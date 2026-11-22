@@ -12,6 +12,7 @@ import {
   type Tour,
 } from "@/lib/catalog";
 import TourCard from "@/components/TourCard";
+import LeadForm from "@/components/LeadForm";
 const names: Record<string, string> = {
   about: "Về Blue Sky Group",
   contact: "Liên hệ",
@@ -347,6 +348,13 @@ export default async function ContentPage({
       key === "policies" ? path[1] || "terms" : key,
     );
     title = page.title;
+    const hasLeadForm = ["schools", "companies", "contact"].includes(key);
+    const settings = hasLeadForm
+      ? await read<{ response_sla?: { message: string } }>("/site-settings")
+      : undefined;
+    const tourId = typeof filter.tour === "string" &&
+      /^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(filter.tour)
+      ? filter.tour : undefined;
     body = (
       <>
         <div
@@ -355,17 +363,23 @@ export default async function ContentPage({
         />
         {["schools", "companies"].includes(key) && (
           <>
-            <p className="notice">
-              Form báo giá trực tuyến sẽ được mở trong giai đoạn M5. Hiện tại
-              bạn có thể xem chương trình và liên hệ trực tiếp.
-            </p>
             <GroupTours audience={key === "schools" ? "school" : "company"} />
-            <Link className="btn" href="/contact">
-              Xem thông tin liên hệ
+            <Link className="btn" href="#bao-gia">
+              Yêu cầu báo giá
             </Link>
           </>
         )}
         {key === "contact" && <Company />}
+        {hasLeadForm && (
+          <LeadForm
+            groupType={key === "contact" ? undefined : key === "schools" ? "school" : "company"}
+            tourId={key === "contact" ? tourId : undefined}
+            sla={settings?.response_sla?.message}
+            mock={["local", "test"].includes(process.env.APP_ENV || "local") &&
+              process.env.TURNSTILE_MODE !== "real"}
+            siteKey={process.env.TURNSTILE_SITE_KEY || ""}
+          />
+        )}
       </>
     );
   } else notFound();

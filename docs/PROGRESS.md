@@ -235,3 +235,8 @@ T215 log privacy: Nginx access log chỉ ghi method/uri không query, media loca
 - `feature/sales` xuất phát từ `develop` tại bản hợp nhất PR #4 (`ff59d0f`). Migration `000006_sales.sql` thêm yêu cầu đoàn, gọi lại, ghi chú, phiên bản báo giá và tệp đính kèm riêng tư.
 - API dùng phiên khách, CSRF, giới hạn gửi và Turnstile. Gửi lại cùng khóa trả biên nhận đã lưu. Admin chỉ giao việc cho nhân viên đủ quyền đang hoạt động. Báo giá đã phát hành giữ nguyên nội dung và kết quả trao đổi được ghi nhận trong Admin.
 - Go vet và các test chạy được của booking/platform đã đạt trên bản kiểm tra ban đầu. Bộ test Go toàn bộ gặp giới hạn socket loopback của sandbox ở test R2 có sẵn. PostgreSQL và browser chờ CI, gồm kiểm tra gửi trùng, quyền xem, chuyển trạng thái và phiên bản báo giá.
+
+### T502 — Biểu mẫu tư vấn công khai
+
+- Form báo giá trên trang trường học và doanh nghiệp, form gọi lại trên trang liên hệ, có lối vào từ trang tour. Biên nhận hiển thị mã và thời gian phản hồi lấy từ Cài đặt Admin. Biểu mẫu giữ nội dung khi gửi lỗi và giữ cùng khóa khi thử lại dữ liệu cũ.
+- Lint frontend qua với một cảnh báo stylesheet có sẵn, TypeScript và unit test đạt. Test Playwright được thêm vào luồng CI hiện có để kiểm tra captcha lỗi, giữ nội dung, bấm gửi hai lần và biên nhận.
