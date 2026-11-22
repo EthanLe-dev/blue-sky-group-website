@@ -4,7 +4,14 @@ import Hero from "@/components/Hero";
 import PhotoMoment from "@/components/PhotoMoment";
 import TourCard from "@/components/TourCard";
 import { read, type Tour, type Content } from "@/lib/catalog";
+import "@fontsource-variable/nunito-sans/wght.css";
+import "./home.css";
+
 export const dynamic = "force-dynamic";
+export const metadata = {
+  title: { absolute: "Blue Sky Group | Du lịch & Trải nghiệm" },
+  description: "Khám phá các chương trình du lịch, tìm tour và xem hành trình dành cho trường học, doanh nghiệp cùng Blue Sky Group.",
+};
 export default async function Home() {
   let data: {
     featured_tours?: Tour[];
@@ -33,17 +40,14 @@ export default async function Home() {
   try {
     homeCopy = await read<Content>("/pages/home");
   } catch {}
-  const tours = data?.featured_tours || data?.tours || [];
+  const tours = data?.featured_tours?.length ? data.featured_tours : data?.tours ?? [];
   return (
-    <main id="main">
+    <main id="main" className="home">
       <Hero />
-      <section className="section ground-surface" id="journeys">
+      <section className="section home-tours" id="journeys">
         <div className="wrap">
           <div className="section-head">
-            <div>
-              <p className="eyebrow">ĐI GẦN, KHÁM PHÁ NHIỀU</p>
-              <h2>Tour Ninh Chữ & Vĩnh Hy</h2>
-            </div>
+            <h2>Khám phá các tour</h2>
             <Link prefetch={false} className="text-action" href="/tours">
               Xem tất cả tour ↗
             </Link>
@@ -64,9 +68,11 @@ export default async function Home() {
             </Link>
           ))}
           {tours.length ? (
-            <div className="tour-grid">
-              {tours.slice(0, 3).map((t) => (
-                <TourCard key={t.id} tour={t} />
+            <div className="tour-grid home-tour-grid">
+              {tours.slice(0, 3).map((t, index) => (
+                <TourCard key={t.id} tour={t} imageSizes={index === 0 && tours.length > 1
+                  ? "(max-width:540px) 100vw, (max-width:850px) 50vw, 56vw"
+                  : undefined} />
               ))}
             </div>
           ) : (

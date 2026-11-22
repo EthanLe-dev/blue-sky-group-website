@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Tour } from "@/lib/catalog";
 import { money } from "@/lib/catalog";
-export default function TourCard({ tour }: { tour: Tour }) {
+export default function TourCard({ tour, imageSizes }: { tour: Tour; imageSizes?: string }) {
   return (
     <article className="card tour-card">
       <Link prefetch={false} className="m-zoom" href={"/tours/" + tour.slug}>
@@ -10,7 +10,7 @@ export default function TourCard({ tour }: { tour: Tour }) {
           {tour.cover ? (
             <Image
               src={tour.cover.url}
-              sizes="(max-width:540px) 100vw, (max-width:850px) 50vw, 33vw"
+              sizes={imageSizes ?? "(max-width:540px) 100vw, (max-width:850px) 50vw, 33vw"}
               alt={tour.cover.alt_text || tour.title}
               width="640"
               height="440"

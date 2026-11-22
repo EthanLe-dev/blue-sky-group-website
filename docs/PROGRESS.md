@@ -12,6 +12,11 @@
 - T108b lookup token cần FK booking nên chuyển sang M3 sau T301; T108a guest hoàn tất. T113 default snapshot vào đơn sẽ kiểm ở T302. Công ty upload giấy phép chọn media chờ T215. Turnstile real adapter có, local dùng mock; chưa nghiệm thu siteverify với tài khoản thật.
 - Tiếp theo sau M1: T201/T202 và T203 catalog; dùng poster Ninh Chữ + inventory demo, mọi dữ liệu thiếu chỉnh ở Admin theo kế hoạch. Đọc TASKS/PLAN/API/schema/design/testing trước sửa.
 
+## Làm mới Trang chủ
+
+- T703a trên `feature/homepage-refresh`: phần đầu trang giới thiệu dịch vụ Blue Sky Group và ô tìm tour. Khối tour bên dưới dùng dữ liệu hiện có, kể cả danh sách trống. Thêm Nunito Sans theo phạm vi trang chủ, bố cục thẻ ảnh và hai chuyển động GSAP có chế độ tĩnh.
+- Mở rộng ca Playwright hiện có để kiểm tiêu đề, tiếng Việt, menu và ảnh ở 320, 390, 768, 1024, 1440 px. Ảnh responsive sinh từ CI. App local không được khởi động.
+
 ## Lịch sử thực hiện
 
 ### 22/11/2026 — Chuẩn bị thiết kế kỹ thuật

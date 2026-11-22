@@ -4,10 +4,14 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
   const problems: string[] = [];
   page.on("pageerror", error => problems.push(error.message));
   await page.emulateMedia({ reducedMotion: "reduce" });
-  for (const [width, height] of [[390, 844], [768, 1024], [1440, 900]]) {
+  for (const [width, height] of [[320, 720], [390, 844], [768, 1024], [1024, 768], [1440, 900]]) {
     await page.setViewportSize({ width, height });
     await page.goto("http://localhost:3000/");
-    await expect(page.getByRole("main").getByRole("heading", { level: 1 })).toBeVisible();
+    const hero = page.locator(".hero");
+    await expect(hero.getByRole("heading", { name: "Khám phá những hành trình cùng Blue Sky Group" })).toBeVisible();
+    await expect(hero).not.toContainText(/Ninh Chữ|Vĩnh Hy|ngày.*đêm/i);
+    await expect(hero.getByRole("link", { name: /Ninh Chữ|Vĩnh Hy/i })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Khám phá các tour" })).toBeVisible();
     await page.keyboard.press("Tab");
     const skip = page.getByRole("link", { name: "Bỏ qua đến nội dung" });
     await expect(skip).toBeFocused();
@@ -26,6 +30,11 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     const photo = page.locator("img.hero-photo");
     await expect.poll(() => photo.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     await expect(page.locator(".hero h1")).toHaveCSS("opacity", "1");
+    await expect(page.locator(".hero h1")).toHaveCSS("font-family", /Nunito Sans Variable/);
+    expect(await page.evaluate(async () => {
+      const faces = await document.fonts.load('800 32px "Nunito Sans Variable"', "Ắ Ằ Ẳ Ẵ Ặ");
+      return faces.some(face => face.status === "loaded");
+    })).toBe(true);
     const contrast = await page.locator(".hero input").evaluate(input => {
       const luminance = (color: string) => {
         const values = (color.match(/[0-9]+(?:\.[0-9]+)?/g) || []).slice(0, 3).map(Number);
@@ -43,7 +52,7 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
   }
-  await page.getByRole("link", { name: "Xem hành trình Ninh Chữ", exact: true }).click();
+  await page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]').click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
   await page.getByRole("button", { name: /Xem poster đầy đủ/ }).click();
