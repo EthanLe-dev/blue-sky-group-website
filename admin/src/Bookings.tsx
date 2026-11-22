@@ -24,6 +24,7 @@ type Booking = {
   payment_option: string;
   balance_amount: string;
   expires_at: string;
+  server_time: string;
   tour_snapshot: { title: string; starts_at: string };
   price_snapshot: { cancellation_policy: string };
   notes: { id: string; body: string; created_at: string }[];

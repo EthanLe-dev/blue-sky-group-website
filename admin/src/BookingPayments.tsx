@@ -1,25 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { authorized } from "./lib/session";
 import { ApiError } from "./lib/api";
+import { NotificationEntries, type NotificationJournal } from "./NotificationLog";
 
 type Payment = { id: string; amount: string; purpose: string; status: string; expires_at: string };
 type Refund = { id: string; payment_id: string; amount: string; reason: string };
 type Ledger = { server_time: string; payments: Payment[]; refunds: Refund[]; reconciled: boolean };
-type Notifications = {
-  logs: { id: string; channel: string; subject: string | null; body: string; created_at: string }[];
-  jobs: { id: string; template_code: string; status: string; attempts: number; error_code: string | null }[];
-};
 const money = (amount: string) => BigInt(amount).toLocaleString("vi-VN") + " ₫";
 const purposes: Record<string, string> = { full: "Toàn bộ", deposit: "Đặt cọc", balance: "Phần còn lại" };
 
 export default function BookingPayments({ booking, canPay, canReadNotifications, onChanged }: {
-  booking: { id: string; status: string; payment_option: string; balance_amount: string; refunded_amount: string; version: number };
+  booking: { id: string; status: string; payment_option: string; balance_amount: string; version: number; server_time: string; tour_snapshot: { starts_at: string } };
   canPay: boolean;
   canReadNotifications: boolean;
   onChanged: () => Promise<void>;
 }) {
   const [ledger, setLedger] = useState<Ledger | null>(null);
-  const [notifications, setNotifications] = useState<Notifications | null>(null);
+  const [notifications, setNotifications] = useState<NotificationJournal | null>(null);
   const [disabled, setDisabled] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -37,7 +34,7 @@ export default function BookingPayments({ booking, canPay, canReadNotifications,
       else setError(String(e));
     });
     if (canReadNotifications) {
-      authorized<Notifications>(notificationPath, { signal: controller.signal }).then(setNotifications).catch((e) => {
+      authorized<NotificationJournal>(notificationPath, { signal: controller.signal }).then(setNotifications).catch((e) => {
         if (!controller.signal.aborted && !(e instanceof ApiError && e.status === 404)) setError(String(e));
       });
     }
@@ -90,7 +87,7 @@ export default function BookingPayments({ booking, canPay, canReadNotifications,
   }
 
   const purpose = booking.status === "pending" ? booking.payment_option :
-    booking.status === "confirmed" && booking.balance_amount !== "0" && booking.refunded_amount === "0" ? "balance" : "";
+    booking.status === "confirmed" && booking.balance_amount !== "0" && new Date(booking.server_time) < new Date(booking.tour_snapshot.starts_at) ? "balance" : "";
   const pending = ledger?.payments.find(p => p.status === "pending" && new Date(p.expires_at) > new Date(ledger.server_time));
 
   if (disabled && !notifications) return null;
@@ -153,17 +150,9 @@ export default function BookingPayments({ booking, canPay, canReadNotifications,
         <div>
           <h4>Email/SMS giả lập</h4>
           <button disabled={busy} onClick={() => void run(async () => {
-            setNotifications(await authorized<Notifications>(notificationPath));
+            setNotifications(await authorized<NotificationJournal>(notificationPath));
           })}>Tải lại nhật ký thông báo</button>
-          {notifications.logs.length === 0 && <p>Chưa có bản xem trước.</p>}
-          {notifications.jobs.map(e => <p key={e.id}>{e.template_code} · {e.status === "failed" ? "Tạo bản xem trước thất bại" : "Đang chờ tạo bản xem trước"} · {e.attempts}/5 lần</p>)}
-          {notifications.logs.map(n => (
-            <details key={n.id}>
-              <summary>{n.channel === "email" ? "Email" : "SMS"} giả lập · {new Date(n.created_at).toLocaleString("vi-VN")}</summary>
-              {n.subject && <p><strong>{n.subject}</strong></p>}
-              <p>{n.body}</p>
-            </details>
-          ))}
+          <NotificationEntries journal={notifications} />
         </div>
       )}
       {message && <p role="status">{message}</p>}
