@@ -3,10 +3,13 @@ import type { FormEvent } from 'react'
 import './App.css'
 import Captcha from './Captcha'
 import Settings from './Settings'
+import Catalog from './Catalog'
+import Media from './Media'
 import { login as loginSession,logout as logoutSession,restore } from './lib/session'
 
 type User = { full_name: string; permissions: string[] }
 export default function App() {
+  const [tab,setTab]=useState('catalog')
   const [user, setUser] = useState<User | null>(null)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -22,5 +25,5 @@ export default function App() {
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Không kết nối được máy chủ.');setAttempt(n=>n+1) }
     finally { setLoading(false) }
   }
-  return <main><p>BLUE SKY GROUP · Nền tảng quản trị</p>{user ? <><h1>Xin chào, {user.full_name}</h1><button onClick={async()=>{try{await logoutSession();setUser(null)}catch{setError("Không đăng xuất được. Thử lại.")}}}>Đăng xuất</button>{error&&<p role="alert">{error}</p>}{user.permissions.includes("settings.write")&&<Settings/>}</> : <><h1>Đăng nhập quản trị</h1><p>Chỉ dành cho nhân viên được cấp quyền.</p><form onSubmit={login}><label htmlFor="email">Email</label><input id="email" name="email" type="email" autoComplete="username" required maxLength={254}/><label htmlFor="password">Mật khẩu</label><input id="password" name="password" type="password" autoComplete="current-password" required maxLength={72}/>{error && <p role="alert">{error}</p>}<Captcha key={attempt} onToken={onToken}/><button disabled={loading || !captcha}>{loading ? 'Đang đăng nhập…' : 'Đăng nhập'}</button></form></>}</main>
+  return <main><a className="admin-brand" href="/"><img src="/brand/logo.jpg" width="72" height="72" alt="Logo Blue Sky Group"/>BLUE SKY GROUP · Quản trị</a>{user ? <><h1>Xin chào, {user.full_name}</h1><button onClick={async()=>{try{await logoutSession();setUser(null)}catch{setError("Không đăng xuất được. Thử lại.")}}}>Đăng xuất</button>{error&&<p role="alert">{error}</p>}<nav className="admin-tabs" aria-label="Module quản trị">{[["catalog","Tour & Nội dung"],["media","Media"],["settings","Cài đặt"]].map(([id,label])=><button key={id} aria-pressed={tab===id} onClick={()=>setTab(id)}>{label}</button>)}</nav>{tab==="catalog"&&<Catalog permissions={user.permissions}/>} {tab==="media"&&user.permissions.includes("media.write")&&<Media/>}{tab==="settings"&&user.permissions.includes("settings.write")&&<Settings/>}</> : <><h1>Đăng nhập quản trị</h1><p>Chỉ dành cho nhân viên được cấp quyền.</p><form onSubmit={login}><label htmlFor="email">Email</label><input id="email" name="email" type="email" autoComplete="username" required maxLength={254}/><label htmlFor="password">Mật khẩu</label><input id="password" name="password" type="password" autoComplete="current-password" required maxLength={72}/>{error && <p role="alert">{error}</p>}<Captcha key={attempt} onToken={onToken}/><button disabled={loading || !captcha}>{loading ? 'Đang đăng nhập…' : 'Đăng nhập'}</button></form></>}</main>
 }

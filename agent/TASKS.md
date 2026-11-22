@@ -48,7 +48,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | --- | --- | --- | --- |
 | T201 | Tokens, font Việt, Button/Input/Dialog/Toast/empty-error states | T101,T004 | Keyboard, 320px/390px, zoom200%, dấu Việt, reduced motion |
 | T202 | Layout public: nav/mobile menu/footer/hotline | T201 | Focus trap/restore, skip link, safe area, liên hệ thật hoặc demo rõ |
-| T203 | Migration media/content/catalog/departures/prices/quotes | T104 | Up/FK/checks; capacity âm và ngày sai bị từ chối |
+| T203 | DONE — Migration media/content/catalog/departures/prices/quotes | T104 | Up/FK/checks; capacity âm và ngày sai bị từ chối |
 | T204 | Catalog read API, search/filter/sort/autocomplete | T203,T109 | Bộ lọc ngày/giá/chỗ cùng departure; draft không public, pagination đúng |
 | T205 | Service CRUD/clone/publish/archive tour | T203,T107 | Clone không copy booking; publish thiếu dữ liệu fail; RBAC |
 | T206 | Departure bulk/pricing/capacity/open-close API | T205 | Bulk rollback toàn bộ; price_version tăng đúng; capacity không dưới chỗ đã dùng |
