@@ -158,21 +158,20 @@ test("mobile homepage keeps search and navigation available without JavaScript",
   }
 });
 
-test("homepage video plays once without controls and holds its final frame", async ({ page, browserName }) => {
+test("homepage video loops without controls and pauses outside the viewport", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "Live playback is verified in Chromium; other CI engines check reduced motion");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("http://localhost:3000/");
   const video = page.locator(".home-hero-video");
   await expect(video).toHaveAttribute("data-frame", "true");
   await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && !el.loop && el.playsInline && el.duration <= 5)).toBe(true);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.loop && el.playsInline && !el.controls)).toBe(true);
   await expect(page.locator(".home-hero-scene").getByRole("button")).toHaveCount(0);
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.ended), { timeout: 7000 }).toBe(true);
-  await expect(video).toHaveAttribute("data-frame", "true");
+  await video.evaluate((el: HTMLVideoElement) => { el.currentTime = el.duration - 0.25; });
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => !el.paused && el.currentTime < 2)).toBe(true);
   await page.screenshot({ path: test.info().outputPath("homepage-video.png"), animations: "disabled" });
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await page.evaluate(() => scrollTo(0, 0));
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.ended)).toBe(true);
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(video).toHaveCount(0);
   await page.route("**/images/home-coast.*", route => route.abort());

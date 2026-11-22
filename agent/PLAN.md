@@ -6,7 +6,7 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
-- T703h: Bỏ nút trên video nền. Phát video dưới 5 giây một lần rồi giữ khung cuối, giữ chế độ giảm chuyển động và ảnh dự phòng.
+- T703h: Bỏ nút trên video nền Trang chủ và tiếp tục phát lặp theo yêu cầu. Giữ chế độ giảm chuyển động, ảnh dự phòng và tạm nghỉ ngoài khung nhìn.
 
 - T703g: Bổ sung cụm ba ảnh phong cảnh và hiệu ứng GSAP trong phần giới thiệu Trang chủ. Kiểm tải ảnh và ảnh chụp responsive qua CI của nhánh `feature/homepage-about-gallery`.
 

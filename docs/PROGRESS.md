@@ -14,7 +14,7 @@
 
 ## Làm mới Trang chủ
 
-- T703h trên `feature/homepage-video-cleanup`: gỡ nút phát/tạm dừng. Hai bản video được rút còn dưới 5 giây và phát một lần rồi giữ khung cuối. Playwright kiểm video không lặp và ảnh dự phòng.
+- T703h trên `feature/homepage-video-cleanup`: gỡ nút phát/tạm dừng và giữ video 9 giây tự phát lặp. Playwright kiểm vòng lặp, tạm nghỉ ngoài khung nhìn và ảnh dự phòng.
 
 - T703g trên `feature/homepage-about-gallery`: phần giới thiệu có cụm ảnh Ninh Bình, Hội An, Ninh Chữ với nhãn địa danh. GSAP chạy một lần khi ảnh vào khung nhìn, dùng ảnh tĩnh theo thiết lập giảm chuyển động. Nội dung CMS và liên kết giới thiệu giữ nguyên.
 

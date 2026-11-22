@@ -29,7 +29,7 @@ function Video() {
     if (!video) return;
     let onScreen = !("IntersectionObserver" in window);
     const sync = () => {
-      if (onScreen && !document.hidden && !video.ended) {
+      if (onScreen && !document.hidden) {
         void video.play().catch(() => {});
       } else {
         video.pause();
@@ -57,6 +57,7 @@ function Video() {
       preload="none"
       muted
       playsInline
+      loop
       aria-hidden="true"
       onPlaying={() => setHasFrame(true)}
       onError={showPoster}
