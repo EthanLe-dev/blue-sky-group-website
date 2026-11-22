@@ -158,28 +158,26 @@ test("mobile homepage keeps search and navigation available without JavaScript",
   }
 });
 
-test("homepage plays the muted video and keeps it paused when requested", async ({ page, browserName }) => {
+test("homepage video plays once without controls and holds its final frame", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "Live playback is verified in Chromium; other CI engines check reduced motion");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("http://localhost:3000/");
   const video = page.locator(".home-hero-video");
   await expect(video).toHaveAttribute("data-frame", "true");
   await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.loop && el.playsInline)).toBe(true);
-  await page.getByRole("button", { name: "Tạm dừng video nền" }).click();
-  await expect(page.getByRole("button", { name: "Phát video nền" })).toBeVisible();
-  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && !el.loop && el.playsInline && el.duration <= 5)).toBe(true);
+  await expect(page.locator(".home-hero-scene").getByRole("button")).toHaveCount(0);
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.ended), { timeout: 7000 }).toBe(true);
+  await expect(video).toHaveAttribute("data-frame", "true");
   await page.screenshot({ path: test.info().outputPath("homepage-video.png"), animations: "disabled" });
-  await page.getByRole("button", { name: "Phát video nền" }).click();
-  await expect(page.getByRole("button", { name: "Tạm dừng video nền" })).toBeVisible();
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
-  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  await page.evaluate(() => scrollTo(0, 0));
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.ended)).toBe(true);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(video).toHaveCount(0);
   await page.route("**/images/home-coast.*", route => route.abort());
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("http://localhost:3000/?video=fallback");
-  await expect(page.locator(".home-video-toggle")).toHaveCount(0);
   await expect(video).toHaveAttribute("data-frame", "false");
   await expect(page.locator(".hero-photo")).toBeVisible();
 });

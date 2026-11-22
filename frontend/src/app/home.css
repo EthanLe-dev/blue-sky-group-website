@@ -112,20 +112,6 @@ body:has(.home-shell) {
 
 .home-hero-video[data-frame="true"] { opacity: 1; }
 
-.home-video-toggle {
-  position: absolute;
-  z-index: 2;
-  inset-block-start: 14px;
-  inset-inline-end: max(16px, calc((100% - 1280px) / 2));
-  border-color: #c3d9e6;
-  background: #123b56;
-  color: #fff;
-  font-size: .875rem;
-  font-weight: 750;
-}
-
-.home-video-toggle:hover { background: #075a91; }
-
 .home-hero-scene::after {
   content: "";
   position: absolute;
@@ -624,8 +610,7 @@ body:has(.home-shell) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-hero-video,
-  .home-video-toggle { display: none; }
+  .home-hero-video { display: none; }
   .home-shell :is(.home-button, .home-outline):active { transform: none; }
   .home-tour-grid .tour-card:hover img { transform: none; scale: 1; }
   .home-tour-grid .tour-card:hover .home-tour-cta > span { transform: none; }
