@@ -17,6 +17,9 @@
 - T703a trên `feature/homepage-refresh`: phần đầu trang giới thiệu dịch vụ Blue Sky Group và ô tìm tour. Khối tour bên dưới dùng dữ liệu hiện có, kể cả danh sách trống. Thêm Nunito Sans theo phạm vi trang chủ, bố cục thẻ ảnh và hai chuyển động GSAP có chế độ tĩnh.
 - Mở rộng ca Playwright hiện có để kiểm tiêu đề, tiếng Việt, menu và ảnh ở 320, 390, 768, 1024, 1440 px. Ảnh responsive sinh từ CI. App local không được khởi động.
 
+- T703c trên `feature/homepage-catalog`: Trang chủ có header và footer riêng, ảnh biển và tìm tour theo từ khóa, điểm đến và ngày. Banner đang bật lấy từ CMS. Lưới tour tối đa sáu thẻ, hai dịch vụ theo đoàn nối form báo giá hiện có. Hotline demo hoặc thiếu được thay bằng liên kết hỗ trợ. Không thay đổi backend hoặc Admin.
+- Kiểm chứng T703c: unit test cho dữ liệu nhiều tour, một tour, trống và lỗi. Playwright kiểm thông số tìm kiếm, điều hướng báo giá, footer, bố cục và giảm chuyển động. Lấy ảnh toàn trang từ CI để rà giao diện. App local không khởi động.
+
 ## Lịch sử thực hiện
 
 ### 22/11/2026 — Chuẩn bị thiết kế kỹ thuật

@@ -4,7 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 gsap.registerPlugin(useGSAP);
-export default function Hero() {
+export default function Hero({ destinations }: { destinations: { slug: string; name: string }[] }) {
   const scope = useRef<HTMLElement>(null);
   useGSAP(
     () => {
@@ -24,37 +24,42 @@ export default function Hero() {
     { scope },
   );
   return (
-    <section ref={scope} className="hero hero--photo" data-enter="">
-      <Image
-        sizes="100vw"
-        className="hero-photo"
-        src="/images/vinh-hy.jpg"
-        width="1920"
-        height="1280"
-        alt="Vịnh Vĩnh Hy với biển xanh, thuyền neo và núi ven bờ"
-        fetchPriority="high"
-        loading="eager"
-      />
-      <div className="wrap">
-        <div className="hero-copy">
-          <h1 data-enter-text="">
-            Khám phá những hành trình cùng Blue Sky Group
-          </h1>
-          <p data-enter-text="">
-            Tìm chuyến đi cho gia đình hoặc khám phá các chương trình dành cho
-            trường học và doanh nghiệp.
-          </p>
-          <form className="hero-search" action="/tours">
-            <label htmlFor="hero-q">Bạn muốn đi đâu?</label>
-            <input
-              id="hero-q"
-              name="q"
-              maxLength={100}
-              placeholder="Nhập điểm đến bạn muốn khám phá"
-            />
-            <button className="btn">Tìm tour ↗</button>
-          </form>
+    <section ref={scope} className="hero home-hero" data-enter="off" aria-labelledby="hero-title">
+      <div className="home-hero-scene">
+        <Image
+          sizes="100vw"
+          className="hero-photo"
+          src="/images/vinh-hy.jpg"
+          width="1920"
+          height="1280"
+          alt=""
+          fetchPriority="high"
+          loading="eager"
+        />
+        <div className="wrap home-hero-copy">
+          <h1 id="hero-title" data-enter-text="">Kiến tạo hành trình</h1>
+          <p data-enter-text="">Khám phá Việt Nam cùng Blue Sky Group và tìm chuyến đi dành cho bạn.</p>
         </div>
+      </div>
+      <div className="wrap home-search-panel">
+        <form className="home-search" action="/tours" method="get" aria-label="Tìm tour">
+          <label htmlFor="hero-q">
+            Từ khóa
+            <input id="hero-q" name="q" maxLength={100} placeholder="Nhập tên tour hoặc điểm đến" />
+          </label>
+          <label htmlFor="hero-destination">
+            Điểm đến
+            <select id="hero-destination" name="destination">
+              <option value="">Tất cả điểm đến</option>
+              {destinations.map(({ slug, name }) => <option key={slug} value={slug}>{name}</option>)}
+            </select>
+          </label>
+          <label htmlFor="hero-departure">
+            Khởi hành từ ngày
+            <input id="hero-departure" name="depart_from" type="date" />
+          </label>
+          <button className="btn home-button" type="submit">Tìm tour <span aria-hidden="true">↗</span></button>
+        </form>
       </div>
     </section>
   );

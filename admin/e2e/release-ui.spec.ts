@@ -8,7 +8,9 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await page.setViewportSize({ width, height });
     await page.goto("http://localhost:3000/");
     const hero = page.locator(".hero");
-    await expect(hero.getByRole("heading", { name: "Khám phá những hành trình cùng Blue Sky Group" })).toBeVisible();
+    await expect(hero.getByRole("heading", { name: "Kiến tạo hành trình" })).toBeVisible();
+    await expect(page.getByRole("banner")).toHaveCount(1);
+    await expect(page.getByRole("contentinfo")).toHaveCount(1);
     await expect(hero).not.toContainText(/Ninh Chữ|Vĩnh Hy|ngày.*đêm/i);
     await expect(hero.getByRole("link", { name: /Ninh Chữ|Vĩnh Hy/i })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Khám phá các tour" })).toBeVisible();
@@ -35,7 +37,7 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
       const faces = await document.fonts.load('800 32px "Nunito Sans Variable"', "Ắ Ằ Ẳ Ẵ Ặ");
       return faces.some(face => face.status === "loaded");
     })).toBe(true);
-    const contrast = await page.locator(".hero input").evaluate(input => {
+    const contrast = await page.getByLabel("Từ khóa", { exact: true }).evaluate(input => {
       const luminance = (color: string) => {
         const values = (color.match(/[0-9]+(?:\.[0-9]+)?/g) || []).slice(0, 3).map(Number);
         return values.reduce((sum, value, i) => {
@@ -51,6 +53,9 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     expect(contrast).toBeGreaterThanOrEqual(4.5);
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
+    if (width === 390 || width === 1440) {
+      await page.screenshot({ path: test.info().outputPath("homepage-full-" + width + ".png"), animations: "disabled", fullPage: true });
+    }
   }
   await page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]').click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
@@ -69,4 +74,49 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
   await page.getByRole("button", { name: "Mở bản đồ điểm đến" }).click();
   await expect(page.locator(".leaflet-marker-icon")).toBeVisible();
   expect(problems).toEqual([]);
+});
+
+test("homepage links use existing filters and group quote routes", async ({ page }) => {
+  const home = "http://localhost:3000/";
+  await page.goto(home);
+  const search = page.getByRole("form", { name: "Tìm tour" });
+  await search.getByRole("button", { name: "Tìm tour" }).click();
+  await expect(page).toHaveURL(/\/tours\?/);
+  await expect(page.getByRole("main").getByRole("heading", { name: "Khám phá tour", exact: true })).toBeVisible();
+  await page.goto(home);
+  const destination = search.getByLabel("Điểm đến", { exact: true });
+  const slug = await destination.locator("option").nth(1).getAttribute("value");
+  expect(slug).toBeTruthy();
+  await search.getByLabel("Từ khóa", { exact: true }).fill("Ninh Chữ");
+  await destination.selectOption(slug!);
+  await search.getByLabel("Khởi hành từ ngày").fill("2026-01-02");
+  await search.getByRole("button", { name: "Tìm tour" }).click();
+  await expect(page).toHaveURL(/\/tours\?/);
+  const params = new URL(page.url()).searchParams;
+  expect(params.get("q")).toBe("Ninh Chữ");
+  expect(params.get("destination")).toBe(slug);
+  expect(params.get("depart_from")).toBe("2026-01-02");
+  await page.goto(home);
+  const point = page.getByRole("navigation", { name: "Lọc tour theo điểm đến" }).getByRole("link").first();
+  await point.click();
+  await expect(page).toHaveURL(/\/tours\?destination=/);
+
+  for (const [route, audience] of [["schools", "trường học"], ["companies", "doanh nghiệp"]]) {
+    await page.goto(home);
+    await page.getByRole("link", { name: "Yêu cầu báo giá " + audience }).click();
+    await expect(page).toHaveURL(new RegExp("/" + route + "#bao-gia$"));
+    await expect(page.locator("#bao-gia")).toBeVisible();
+  }
+  await page.goto(home);
+  const toTop = page.getByRole("link", { name: "Lên đầu trang" });
+  await expect(toTop).toBeHidden();
+  const footer = page.getByRole("contentinfo");
+  await footer.scrollIntoViewIfNeeded();
+  await expect(toTop).toBeVisible();
+  await toTop.click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await footer.getByRole("link", { name: "Bảo mật thông tin" }).click();
+  await expect(page).toHaveURL(/\/policies\/privacy$/);
+  await expect(page.locator(".home-header")).toHaveCount(0);
+  await expect(page.getByRole("banner")).toHaveCount(1);
 });

@@ -7,7 +7,7 @@ import "@fontsource/be-vietnam-pro/latin-600.css";
 import "./globals.css";
 import Analytics from "@/components/Analytics";
 import Script from "next/script";
-import { Header, Footer } from "@/components/Shell";
+import { SiteHeader, SiteFooter } from "@/components/Shell";
 const origin = process.env.SITE_URL || "http://localhost:3000";
 export function generateMetadata(): Metadata {
   const verification = process.env.GSC_VERIFICATION || "";
@@ -39,9 +39,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           src="/assets/motion/motion.js"
           strategy="afterInteractive"
         />
-        <Header />
+        <SiteHeader />
         {children}
-        <Footer />
+        <SiteFooter />
         <Analytics />
       </body>
     </html>

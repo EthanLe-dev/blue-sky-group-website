@@ -10,6 +10,7 @@ export type Tour = {
   description: string;
   duration_days: number;
   duration_nights: number;
+  origin_name?: string | null;
   price_from: string | null;
   cover: Media | null;
   poster: Media | null;
