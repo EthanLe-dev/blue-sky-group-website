@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef } from "react";
 export default function PhotoMoment() {
@@ -32,8 +33,9 @@ export default function PhotoMoment() {
           data-moment="picture-develops"
           data-moment-opts='{"look":"film"}'
         >
-          <img
+          <Image
             src="/images/ninh-chu.jpg"
+            sizes="100vw"
             alt="Bờ biển Ninh Chữ trải dài dưới bầu trời xanh"
             width="1280"
             height="960"

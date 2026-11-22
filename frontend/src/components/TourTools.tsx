@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 type Picture = { id: string; url: string; alt_text: string; kind: string };
 export function TourTools({ slug, title }: { slug: string; title: string }) {
   const [saved, setSaved] = useState(false);
@@ -104,7 +105,8 @@ export function Gallery({
             {p.kind === "video" ? (
               <span>Xem video</span>
             ) : (
-              <img
+              <Image
+                sizes="(max-width:540px) 90vw, 46vw"
                 src={p.url}
                 alt={p.alt_text || "Ảnh hành trình"}
                 loading="lazy"

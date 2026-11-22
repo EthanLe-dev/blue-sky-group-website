@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Tour } from "@/lib/catalog";
 import { money } from "@/lib/catalog";
@@ -7,8 +8,9 @@ export default function TourCard({ tour }: { tour: Tour }) {
       <Link className="m-zoom" href={"/tours/" + tour.slug}>
         <div className="card-image">
           {tour.cover ? (
-            <img
+            <Image
               src={tour.cover.url}
+              sizes="(max-width:540px) 100vw, (max-width:850px) 50vw, 33vw"
               alt={tour.cover.alt_text || tour.title}
               width="640"
               height="440"

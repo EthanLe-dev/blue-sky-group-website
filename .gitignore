@@ -80,3 +80,6 @@ __pycache__/
 
 .taste-skill/build.json
 .taste-skill/gate.json
+
+.taste-skill/build.done.json
+.taste-skill/gate/

@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import Link from "next/link";
 import { useRef, useState } from "react";
 const links = [
@@ -28,8 +29,10 @@ export function Header() {
           href="/"
           aria-label="Blue Sky Group — Trang chủ"
         >
-          <img
+          <Image
             src="/brand/logo.jpg"
+            loading="eager"
+            sizes="70px"
             width="70"
             height="70"
             alt="Logo Blue Sky Group"

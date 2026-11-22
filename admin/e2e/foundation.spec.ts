@@ -50,4 +50,12 @@ test("public proxy forwards guest cookie and CSRF", async ({ request }) => {
   expect(r.status()).toBe(201);
   expect(r.headers()["set-cookie"]).toContain("HttpOnly");
   expect((await r.json()).data.csrf_token).toBeTruthy();
+  const blocked = await request.get("http://localhost:3000/_next/image", {
+    params: {
+      url: "/api/v1/media/00000000-0000-0000-0000-000000000001?expires=9999999999&signature=private",
+      w: "640",
+      q: "75",
+    },
+  });
+  expect(blocked.status()).toBe(400);
 });
