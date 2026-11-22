@@ -62,6 +62,18 @@ export default function App() {
       setLoading(false);
     }
   }
+  const permissions = user?.permissions ?? [];
+  const tabs = [
+    { id: "bookings", label: "Đơn tour", allowed: permissions.includes("booking.read") },
+    { id: "reports", label: "Báo cáo", allowed: permissions.includes("report.read") },
+    { id: "catalog", label: "Tour & Nội dung", allowed: permissions.includes("catalog.write") || permissions.includes("content.write") },
+    { id: "media", label: "Media", allowed: permissions.includes("media.write") },
+    { id: "sales", label: "Yêu cầu tư vấn", allowed: permissions.includes("lead.write") },
+    { id: "customers", label: "Khách hàng", allowed: permissions.includes("customer.write") },
+    { id: "notifications", label: "Nhật ký thông báo", allowed: permissions.includes("notification.read") },
+    { id: "settings", label: "Cài đặt", allowed: permissions.includes("settings.write") },
+  ].filter(entry => entry.allowed);
+  const activeTab = tabs.some(entry => entry.id === tab) ? tab : tabs[0]?.id;
   return (
     <main>
       <a className="admin-brand" href="/">
@@ -90,39 +102,30 @@ export default function App() {
           </button>
           {error && <p role="alert">{error}</p>}
           <nav className="admin-tabs" aria-label="Module quản trị">
-            {[
-              ...(user.permissions.includes("booking.read") ? [["bookings", "Đơn tour"]] : []),
-              ...(user.permissions.includes("report.read") ? [["reports", "Báo cáo"]] : []),
-              ["catalog", "Tour & Nội dung"],
-              ["media", "Media"],
-              ...(user.permissions.includes("lead.write") ? [["sales", "Yêu cầu tư vấn"]] : []),
-              ...(user.permissions.includes("customer.write") ? [["customers", "Khách hàng"]] : []),
-              ...(user.permissions.includes("notification.read") ? [["notifications", "Nhật ký thông báo"]] : []),
-              ["settings", "Cài đặt"],
-            ].map(([id, label]) => (
+            {tabs.map(({ id, label }) => (
               <button
                 key={id}
-                aria-pressed={tab === id}
+                aria-pressed={activeTab === id}
                 onClick={() => setTab(id)}
               >
                 {label}
               </button>
             ))}
           </nav>
-          {tab === "bookings" && user.permissions.includes("booking.read") && (
+          {activeTab === "bookings" && user.permissions.includes("booking.read") && (
             <Bookings canExport={user.permissions.includes("report.export")} write={user.permissions.includes("booking.write")} canPay={user.permissions.includes("payment.write")} canReadNotifications={user.permissions.includes("notification.read")} />
           )}{" "}
-          {tab === "reports" && user.permissions.includes("report.read") && <Reports canExport={user.permissions.includes("report.export")} />}
-          {tab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
-          {tab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
-          {tab === "customers" && user.permissions.includes("customer.write") && (
+          {activeTab === "reports" && user.permissions.includes("report.read") && <Reports canExport={user.permissions.includes("report.export")} />}
+          {activeTab === "notifications" && user.permissions.includes("notification.read") && <NotificationLog />}
+          {activeTab === "sales" && user.permissions.includes("lead.write") && <Sales canAttach={user.permissions.includes("media.private.write")} />}
+          {activeTab === "customers" && user.permissions.includes("customer.write") && (
             <Customers canReadBookings={user.permissions.includes("booking.read")} canLink={user.permissions.includes("booking.write")} />
           )}
-          {tab === "catalog" && <Catalog permissions={user.permissions} />}{" "}
-          {tab === "media" && user.permissions.includes("media.write") && (
+          {activeTab === "catalog" && <Catalog permissions={user.permissions} />}{" "}
+          {activeTab === "media" && user.permissions.includes("media.write") && (
             <Media />
           )}
-          {tab === "settings" &&
+          {activeTab === "settings" &&
             user.permissions.includes("settings.write") && <Settings />}
         </>
       ) : (
