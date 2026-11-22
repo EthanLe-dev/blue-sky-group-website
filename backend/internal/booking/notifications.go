@@ -132,9 +132,10 @@ func (s *Server) notifications(staff bool) gin.HandlerFunc {
 			respondError(c, problem("VALIDATION_ERROR"))
 			return
 		}
-		query := `SELECT to_jsonb(n)-'dedupe_key' FROM notification_logs n
-			WHERE ($1='' OR booking_id=NULLIF($1,'')::uuid) AND ($2='' OR channel=$2) AND ($3='' OR status=$3)
-			ORDER BY created_at DESC,id LIMIT $4 OFFSET $5`
+		query := `SELECT (to_jsonb(n)-'dedupe_key')||jsonb_build_object('booking_code',b.code)
+			FROM notification_logs n JOIN bookings b ON b.id=n.booking_id
+			WHERE ($1='' OR booking_id=NULLIF($1,'')::uuid) AND ($2='' OR channel=$2) AND ($3='' OR n.status=$3)
+			ORDER BY n.created_at DESC,n.id LIMIT $4 OFFSET $5`
 		logs, err := httpx.JSONRows(ctx, s.DB, query, id, channel, status, size, (page-1)*size)
 		if err != nil {
 			respondError(c, err)
@@ -144,10 +145,10 @@ func (s *Server) notifications(staff bool) gin.HandlerFunc {
 			httpx.OK(c, 200, logs)
 			return
 		}
-		jobs, err := httpx.JSONRows(ctx, s.DB, `SELECT jsonb_build_object('id',id,'booking_id',booking_id,
-			'template_code',event_type,'status',status,'attempts',attempts,'error_code',last_error,'created_at',created_at)
-			FROM outbox_events WHERE ($1='' OR booking_id=NULLIF($1,'')::uuid)
-			AND ($2='' OR status=$2) AND status<>'done' ORDER BY created_at DESC,id LIMIT $3 OFFSET $4`, id, status, size, (page-1)*size)
+		jobs, err := httpx.JSONRows(ctx, s.DB, `SELECT jsonb_build_object('id',e.id,'booking_id',booking_id,'booking_code',b.code,
+			'template_code',event_type,'status',e.status,'attempts',attempts,'error_code',last_error,'created_at',e.created_at)
+			FROM outbox_events e JOIN bookings b ON b.id=e.booking_id WHERE ($1='' OR booking_id=NULLIF($1,'')::uuid)
+			AND ($2='' OR e.status=$2) AND e.status<>'done' ORDER BY e.created_at DESC,e.id LIMIT $3 OFFSET $4`, id, status, size, (page-1)*size)
 		if err != nil {
 			respondError(c, err)
 			return
