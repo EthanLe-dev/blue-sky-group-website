@@ -360,3 +360,33 @@ func TestQuoteClockAfterWaitingForDepartureLock(t *testing.T) {
 		t.Fatal("used transaction-start time after lock", e)
 	}
 }
+
+func TestBookingRoleMatrix(t *testing.T) {
+	a, p, dep := bookingFixture(t, 3)
+	ctx := context.Background()
+	_, sid, _ := a.createSession(ctx, p.ID)
+	token, _ := a.access(p.ID, sid)
+	for _, tc := range []struct {
+		role                 string
+		read, write, catalog int
+	}{{"admin", 200, 201, 200}, {"product_manager", 403, 403, 200}, {"sales", 200, 201, 403}, {"accountant", 200, 403, 403}, {"executive", 403, 403, 403}} {
+		if _, e := a.DB.Exec(ctx, "DELETE FROM staff_roles WHERE staff_id=$1", p.ID); e != nil {
+			t.Fatal(e)
+		}
+		if _, e := a.DB.Exec(ctx, "INSERT INTO staff_roles(staff_id,role_id) SELECT $1,id FROM roles WHERE code=$2", p.ID, tc.role); e != nil {
+			t.Fatal(e)
+		}
+		w := request(a, "GET", "/api/v1/admin/bookings", "", token, "", nil)
+		if w.Code != tc.read {
+			t.Fatalf("%s read %d", tc.role, w.Code)
+		}
+		w = request(a, "POST", "/api/v1/admin/booking-quotes", fmt.Sprintf(`{"departure_id":%q,"counts":{"adult":1,"child":0,"infant":0},"surcharge_codes":[]}`, dep), token, "", nil)
+		if w.Code != tc.write {
+			t.Fatalf("%s quote %d %s", tc.role, w.Code, w.Body)
+		}
+		w = request(a, "GET", "/api/v1/admin/tours", "", token, "", nil)
+		if w.Code != tc.catalog {
+			t.Fatalf("%s catalog %d", tc.role, w.Code)
+		}
+	}
+}

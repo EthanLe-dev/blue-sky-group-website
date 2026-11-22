@@ -190,3 +190,6 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - Go vet/race toàn suite PASS gần nhất57.587s; OpenAPI validate và M2 response cases PASS; Playwright5/5 PASS. Đã sửa 404 SSR, xác minh poster confirmed:true, metadata/media proxy headers và scope limiter checkout theo guest+IP.
 - T201–T218 và T301–T308 đã có chức năng/kiểm chứng; T703 taste/UAT còn mở: `GATE: OPEN 19 (rounds used up)`, chi tiết docs/ui-qa-m2-m3.md. Không gắn nhãn hoàn tất nghiệm thu giao diện.
 - PR #3 feature/booking→develop gồm dependency feature/catalog; chờ CI trước merge. Main không thay đổi; không deploy cloud.
+
+### T306 — Ma trận vai trò
+- TestBookingRoleMatrix PASS race3.771s: admin đọc/tạo quote/catalog; sales đọc/tạo quote nhưng không sửa catalog; product_manager có catalog nhưng bị chặn booking; accountant chỉ đọc booking; executive không có booking PII. Backend kiểm quyền trực tiếp từng route.
