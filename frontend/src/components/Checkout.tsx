@@ -45,6 +45,7 @@ type Booking = {
   balance_amount: string;
   paid_amount: string;
   refunded_amount: string;
+  contact: Contact;
   payment_status: string;
   balance_due_at: string;
   expires_at: string;
@@ -107,7 +108,7 @@ export function BookingResult({ initial, csrf, mockPayment }: {
   useEffect(() => {
     const controller = new AbortController();
     api<Booking>(bookingPath, { signal: controller.signal })
-      .then(setBooking)
+      .then(next => setBooking(current => current.version > next.version ? current : next))
       .catch(() => {
         if (!controller.signal.aborted) setError("Chưa cập nhật được trạng thái đơn.");
       });
@@ -120,6 +121,7 @@ export function BookingResult({ initial, csrf, mockPayment }: {
     const controller = new AbortController();
     const deadline = performance.now() + 30_000;
     let timer: ReturnType<typeof setTimeout>;
+    const stop = setTimeout(() => controller.abort(), 30_000);
     async function check() {
       if (controller.signal.aborted || performance.now() >= deadline) return;
       if (!document.hidden) {
@@ -138,6 +140,7 @@ export function BookingResult({ initial, csrf, mockPayment }: {
     return () => {
       controller.abort();
       clearTimeout(timer);
+      clearTimeout(stop);
     };
   }, [bookingPath, booking.paid_amount, expected, mockPayment, pollCycle, allPreviews]);
 
@@ -176,7 +179,7 @@ export function BookingResult({ initial, csrf, mockPayment }: {
     return response;
   }
   const purpose = booking.status === "pending" ? booking.payment_option :
-    booking.status === "confirmed" && booking.balance_amount !== "0" && booking.refunded_amount === "0" &&
+    booking.status === "confirmed" && booking.balance_amount !== "0" &&
     new Date(booking.server_time) < new Date(booking.tour_snapshot.starts_at) ? "balance" : "";
   const paymentLabels: Record<string, string> = {
     unpaid: "Chưa thanh toán", partially_paid: "Đã đặt cọc", paid: "Đã thanh toán đủ",
@@ -237,6 +240,7 @@ export function BookingResult({ initial, csrf, mockPayment }: {
       {mockPayment && booking.paid_amount !== "0" && (
         <div>
           <h3>Email/SMS giả lập</h3>
+          {previews.length > 0 && <p role="status">Đã tạo bản xem trước cho {booking.contact.email} và số {booking.contact.phone}.</p>}
           {previews.length < expected && <p role="status">Đang tạo bản xem trước.</p>}
           {previews.map((p) => (
             <details key={p.id}>
@@ -253,10 +257,38 @@ export function BookingResult({ initial, csrf, mockPayment }: {
         setPollCycle((n) => n + 1);
       })}>Cập nhật trạng thái đơn</button>
       {error && <p role="alert">{error}</p>}
-      <Link className="text-action" href="/lookup">Tra cứu đơn</Link>
+      <div className="tools">
+        <Link className="text-action" href={"/checkout?booking=" + booking.id}>Mở lại đơn trên trình duyệt này</Link>
+        <Link className="text-action" href="/lookup">Tra cứu đơn</Link>
+      </div>
     </section>
   );
 }
+export function ResumeBooking({ id, mockPayment }: { id: string; mockPayment: boolean }) {
+  const [session, setSession] = useState<{ booking: Booking; csrf: string } | null>(null);
+  const [error, setError] = useState(false);
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = controller.signal;
+    async function load() {
+      try {
+        const booking = await api<Booking>("/bookings/" + id, { signal });
+        const { csrf_token } = await api<{ csrf_token: string }>("/guest-sessions", {
+          method: "POST", body: "{}", signal,
+        });
+        if (!signal.aborted) setSession({ booking, csrf: csrf_token });
+      } catch {
+        if (!signal.aborted) setError(true);
+      }
+    }
+    void load();
+    return () => controller.abort();
+  }, [id]);
+  if (error) return <p role="alert">Chưa mở được đơn trên trình duyệt này. Bạn có thể <Link href="/lookup">tra cứu bằng mã đơn</Link>.</p>;
+  if (!session) return <p role="status">Đang mở đơn…</p>;
+  return <BookingResult initial={session.booking} csrf={session.csrf} mockPayment={mockPayment} />;
+}
+
 export default function Checkout({
   departure,
   title,

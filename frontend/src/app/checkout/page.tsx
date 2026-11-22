@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { read, type Tour, type Departure } from "@/lib/catalog";
-import Checkout from "@/components/Checkout";
+import Checkout, { ResumeBooking } from "@/components/Checkout";
 export const metadata = {
   title: "Đặt tour",
   robots: { index: false, follow: false },
@@ -8,9 +8,19 @@ export const metadata = {
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{ tour?: string; departure?: string }>;
+  searchParams: Promise<{ tour?: string; departure?: string; booking?: string }>;
 }) {
-  const { tour, departure } = await searchParams;
+  const { tour, departure, booking } = await searchParams;
+  const mockPayment = process.env.APP_ENV !== "production" && process.env.PAYMENT_PROVIDER === "mock";
+  if (booking) {
+    if (!/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(booking)) notFound();
+    return (
+      <main id="main" className="page wrap prose-page">
+        <h1>Chi tiết đặt tour</h1>
+        <ResumeBooking key={booking} id={booking} mockPayment={mockPayment} />
+      </main>
+    );
+  }
   if (!tour || !departure) notFound();
   const t = await read<Tour>("/tours/" + encodeURIComponent(tour));
   const ds = await read<Departure[]>(
@@ -30,7 +40,7 @@ export default async function Page({
           ["local", "test"].includes(process.env.APP_ENV || "local") &&
           process.env.TURNSTILE_MODE !== "real"
         }
-        mockPayment={process.env.APP_ENV !== "production" && process.env.PAYMENT_PROVIDER === "mock"}
+        mockPayment={mockPayment}
         siteKey={process.env.TURNSTILE_SITE_KEY || ""}
       />
     </main>
