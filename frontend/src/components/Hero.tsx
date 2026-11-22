@@ -1,4 +1,5 @@
 "use client";
+import Image from "next/image";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -29,13 +30,15 @@ export default function Hero() {
   );
   return (
     <section ref={scope} className="hero hero--photo" data-enter="">
-      <img
+      <Image
+        sizes="100vw"
         className="hero-photo"
         src="/images/vinh-hy.jpg"
         width="1920"
         height="1280"
         alt="Vịnh Vĩnh Hy với biển xanh, thuyền neo và núi ven bờ"
         fetchPriority="high"
+        loading="eager"
       />
       <div className="wrap">
         <div className="hero-copy">
@@ -52,9 +55,16 @@ export default function Hero() {
             chuyến đi vừa với bạn.
           </p>
           <div data-enter-text="">
-            <Link className="btn" href="/tours">
-              Tìm tour ↗
-            </Link>
+            <form className="hero-search" action="/tours">
+              <label htmlFor="hero-q">Bạn muốn đi đâu?</label>
+              <input
+                id="hero-q"
+                name="q"
+                maxLength={100}
+                placeholder="Ninh Chữ, Vĩnh Hy…"
+              />
+              <button className="btn">Tìm tour ↗</button>
+            </form>
             <Link className="text-action" href="/tours/ninh-chu-2-ngay-1-dem">
               Xem hành trình Ninh Chữ
             </Link>

@@ -10,12 +10,29 @@ export default async function Home() {
     featured_tours?: Tour[];
     tours?: Tour[];
     faqs?: Content[];
-    banners?: {id:string;title:string;media_id:string;target_url:string|null}[];
+    destinations?: Content[];
+    latest_posts?: Content[];
+    testimonials?: {
+      id: string;
+      display_name: string;
+      body: string;
+      rating: number;
+      is_demo: boolean;
+    }[];
+    banners?: {
+      id: string;
+      title: string;
+      media_id: string;
+      target_url: string | null;
+    }[];
   } | null = null;
   try {
     data = await read("/home");
   } catch {}
-  let homeCopy:Content|null=null;try{homeCopy=await read<Content>("/pages/home")}catch{}
+  let homeCopy: Content | null = null;
+  try {
+    homeCopy = await read<Content>("/pages/home");
+  } catch {}
   const tours = data?.featured_tours || data?.tours || [];
   return (
     <main id="main">
@@ -31,7 +48,21 @@ export default async function Home() {
               Xem tất cả tour ↗
             </Link>
           </div>
-          {data?.banners?.map(b=><Link key={b.id} href={b.target_url||"/tours"} className="home-banner"><Image src={"/api/v1/media/"+b.media_id} alt={b.title} width={1240} height={320} sizes="100vw"/></Link>)}
+          {data?.banners?.map((b) => (
+            <Link
+              key={b.id}
+              href={b.target_url || "/tours"}
+              className="home-banner"
+            >
+              <Image
+                src={"/api/v1/media/" + b.media_id}
+                alt={b.title}
+                width={1240}
+                height={320}
+                sizes="100vw"
+              />
+            </Link>
+          ))}
           {tours.length ? (
             <div className="tour-grid">
               {tours.slice(0, 3).map((t) => (
@@ -53,6 +84,70 @@ export default async function Home() {
           )}
         </div>
       </section>
+      {data?.destinations?.length || data?.latest_posts?.length ? (
+        <section className="section home-content">
+          <div className="wrap">
+            <h2>Chuẩn bị chuyến đi</h2>
+            <div className="group-section">
+              <div>
+                <h3>Điểm đến</h3>
+                <div className="content-list">
+                  {data?.destinations?.map((d) => (
+                    <article key={d.id}>
+                      <Link
+                        className="text-action"
+                        href={"/destinations/" + d.slug}
+                      >
+                        {d.name} ↗
+                      </Link>
+                    </article>
+                  ))}
+                </div>
+                <Link className="text-action" href="/destinations">
+                  Xem các điểm đến
+                </Link>
+              </div>
+              <div>
+                <h3>Cẩm nang du lịch</h3>
+                <div className="content-list">
+                  {data?.latest_posts?.map((post) => (
+                    <article key={post.id}>
+                      <Link className="text-action" href={"/blog/" + post.slug}>
+                        {post.title} ↗
+                      </Link>
+                      <p>{post.excerpt}</p>
+                    </article>
+                  ))}
+                </div>
+                <Link className="text-action" href="/blog">
+                  Xem cẩm nang
+                </Link>
+              </div>
+            </div>
+          </div>
+        </section>
+      ) : null}
+      {(data?.testimonials?.length || 0) > 0 && (
+        <section className="section home-content ground-surface">
+          <div className="wrap">
+            <h2>Đánh giá được chia sẻ</h2>
+            <div className="content-list">
+              {data?.testimonials?.map((r) => (
+                <article key={r.id}>
+                  <h3>{r.display_name}</h3>
+                  <p>
+                    {r.rating}/5 {r.is_demo ? "· Đánh giá demo" : ""}
+                  </p>
+                  <div
+                    className="prose"
+                    dangerouslySetInnerHTML={{ __html: r.body }}
+                  />
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
       <PhotoMoment />
       <section className="section programmes">
         <div className="wrap">
@@ -70,7 +165,13 @@ export default async function Home() {
               height={542}
               sizes="(max-width:540px) 90vw, 380px"
             />
-            <div className="service-rows">{homeCopy?.body&&<div className="prose" dangerouslySetInnerHTML={{__html:homeCopy.body}}/>}
+            <div className="service-rows">
+              {homeCopy?.body && (
+                <div
+                  className="prose"
+                  dangerouslySetInnerHTML={{ __html: homeCopy.body }}
+                />
+              )}
               <Link href="/schools">
                 <span>01 / Trường học</span>
                 <h3>Ngoại khoá học đường</h3>
