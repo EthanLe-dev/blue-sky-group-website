@@ -154,7 +154,7 @@ function LeadQueue({ group, canAttach }: { group: boolean; canAttach: boolean })
 }
 
 const transitions: Record<string, string[]> = {
-  new: ["preparing", "contacted"], preparing: ["lost"], quoted: ["lost"],
+  new: ["preparing", "contacted"], quoted: ["lost"],
   lost: ["preparing"], contacted: ["closed"],
 };
 

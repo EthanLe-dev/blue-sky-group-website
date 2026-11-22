@@ -91,6 +91,7 @@ func TestSalesIntakeAndQuoteWorkflow(t *testing.T) {
 	}
 	check(admin("PATCH", group, `{"assigned_to":"`+disabled+`"}`), 422)
 	check(admin("PATCH", group, `{"status":"preparing","assigned_to":"`+staff+`"}`), 200)
+	check(admin("PATCH", group, `{"status":"lost"}`), 409)
 	q := `{"title":"Tour Demo","itinerary":"Hai ngày","inclusions":"Xe","exclusions":"","total_amount":"123000","currency":"VND","valid_until":"9999-01-01"}`
 	draft := admin("POST", group+"/quotes", q)
 	check(draft, 201)

@@ -182,7 +182,7 @@ func canMoveLead(group bool, from, to, reason string) bool {
 	if !group {
 		return from == "new" && to == "contacted" || from == "contacted" && to == "closed"
 	}
-	return from == "new" && to == "preparing" || from == "preparing" && to == "lost" ||
+	return from == "new" && to == "preparing" ||
 		from == "quoted" && to == "lost" || from == "lost" && to == "preparing" && reason != ""
 }
 
