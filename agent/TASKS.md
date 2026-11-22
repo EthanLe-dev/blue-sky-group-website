@@ -1,10 +1,10 @@
 # Task phát triển Blue Sky Group
 
-Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema](../docs/database-schema.md), [thiết kế](../docs/design-style.md), [kiểm thử](../docs/testing-strategy.md). Đây là backlog thực thi; chưa có mã ứng dụng.
+Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema](../docs/database-schema.md), [thiết kế](../docs/design-style.md), [kiểm thử](../docs/testing-strategy.md). Đây là backlog thực thi; M0/M1 nền tảng đã có code và kiểm chứng local, merge theo CI PR #1.
 
 ## Cách sử dụng
 
-- Trạng thái: TODO, DOING, BLOCKED, DONE. Tất cả task dưới đây bắt đầu TODO. Ghi trạng thái cạnh ID khi nhận việc; chỉ một task DOING cho mỗi Agent. Không mặc định dùng nhiều Agent.
+- Trạng thái: TODO, DOING, BLOCKED, DONE. Task không có trạng thái ghi riêng là TODO; T001/T002 đã DONE theo quyết định demo. Ghi trạng thái cạnh ID khi nhận việc; chỉ một task DOING cho mỗi Agent. Không mặc định dùng nhiều Agent.
 - Task độc lập để kiểm chứng sau khi các phụ thuộc đã DONE. Mỗi task nên hoàn thành trong một phiên (khoảng 1–4 giờ); vượt mức thì tách ID con và ghi lý do trước khi tiếp tục.
 - Đọc đầu vào, chốt phạm vi, triển khai đầu ra, chạy kiểm chứng ở hàng tương ứng. DONE cần đường dẫn artifact, lệnh/kết quả hoặc bằng chứng browser trong PROGRESS; không dùng “đã viết code” làm bằng chứng.
 - Nếu thiếu tài khoản/nội dung, ghi BLOCKED cùng điều kiện gỡ; chọn task không phụ thuộc. Dùng fixture giả có nhãn cho UI, không coi fixture là tích hợp hoàn tất.
@@ -15,27 +15,32 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T001 | Ghi quyết định BA: tuổi, cọc, chỗ em bé, hạn trả dư, huỷ/hoàn, SLA vào PLAN | — | Có quyết định/người xác nhận; không đánh dấu đề xuất là đã duyệt |
-| T002 | Chốt host demo và sửa sai lệch Cloudflare/D1 trong tài liệu nguồn | — | Architecture/MVP/PLAN thống nhất và ghi phương án miễn phí/hạn mức được chọn |
-| T003 | Lập danh mục asset/nội dung thật: logo, ảnh, tour, giấy phép, liên hệ, policy | — | Mỗi asset có nguồn/quyền dùng/trạng thái; thiếu gì được liệt kê |
-| T004 | Page map và wireframe home/list/detail/checkout/admin theo design-style | T003 hoặc fixture có nhãn | Review luồng mobile, CTA, nội dung cần thiết; chưa gọi là UI đã nghiệm thu |
+| T001 | DONE — Người dùng cho phép giả định và yêu cầu sửa qua Admin (22/11/2026). Ghi quyết định BA: tuổi, cọc, chỗ em bé, hạn trả dư, huỷ/hoàn, SLA vào PLAN | — | Có quyết định/người xác nhận; không đánh dấu đề xuất là đã duyệt |
+| T002 | DONE — Chốt Render Free + Neon Free trong quota, cập nhật nguồn (22/11/2026). Chốt host demo và sửa sai lệch Cloudflare/D1 trong tài liệu nguồn | — | Architecture/MVP/PLAN thống nhất và ghi phương án miễn phí/hạn mức được chọn |
+| T003a | DONE — Lưu và phân tích poster mẫu Ninh Chữ | — | File gốc1051×1497; docs/poster-reference.md, phân biệt dữ liệu ảnh với thông tin đã xác minh |
+| T003 | DONE — inventory demo docs/content-inventory.md; Lập danh mục asset/nội dung thật: logo, ảnh, tour, giấy phép, liên hệ, policy | — | Mỗi asset có nguồn/quyền dùng/trạng thái; thiếu gì được liệt kê |
+| T004 | DONE — page map/wireframe docs/page-map.md; Page map và wireframe home/list/detail/checkout/admin theo design-style | T003 hoặc fixture có nhãn | Review luồng mobile, CTA, nội dung cần thiết; chưa gọi là UI đã nghiệm thu |
 
 ## M1 — Nền tảng
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T101 | Scaffold Next.js + TypeScript, lockfile và 4 scripts CI | — | npm ci, lint, typecheck, test:ci, build chạy; có smoke test thật |
-| T102 | Scaffold React/Vite admin và 4 scripts CI | — | Cài sạch/build; test render route login |
-| T103 | Scaffold Go/Gin, config loader, log redaction, health/ready | — | go vet/test/build; env thiếu và DB lỗi trả đúng lỗi, secret không log |
-| T104 | DB pool, migration runner, test harness PostgreSQL tách dữ liệu | T103 | Up DB sạch, chạy lại không lặp; rollback/restore thử trong DB test |
-| T105 | Migration identity/RBAC/guest/audit, seed quyền, bootstrap admin | T104 | FK/unique đúng; seed hai lần không trùng; không có password mặc định |
-| T106 | Login/logout/refresh rotation/reset password mock | T105 | Sai mật khẩu, expired, refresh reuse, revoke session đều có test |
-| T107 | Middleware RBAC, CSRF, Origin/CORS, rate limit, Turnstile adapter | T106 | Ma trận 401/403, reset/restart limiter, captcha fail; production chặn mock |
-| T108 | Guest session + lookup token storage, cookie và CSRF | T105,T107 | Session khác không chia dữ liệu; token hash; TTL và revoke đúng |
-| T109 | Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
-| T110 | Public/admin API clients và same-origin proxy | T101,T102,T108 | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
-| T111 | Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
-| T112 | Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
+| T101 | DONE 22/11/2026 — Scaffold Next.js + TypeScript, lockfile và 4 scripts CI; cài GSAP + @gsap/react | — | npm ci, lint, typecheck, test:ci, build chạy; smoke test GSAP timeline thật |
+| T102 | DONE — Scaffold React/Vite admin và 4 scripts CI | — | Cài sạch/build; test render route login |
+| T103 | DONE — Scaffold Go/Gin, config loader, log redaction, health/ready | — | go vet/test/build; env thiếu và DB lỗi trả đúng lỗi, secret không log |
+| T104 | DONE — DB pool, migration runner, test harness PostgreSQL tách dữ liệu | T103 | Up DB sạch, chạy lại không lặp; rollback/restore thử trong DB test |
+| T105 | DONE — Migration identity/RBAC/guest/audit, seed quyền, bootstrap admin | T104 | FK/unique đúng; seed hai lần không trùng; không có password mặc định |
+| T106 | DONE — Login/logout/refresh rotation/reset password mock | T105 | Sai mật khẩu, expired, refresh reuse, revoke session đều có test |
+| T107 | DONE — Middleware RBAC, CSRF, Origin/CORS, rate limit, Turnstile adapter | T106 | Ma trận 401/403, reset/restart limiter, captcha fail; production chặn mock |
+| T108a | DONE — Guest session storage/cookie/CSRF | T105,T107 | Token hash, reuse/TTL/origin, session isolation qua API |
+| T108b | Lookup token storage/FK booking (chuyển M3) | T301 | Token hash/TTL/read-only và không cấp quyền thanh toán |
+| T109 | DONE — Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
+| T110 | DONE — Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
+| T111 | DONE — Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
+| T112 | DONE (triển khai pipeline; merge vẫn cần CI xanh) — Kích hoạt CI app, migration/contract tests và branch check runbook | T104,T109,T111 | PR kiểm tra lỗi thật làm CI fail; scripts không bị skip khi có manifest |
+
+| T113 | DONE — API cấu hình booking_defaults/company_profile/SLA, version/audit/snapshot | T105,T107,T109 | Q19/Q20: validation, quyền, version/cache và không thay đơn cũ |
+| T114 | DONE — Admin forms cài đặt đặt tour/thông tin công ty | T102,T113 | Save/reload/preview, nhãn demo, lỗi field và stale version |
 
 ## M2 — Nội dung và khám phá tour
 
@@ -58,15 +63,18 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T215 | Media upload local/R2 và private download authorization | T203,T107 | Magic bytes/size/path traversal/private object và signed URL expiry |
 | T216 | SEO meta/canonical/OG/sitemap/robots/schema | T208,T210,T213 | HTML SSR có nội dung; draft không index; structured data không bịa rating |
 
+| T217 | Schema/API poster media/revision/verification và invalidate khi sửa tour/giá/lịch | T205,T206,T215 | Q21: stale revision, public filtering, MIME; không lấy giá từ ảnh |
+| T218 | Admin upload/preview/verify poster và public viewer responsive | T217,T210 | Ảnh không crop chữ, zoom/keyboard/mobile, structured content vẫn đầy đủ |
+
 ## M3 — Giá và đặt chỗ (FR-20–25,31,83–84)
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108 | Unique quote/code, FK, constraints; migrations trên DB sạch |
-| T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
+| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
+| T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
 | T303 | Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
 | T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |
-| T305 | Creator read và guest lookup read-only che PII | T303,T108 | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
+| T305 | Creator read và guest lookup read-only che PII | T303,T108b | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
 | T306 | Admin tạo/sửa/notes/cancel/complete dùng chung service | T303,T304,T107 | Manual+web tranh cùng kho; cancel hai lần; completed không nhả chỗ |
 | T307 | Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
 | T308 | Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |
@@ -113,7 +121,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T706 | UAT với khách 30+, trường/doanh nghiệp và admin | T702,T703,T704,T605 | 11 tiêu chí mục8 MVP có evidence; ghi lỗi và sửa trước duyệt |
 | T707 | Runbook setup/seed/deploy/backup demo và bàn giao | T706,T705 | Người khác làm theo trên môi trường sạch, ghi remaining production gaps |
 
-T208–T214 nghĩa toàn bộ các ID trong khoảng. T001/T003 có thể chờ BA trong khi scaffold bằng fixture; bán thật và UAT nội dung phải có quyết định được duyệt.
+T208–T214 nghĩa toàn bộ các ID trong khoảng. T001/T002 đã hoàn tất quyết định demo. T003 đã có poster tham chiếu qua T003a, còn thiếu nội dung đầy đủ/quyền ảnh; không chặn scaffold bằng fixture. Bán thật cần thay và duyệt các thông tin demo.
 
 ## Sau MVP
 

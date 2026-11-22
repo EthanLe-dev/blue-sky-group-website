@@ -1,0 +1,5 @@
+CREATE TABLE site_settings(key text PRIMARY KEY,value jsonb NOT NULL,version int NOT NULL DEFAULT 1,updated_by uuid REFERENCES staff_users,created_at timestamptz NOT NULL DEFAULT now(),updated_at timestamptz NOT NULL DEFAULT now());
+INSERT INTO site_settings(key,value) VALUES
+('booking_defaults','{"hold_minutes":20,"deposit_bps":3000,"balance_due_days":7,"max_travellers":20,"age_bands":[{"passenger_type":"infant","min_age":0,"max_age_exclusive":2,"seats_per_person":0},{"passenger_type":"child","min_age":2,"max_age_exclusive":12,"seats_per_person":1},{"passenger_type":"adult","min_age":12,"max_age_exclusive":null,"seats_per_person":1}],"cancellation_policy":"Demo: nhân viên xét duyệt theo chính sách tour."}'),
+('company_profile','{"legal_name":"Blue Sky Group","display_name":"Blue Sky Group","license_number":null,"address":null,"hotline":null,"email":null,"zalo_url":null,"office_coordinates":null,"document_media_ids":[],"is_demo":true}'),
+('response_sla','{"business_days":1,"message":"Demo: phản hồi trong một ngày làm việc."}');

@@ -92,3 +92,13 @@ Easing mặc định `cubic-bezier(.22,1,.36,1)`, exit `cubic-bezier(.4,0,1,1)`.
 Giọng văn rõ, lịch sự, thân thiện: “Chọn ngày khởi hành”, “Còn 3 chỗ” khi DB thật, “Giữ chỗ đến 14:20”. Không khẩn cấp giả, khen thương hiệu bằng số liệu bịa. Lỗi có hướng xử lý/hotline; tính năng hoãn disabled với giải thích.
 
 Trước DONE UI: build rồi chạy checker/consistency/layout/copy/perf/gate theo skill trên trang local thực; lưu dòng GATE thật, waiver, FAIL còn mở và screenshot. Không sửa kit để qua check. Kiểm mắt và tương tác ở1440,1024,820,768,390 và stress320; keyboard/zoom/reduced motion theo [testing-strategy](testing-strategy.md). Gate chưa chạy hoặc ERROR không đồng nghĩa PASS. Hiện tài liệu này chưa có browser evidence vì chưa có ứng dụng.
+
+## Poster tour và màn hình cấu hình Admin
+
+Team thiết kế cung cấp poster từng tour. Đã nhận [mẫu Ninh Chữ](poster-reference.md),1051×1497px, bố cục dọc gần tỉ lệ A-series; không ép mọi poster cùng kích thước. Mẫu xác nhận hướng xanh navy/xanh biển/vàng, UI dùng vàng như accent có kiểm contrast; giữ font body dễ đọc thay chữ script của poster. Hiển thị poster bằng `object-fit: contain`, không crop mất chữ/giá/QR; có mở ảnh lớn/zoom, giữ ảnh bìa riêng cho card. Trên mobile vẫn có tên tour/giá/lịch/itinerary dạng HTML dễ đọc, không bắt khách zoom poster để đặt tour. Không chép chữ trên poster thành alt quá dài; alt mô tả ngắn và nội dung quan trọng có bản text cạnh tour.
+
+Admin có các mục “Cài đặt đặt tour”, “Thông tin công ty”, “Poster tour”. Form group rõ, đơn vị phút/%/ngày, giải thích phạm vi áp dụng; preview, lỗi field, version conflict và xác nhận lưu. Hiển thị “Chỉ áp dụng mặc định cho nội dung/đơn mới; đơn đã đặt giữ nguyên chính sách”. Khi thay poster có preview đầy đủ, nguồn/quyền dùng, revision và bước xác nhận khớp giá/lịch. Thông tin giả định có nhãn Demo; phone/Zalo chưa nhập không thành link thật.
+
+## Triển khai GSAP
+
+GSAP là thư viện animation được chọn cho public frontend. Mỗi route marketing có một timeline hero vào trang và tối đa hai điểm nhấn ảnh/chữ phù hợp nội dung, dùng `@gsap/react` để scope selector và dọn animation khi đổi route. Component động cần reduced-motion branch, không đặt trạng thái ẩn làm mặc định trong HTML/SSR; chỉ áp dụng trạng thái animation sau khi client sẵn sàng. Dùng transform/opacity, giữ LCP image hiển thị, không animate giá/chỗ/tổng tiền hay trì hoãn form. ScrollTrigger chỉ cho tình huống có mục đích rõ và phải refresh/cleanup khi layout thay đổi; không pin/scroll hijack cho checkout. Kiểm điểm đầu/giữa/cuối timeline, resize, Back navigation, reduced motion và mobile trong T703.

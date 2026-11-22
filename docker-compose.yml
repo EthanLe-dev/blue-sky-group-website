@@ -40,6 +40,74 @@ services:
       timeout: 3s
       retries: 5
 
+
+  migrate:
+    profiles: ["app"]
+    build: ./backend
+    image: blue-sky-backend:local
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-blue_sky}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-blue_sky_group}?sslmode=disable
+    command: ["migrate"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  backend:
+    profiles: ["app"]
+    build: ./backend
+    image: blue-sky-backend:local
+    env_file: .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: "8080"
+      DATABASE_URL: postgresql://${POSTGRES_USER:-blue_sky}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-blue_sky_group}?sslmode=disable
+    ports: ["127.0.0.1:8080:8080"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "/server", "healthcheck"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  frontend:
+    profiles: ["app"]
+    build: ./frontend
+    environment:
+      API_UPSTREAM_URL: http://backend:8080
+    ports: ["127.0.0.1:3000:3000"]
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  admin:
+    profiles: ["app"]
+    build:
+      context: ./admin
+      args:
+        VITE_TURNSTILE_MODE: ${TURNSTILE_MODE:-real}
+        VITE_TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+    ports: ["127.0.0.1:5173:8080"]
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  nginx:
+    profiles: ["app"]
+    image: nginx:1.28-alpine
+    ports: ["127.0.0.1:8088:8080"]
+    volumes: ["./nginx/nginx.conf:/etc/nginx/nginx.conf:ro"]
+    depends_on:
+      - frontend
+      - backend
+
 volumes:
   postgres_data:
   redis_data:

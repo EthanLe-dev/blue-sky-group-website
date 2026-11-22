@@ -18,7 +18,7 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 - Giữ module theo architecture; handler xử lý HTTP, service giữ luật nghiệp vụ/transaction, repository truy cập DB. Dùng interface ở ranh giới tích hợp cần thay mock/real; tránh kiến trúc nhiều lớp không cần thiết.
 - REST `/api/v1`, contract trong api-spec. Không cho frontend truy cập DB/R2 bằng secret. Backend quyết định giá, số chỗ, quyền và trạng thái đơn.
 - MVP: thanh toán, email, SMS giả lập có nhãn rõ; tài khoản chỉ dành cho nhân viên. Redis, thanh toán thật, tài khoản khách, mã giảm giá, self-service huỷ/đổi thuộc giai đoạn sau.
-- Không thay PostgreSQL bằng D1/SQLite. Phương án demo đề xuất: Render Free cho Go, Neon Free cho PostgreSQL; hạn mức và ngủ máy được ghi trong PLAN. Chưa chốt/triển khai dịch vụ chỉ bằng việc ghi vào tài liệu.
+- Không thay PostgreSQL bằng D1/SQLite. Phương án demo đã chọn trong hạn mức miễn phí: Render Free cho Go, Neon Free cho PostgreSQL; hạn mức và ngủ máy được ghi trong PLAN. Chưa chốt/triển khai dịch vụ chỉ bằng việc ghi vào tài liệu.
 
 ## 3. Quy tắc không được bỏ qua
 
@@ -59,7 +59,7 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 
 ## 6. Lệnh hiện có
 
-Repository ban đầu chỉ có tài liệu, chưa có ứng dụng/Dockerfile/migration. Không khẳng định lệnh build/test app chạy được trước khi scaffold.
+Đã có khung frontend/admin/backend, migration identity/settings và Dockerfiles M1. Chưa có module catalog/booking/payment đầy đủ. Xem README để chạy ứng dụng.
 
 ```powershell
 Copy-Item .env.example .env  # chỉ khi chưa có .env
@@ -69,4 +69,17 @@ docker compose ps
 docker compose down         # giữ dữ liệu volume; không thêm -v nếu chưa được phép xoá
 ```
 
-Compose hiện cấp PostgreSQL local; Redis chỉ qua profile `production-tools`. Chạy ứng dụng trên host sau milestone M1. Khi có Dockerfile, bổ sung app/Nginx vào Compose cùng kiểm tra health và build, không để tham chiếu file chưa tồn tại.
+Compose mặc định cấp PostgreSQL; profile `app` chạy migration/backend/frontend/admin/Nginx, Redis chỉ qua `production-tools`. Tạo `.env` an toàn bằng `python scripts/init_local.py`, chạy `docker compose --profile app up -d --build`, bootstrap riêng. TEST_DATABASE_URL chỉ dùng DB hậu tố `_test`; mỗi suite tạo schema cô lập.
+
+
+## Quyết định người dùng 22/11/2026
+
+Được giả định giá/đặt chỗ và thông tin công ty cho demo, bắt buộc sửa được trong Admin, có validation/audit/version/snapshot, không đổi ngược đơn đã đặt. Tour có poster do team thiết kế, kèm dữ liệu có cấu trúc. Đã chọn Render Free + Neon Free trong quota, không tự nâng gói mất phí. Không deadline bắt buộc. Ảnh poster mẫu đã nhận và được ghi trong `docs/poster-reference.md`; dùng đúng nguồn, không suy diễn giá/lịch/đối tượng chưa có trên ảnh. Chi tiết bổ sung trong PLAN/schema/API thay thế các giả định cũ chờ BA cho demo.
+
+## Animation bằng GSAP
+
+Người dùng yêu cầu dùng GSAP cho animation của website. `frontend/` cài `gsap` và `@gsap/react` trong package/lockfile; dùng cho hero entrance, timeline nhiều phần và gallery/moment có mục đích theo `docs/design-style.md`. Đọc skill `gsap-web` khi triển khai, cùng taste-skill cho giao diện. Trong React dùng `useGSAP()`/`gsap.context()` và cleanup khi unmount; đăng ký plugin trước khi dùng. Chỉ import trong client component, không truy cập `window` khi SSR. Tôn trọng `prefers-reduced-motion`, đảm bảo nội dung hiện sẵn khi JS không chạy, ưu tiên transform/opacity. Không thêm smooth-scroll/pin chỉ để trang trí; checkout/admin giữ thao tác rõ ràng.
+
+## Tiết kiệm công sức bằng ponytail
+
+Người dùng yêu cầu Agent áp dụng skill `ponytail` khi xây dựng. Trước mỗi task code/review, đọc skill hiện có trong catalog và dùng mức `full` mặc định: hiểu toàn bộ nơi thay đổi tác động, chọn cách nhỏ nhất giải quyết đủ yêu cầu, tái dùng code/thư viện đang có, tránh thêm abstraction hoặc dependency không cần thiết. Chỉ viết test có ý nghĩa cho logic mới; không bỏ validation, bảo mật, accessibility, concurrency hoặc kiểm tra bắt buộc để tiết kiệm token. Câu trả lời gọn, nêu kết quả kiểm chứng thật và rủi ro còn lại. User có thể đổi mức hoặc yêu cầu dừng skill ở phiên sau.

@@ -1,6 +1,6 @@
 # Kế hoạch triển khai Blue Sky Group
 
-Ngày: 22/11/2026. Trạng thái: **thiết kế trước triển khai**. Phạm vi hiện tại là MVP; chưa có mã ứng dụng, migration hay Dockerfile. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
+Ngày: 22/11/2026. Trạng thái: **M0 hoàn tất cho demo, M1 nền tảng đã triển khai**. Phạm vi hiện tại là MVP; frontend/admin/backend và Docker/migration nền tảng đã có. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
 
 Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `develop` là nhánh tích hợp code chính. Mỗi module lớn có nhánh `feature/<module>` từ `develop`; task DONE được commit rõ ID và push ngay, module qua CI thì PR vào `develop`, đợt phát hành qua UAT mới PR vào `main`. CI cùng cấu hình cho push/PR hai nhánh; CD demo chỉ chạy trên push `main`. Xem [AGENTS](../AGENTS.md).
 
@@ -34,20 +34,20 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 
 - [x] Đọc yêu cầu, soạn AGENTS, PLAN, schema, API, CI và cấu hình local ban đầu.
 - [x] Chia backlog trong `agent/TASKS.md`, quy định UI/UX dùng taste-skill trong `docs/design-style.md`, tiêu chuẩn kiểm thử trong `docs/testing-strategy.md` và nhật ký bàn giao trong `docs/PROGRESS.md` (22/11/2026; hoàn tất tài liệu, chưa triển khai ứng dụng).
-- [ ] BA xác nhận cọc, tuổi, số chỗ em bé, ngày đến hạn, chính sách huỷ/hoàn và SLA gọi lại/báo giá.
-- [ ] Chốt host demo, điều chỉnh tiêu chí deploy Cloudflare trong nguồn, xác nhận quota và điều kiện sử dụng.
-- [ ] Nhận nhận diện, danh sách tour/giá/lịch khởi hành, nội dung pháp lý, media có quyền dùng; chốt page map và mẫu UI mobile.
+- [x] Người dùng cho phép giả định cho demo; bắt buộc sửa các giá trị qua Admin (22/11/2026).
+- [x] Chốt Render Free + Neon Free trong quota cho demo; cập nhật nguồn. Kiểm quota tài khoản và smoke test thực tế ở T704 trước deploy.
+- [x] Inventory và page-map/wireframe demo tại docs/content-inventory.md và docs/page-map.md. Người dùng cho phép dữ liệu thiếu dùng mẫu sửa ở Admin; xác minh nội dung thật trước bán chính thức.
 - Đầu ra: quyết định nghiệp vụ được ghi, không còn giả định chặn bán tour thật. Có thể scaffold/demo bằng dữ liệu mẫu trước khi hoàn tất nội dung thật.
 
 ### M1 — Nền tảng ứng dụng và bảo mật (3–5 ngày công)
 
-- [ ] Scaffold `frontend/`, `admin/`, `backend/` đúng architecture; pin công cụ/dependencies, lockfiles, npm scripts theo AGENTS.
-- [ ] Config loader validate env; structured logs có request ID; `/healthz`, `/readyz`; kết nối DB có timeout/pool.
-- [ ] Migration runner + seed idempotent; tài khoản admin bootstrap từ secret một lần, không mật khẩu hardcode. Dữ liệu test độc lập.
-- [ ] Auth JWT access + refresh rotation/revocation, cookie/CSRF/CORS, RBAC 5 vai trò, audit logs, rate limit và Turnstile adapter.
-- [ ] Tạo OpenAPI từ api-spec, test response schema; Dockerfile app/Nginx và mở rộng Compose khi file đã tồn tại.
-- [ ] Kích hoạt job CI ứng dụng khi có manifest; migrations và test integration bắt buộc khi có persistence.
-- Nghiệm thu: setup sạch theo hướng dẫn chạy được; login/logout/refresh, 401/403, secrets không vào bundle; CI lint/typecheck/build/test đạt.
+- [x] Scaffold frontend Next.js/GSAP, React/Vite Admin, Go/Gin; có lockfile, scripts kiểm tra và Dockerfiles.
+- [x] Config loader validate env; structured logs có request ID; `/healthz`, `/readyz`; kết nối DB có timeout/pool.
+- [x] Migration runner + seed idempotent; tài khoản admin bootstrap từ secret một lần, không mật khẩu hardcode. Dữ liệu test độc lập.
+- [x] Auth JWT access + refresh rotation/revocation, cookie/CSRF/CORS, RBAC 5 vai trò, audit logs, rate limit và Turnstile adapter.
+- [x] Tạo OpenAPI từ api-spec, test response schema; Dockerfile app/Nginx và mở rộng Compose khi file đã tồn tại.
+- [x] Kích hoạt job CI ứng dụng khi có manifest; migrations và test integration bắt buộc khi có persistence.
+- Kiểm chứng local: setup Docker, login/logout/refresh/RBAC/settings, vet/race/integration/OpenAPI, frontend/admin lint/typecheck/test/build và hai browser E2E đạt. CI remote và merge gate theo PR #1; không coi local pass là remote pass. T108b lookup storage chuyển M3 sau bảng booking T301; OpenAPI hiện bao phủ endpoint M1, mở rộng cùng mỗi module. T113/T114 cấu hình Admin đã có, media document picker theo T215.
 
 ### M2 — Catalog, nội dung và public website (6–9 ngày công)
 
@@ -128,4 +128,29 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 | Chưa có nội dung thật | Seed gắn nhãn, không xuất bản số giấy phép/đánh giá/ảnh chưa được duyệt. |
 | Privacy và bảo mật | Minimise dữ liệu, audit RBAC, signed URL, retention do công ty/pháp chế chốt; không coi tài liệu này là kết luận pháp lý. |
 | Tài khoản tích hợp | Cần quyền repo/host/DB/R2/Turnstile/GA4/Search Console khi triển khai; chỉ lưu credential trong secret manager. |
-| Ngân sách/nhân sự/deadline | Chưa được cung cấp; ước lượng M0–M7 khoảng 29–45 ngày công, có thể điều chỉnh sau scaffold và duyệt giao diện. |
+| Ngân sách/nhân sự/deadline | Người dùng không đặt deadline bắt buộc; ước lượng M0–M7 khoảng 29–45 ngày công, có thể điều chỉnh sau scaffold và duyệt giao diện. |
+
+## Quyết định bổ sung ngày 22/11/2026 — Admin và poster
+
+Người dùng cho phép giả định giá/đặt chỗ và thông tin công ty để triển khai demo, với điều kiện **đều sửa được ở Admin**. Quyết định này thay thế các mục đang chờ BA về giá trị ban đầu trong tài liệu; chưa phải duyệt chính sách bán thật. Không có deadline bắt buộc, vẫn thực hiện theo dependency và quality gates.
+
+- Mặc định demo: giữ chỗ20 phút, cọc30%, trả dư trước ngày đi7 ngày, adult≥12/child2–<12/infant<2; adult/child1 chỗ, infant0; tối đa20 khách/đơn. Policy huỷ demo: nhân viên xét duyệt theo chính sách hiển thị, không tự hoàn tiền. SLA demo: phản hồi trong1 ngày làm việc. Tất cả hiển thị nhãn demo khi chưa được thay bằng dữ liệu thật.
+- Admin quản lý mặc định đặt chỗ, giá/tuổi/chỗ/cọc/hạn trả theo lịch khởi hành, policy huỷ theo tour, thông tin doanh nghiệp/liên hệ/giấy phép/tài liệu/SLA. Thông tin chưa có dùng placeholder rõ ràng, không bịa giấy phép hay số điện thoại thật; link gọi/Zalo chưa cấu hình phải disabled.
+- Thay đổi cấu hình có validation, version, audit; chỉ tác động đơn mới. Quote đang hiệu lực dùng snapshot cấu hình đã chốt; booking cũ giữ nguyên giá/policy/hạn, không cập nhật ngược. Sửa giá/tuổi/chỗ/cọc của departure tăng price_version và yêu cầu báo giá lại.
+- Tour do team thiết kế poster. Admin upload/thay poster và nhập dữ liệu tour có cấu trúc; poster không thay trường giá/lịch/itinerary dùng tìm kiếm, SEO và checkout. Chưa nhận được ảnh mẫu trong chat hoặc workspace (chỉ có logo), cần bổ sung để chốt bố cục/tỉ lệ poster.
+- Chọn Render Free cho Go API và Neon Free cho PostgreSQL để demo nhỏ, trong quota miễn phí; không tự nâng gói trả tiền. Cần smoke test thực tế, nhất là cold start và PDF, trước khi xác nhận đủ năng lực. Cloudflare vẫn cho Turnstile/R2, không làm Go host/DB. Miễn phí backend/DB không đồng nghĩa đã xác nhận chi phí toàn hệ thống.
+
+
+Nguồn kiểm tra ngày22/11/2026: [Render Free](https://render.com/docs/free) (750 giờ/workspace/tháng, ngủ sau15 phút) và [Neon Free](https://neon.com/pricing) (100 CU-giờ/project/tháng,1GB storage). Khi deploy kiểm tra lại gói/quota và giới hạn chi tiêu; không cam kết miễn phí vô hạn.
+
+### Cập nhật poster mẫu — 22/11/2026
+
+Đã nhận poster Ninh Chữ1051×1497px từ người dùng, lưu [tham chiếu](../docs/poster-reference.md). T003a hoàn tất thu nhận/phân tích ảnh; T003 vẫn cần nội dung tour đầy đủ và hồ sơ quyền ảnh. Ghi chú “chưa nhận ảnh” trước đó là trạng thái lịch sử, không còn là blocker. Giá/liên hệ chép từ ảnh chưa tự áp dụng làm dữ liệu hiện hành.
+
+### GSAP và frontend scaffold — 22/11/2026
+
+Người dùng yêu cầu cài GSAP cho animation. T101 scaffold Next.js App Router + TypeScript và cài `gsap`/`@gsap/react` trên nhánh `feature/public-ui` từ develop. Các trang marketing sẽ dùng GSAP có mục đích, reduced motion và cleanup; checkout/admin ưu tiên rõ ràng. Chưa gọi T208/T703 DONE chỉ vì có thư viện.
+
+### Bàn giao M1
+
+README và docs/platform-runbook.md là nguồn lệnh chạy hiện tại. Docker profile app thực thi migration trước API, bootstrap tách riêng; credentials trong .env ignored. PR #1 vào develop chứa M0/M1. Main giữ nguyên cho tới release nghiệm thu. CI remote là cổng merge, xem trạng thái trực tiếp trên PR.

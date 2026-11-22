@@ -184,3 +184,17 @@ Retention đề xuất cho demo: quote hết hạn 24h, idempotency hết TTL 24
 | Contracts/group roster | Versioned contracts, signing evidence, private roster imports + validation/audit |
 
 Không tạo trước schema cho tính năng chưa chốt để tránh ngầm mở rộng MVP.
+
+## Bổ sung schema cấu hình Admin và poster (22/11/2026)
+
+- `site_settings` thêm `version int NOT NULL DEFAULT 1`; allowlist thêm `booking_defaults`, `company_profile`. `company_profile` JSON gồm `legal_name,display_name,license_number?,address?,hotline?,email?,zalo_url?,office_coordinates?,document_media_ids[],is_demo`; không lưu secret. `response_sla` có `business_days` (1..30) và `message` tối đa500 ký tự. Giá trị rỗng không render thành thông tin thật.
+- `booking_defaults` JSON schema v1: `hold_minutes`15..30, `deposit_bps`1..10000, `balance_due_days`1..365, `max_travellers`1..20, `age_bands[{passenger_type,min_age,max_age_exclusive,seats_per_person}]`, `cancellation_policy` text. Age bands phủ từ0 tuổi, không trùng/khoảng hở; seats0/1, adult bắt buộc1. Giới hạn DB20 là trần an toàn; Admin có thể giảm, nâng trên20 cần thay contract/migration.
+- Khi tạo departure, copy default tuổi/chỗ/cọc và tính balance_due_at từ starts_at; Admin sửa riêng departure theo luật sẵn có. Đổi default không ghi đè departures hiện có. Policy huỷ mặc định copy vào tour mới, chỉnh riêng qua tour editor.
+- `pricing_quotes` thêm `settings_version int` và `settings_snapshot jsonb` chứa hold_minutes/max_travellers; validate quote theo snapshot đó đến khi quote hết hạn. Khi tạo booking lưu cùng policy_snapshot và tính expires_at từ giờ DB + hold_minutes snapshot. Mặc định20 phút trong phần trước là seed, không hardcode runtime.
+- `tours` thêm `poster_media_id uuid NULL FK media_assets`, `poster_revision int NOT NULL DEFAULT 1`, `poster_verified_at timestamptz?` và `poster_verified_by uuid? FK staff_users`. Poster bắt buộc image public/ready. Khi sửa giá/lịch/nội dung tour liên quan thì xoá xác nhận poster; Admin phải kiểm lại trước publish poster mới. Poster chưa xác nhận không trả public, tour vẫn có ảnh bìa.
+- Media thay poster tạo object mới, không ghi đè URL cũ; tăng poster_revision và audit. Không ép poster làm cover; giữ tỉ lệ đầy đủ. Chỉ xoá object hết tham chiếu theo cleanup policy.
+- Update settings dùng optimistic version, transaction + audit; cache invalidate sau commit. Migration bổ sung đi cùng T113/T217, test schema độc lập. Booking/payment lịch sử không đổi khi sửa settings hoặc poster.
+
+## Migration nền tảng đã triển khai
+
+`backend/internal/platform/migrations/000001_identity.sql` tạo identity/RBAC/guest/customer/session/reset/audit/limiter. `000002_settings.sql` tạo và seed cấu hình demo. Runner dùng advisory lock và transaction, version table; bootstrap là lệnh riêng, không mật khẩu trong migration. `mock_password_deliveries` giữ ciphertext AES-GCM của token reset cho preview có quyền, hạn15 phút; token xác minh chỉ lưu hash ở password_reset_tokens. Không log plaintext; cache key từ CSRF secret, rotate secret làm preview cũ không đọc được (token vẫn hết hạn). Bảng booking_lookup_tokens hoãn đến T301 vì cần FK booking; phần guest session của T108 đã thực hiện, không tạo FK rỗng để giả hoàn tất.
