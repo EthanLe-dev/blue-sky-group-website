@@ -109,8 +109,8 @@ func TestM6ReportCalendarLedgerAndPermissions(t *testing.T) {
 		t.Fatal("tour PDF missing")
 	}
 	var quoteID string
-	if err := a.DB.QueryRow(ctx, `INSERT INTO group_quotes(group_request_id,version,title,itinerary,total_amount,currency,valid_until,created_by_staff_id)
-		SELECT id,1,'Trường học','Ngày đi',1650000,'VND',current_date+10,$1 FROM group_requests WHERE code='REPORT-NEW' RETURNING id`, staff.ID).Scan(&quoteID); err != nil {
+	if err := a.DB.QueryRow(ctx, `INSERT INTO group_quotes(group_request_id,version,title,itinerary,inclusions,exclusions,total_amount,currency,valid_until,created_by_staff_id)
+		SELECT id,1,'Trường học','Ngày đi','Bữa sáng','Chi phí cá nhân',1650000,'VND',current_date+10,$1 FROM group_requests WHERE code='REPORT-NEW' RETURNING id`, staff.ID).Scan(&quoteID); err != nil {
 		t.Fatal(err)
 	}
 	quotePath := fmt.Sprintf("/admin/group-quotes/%s/document.pdf", quoteID)

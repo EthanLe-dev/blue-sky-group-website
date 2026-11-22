@@ -9,7 +9,7 @@ export default function ExportButton({ path, filename, label }: { path: string; 
   return (
     <div className="toolbar">
       <label>Định dạng {label}
-        <select value={format} onChange={e => setFormat(e.target.value)} disabled={busy}>
+        <select aria-label={"Định dạng " + label} value={format} onChange={e => setFormat(e.target.value)} disabled={busy}>
           <option value="xlsx">Excel (.xlsx)</option><option value="csv">CSV (.csv)</option>
         </select>
       </label>
