@@ -179,3 +179,7 @@ M5 tiếp tục với form báo giá và gọi lại khi được giao. Nghiệm
 ### M6 — Báo cáo, xuất file và analytics
 
 T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. Excel/CSV theo quyền và giới hạn dòng. PDF nhúng phông tiếng Việt, báo giá theo phiên bản. Analytics chỉ gửi sau khi người dùng đồng ý. Bản mẫu Excel đã mở bằng Microsoft Excel và PDF đã render bằng Poppler. Kiểm tra tích hợp thực hiện trên CI. GA4 DebugView và Search Console chờ cấu hình thuộc tính thật.
+
+### M7 — Đang triển khai
+
+Nhánh feature/mvp-release. Tiếp tục T701–T707 trong repo và CI. Vercel, Render và Neon dành cho demo; xác minh dịch vụ thật, UAT và quyền tài khoản làm sau khi có hỗ trợ.

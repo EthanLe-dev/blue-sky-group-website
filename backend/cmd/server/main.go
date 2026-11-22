@@ -63,6 +63,10 @@ func main() {
 			slog.Error("demo seed failed", "reason", e.Error())
 			os.Exit(1)
 		}
+		if e = platform.New(c, p).BookingServer().SeedDemoStates(context.Background()); e != nil {
+			slog.Error("demo scenarios seed failed", "reason", e.Error())
+			os.Exit(1)
+		}
 		return
 	}
 	app := platform.New(c, p)
