@@ -22,6 +22,8 @@ export function setAnalytics(id: string, allowed: boolean, debug: boolean) {
   measurement = id;
   browser.dataLayer ||= [];
   browser.gtag = function () {
+    // Google Tag consumes the arguments object queued by its documented snippet.
+    // eslint-disable-next-line prefer-rest-params
     browser.dataLayer?.push(arguments);
   };
   const tag = document.createElement("script");
