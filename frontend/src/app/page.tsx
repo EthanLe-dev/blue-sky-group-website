@@ -105,7 +105,7 @@ export default async function Home() {
         <HomeGroupTours />
 
         <section className="wrap home-block home-about" aria-labelledby="about-heading">
-          <div>
+          <div className="home-about-copy">
             <h2 id="about-heading">Về Blue Sky Group</h2>
             <p>Blue Sky Group tổ chức tour du lịch và các chuyến đi theo yêu cầu cho gia đình, trường học và doanh nghiệp.</p>
             {homeCopy?.body && (

@@ -127,6 +127,11 @@ export default async function ContentPage({
             {" và "}<a href="https://www.pexels.com/photo/fun-sack-race-outdoors-in-hanoi-vietnam-35301403/">hoạt động đội nhóm của ANH LÊ</a>,
             theo <a href="https://www.pexels.com/license/">giấy phép Pexels</a>.
           </li>
+          <li>
+            Phong cảnh Việt Nam: <a href="https://www.pexels.com/photo/scenic-boat-tour-in-ninh-binh-vietnam-37273056/">Ninh Bình của Vishal Chokkala</a>
+            {" và "}<a href="https://www.pexels.com/photo/colorful-lantern-display-in-h-i-an-at-night-30937252/">Hội An của Võ Văn Tiến</a>,
+            theo <a href="https://www.pexels.com/license/">giấy phép Pexels</a>.
+          </li>
         </ul>
       </>
     );

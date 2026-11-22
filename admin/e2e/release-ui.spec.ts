@@ -55,15 +55,17 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-" + width + ".png"), animations: "disabled" });
     if (width === 390 || width === 1440) {
-      const aboutPhoto = page.locator(".home-about-photo img");
-      await aboutPhoto.scrollIntoViewIfNeeded();
-      await expect.poll(() => aboutPhoto.evaluate(img => (img as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      const aboutPhotos = page.locator(".home-about-photo img");
+      await expect(aboutPhotos).toHaveCount(3);
+      await aboutPhotos.first().scrollIntoViewIfNeeded();
       await page.evaluate(async () => {
         const images = [...document.querySelectorAll<HTMLImageElement>("main img[loading=lazy]")];
         for (const img of images) img.loading = "eager";
         await Promise.allSettled(images.map(img => img.decode()));
-        scrollTo(0, 0);
       });
+      await expect.poll(() => aboutPhotos.evaluateAll(images => images.every(img => (img as HTMLImageElement).naturalWidth > 0))).toBe(true);
+      await page.locator(".home-about").screenshot({ path: test.info().outputPath("homepage-about-" + width + ".png"), animations: "disabled" });
+      await page.evaluate(() => scrollTo(0, 0));
       await page.screenshot({ path: test.info().outputPath("homepage-full-" + width + ".png"), animations: "disabled", fullPage: true });
     }
   }
