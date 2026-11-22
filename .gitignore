@@ -72,3 +72,8 @@ Desktop.ini
 __pycache__/
 .pytest_cache/
 .venv/
+
+# Taste skill browser profiles and generated QA
+.taste-skill/chrome*/
+.taste-skill/shots/
+.taste-skill/reports/
