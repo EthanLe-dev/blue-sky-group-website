@@ -104,7 +104,7 @@ func (a *App) Router() *gin.Engine {
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
 	bookingServer := a.BookingServer()
 	bookingServer.Register(v, admin, a.guestAccess, a.origin, a.limit("lookup", 5, 900), a.limit("checkout", 10, 600), a.permission("booking.read"), a.permission("booking.write"))
-	catalogServer := &catalog.Server{Expire: bookingServer.Expire, DB: a.DB, UserID: func(c *gin.Context) string { return c.MustGet("user").(User).ID }, Media: catalog.NewMediaStore(a.Config.CSRFSecret)}
+	catalogServer := &catalog.Server{ExpireLocked: booking.ExpireLocked, Expire: bookingServer.Expire, DB: a.DB, UserID: func(c *gin.Context) string { return c.MustGet("user").(User).ID }, Media: catalog.NewMediaStore(a.Config.CSRFSecret)}
 	catalogServer.Register(v, admin, a.permission("catalog.write"), a.permission("content.write"), a.permission("media.write"), a.permission("media.private.write"))
 	r.NoRoute(func(c *gin.Context) { fail(c, 404, "NOT_FOUND") })
 	return r
