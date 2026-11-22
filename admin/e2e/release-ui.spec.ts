@@ -158,20 +158,18 @@ test("mobile homepage keeps search and navigation available without JavaScript",
   }
 });
 
-test("homepage plays the muted video and keeps it paused when requested", async ({ page, browserName }) => {
+test("homepage video loops without controls and pauses outside the viewport", async ({ page, browserName }) => {
   test.skip(browserName !== "chromium", "Live playback is verified in Chromium; other CI engines check reduced motion");
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("http://localhost:3000/");
   const video = page.locator(".home-hero-video");
   await expect(video).toHaveAttribute("data-frame", "true");
   await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.currentTime)).toBeGreaterThan(0);
-  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.loop && el.playsInline)).toBe(true);
-  await page.getByRole("button", { name: "Tạm dừng video nền" }).click();
-  await expect(page.getByRole("button", { name: "Phát video nền" })).toBeVisible();
-  expect(await video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
+  expect(await video.evaluate((el: HTMLVideoElement) => el.muted && el.loop && el.playsInline && !el.controls)).toBe(true);
+  await expect(page.locator(".home-hero-scene").getByRole("button")).toHaveCount(0);
+  await video.evaluate((el: HTMLVideoElement) => { el.currentTime = el.duration - 0.25; });
+  await expect.poll(() => video.evaluate((el: HTMLVideoElement) => !el.paused && el.currentTime < 2)).toBe(true);
   await page.screenshot({ path: test.info().outputPath("homepage-video.png"), animations: "disabled" });
-  await page.getByRole("button", { name: "Phát video nền" }).click();
-  await expect(page.getByRole("button", { name: "Tạm dừng video nền" })).toBeVisible();
   await page.evaluate(() => scrollTo(0, document.documentElement.scrollHeight));
   await expect.poll(() => video.evaluate((el: HTMLVideoElement) => el.paused)).toBe(true);
   await page.emulateMedia({ reducedMotion: "reduce" });
@@ -179,7 +177,6 @@ test("homepage plays the muted video and keeps it paused when requested", async 
   await page.route("**/images/home-coast.*", route => route.abort());
   await page.emulateMedia({ reducedMotion: "no-preference" });
   await page.goto("http://localhost:3000/?video=fallback");
-  await expect(page.locator(".home-video-toggle")).toHaveCount(0);
   await expect(video).toHaveAttribute("data-frame", "false");
   await expect(page.locator(".hero-photo")).toBeVisible();
 });
