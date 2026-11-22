@@ -169,3 +169,8 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - Nhánh feature/booking tạo từ develop và merge dependency feature/catalog trước khi code. M2 UI vẫn đang QA, chưa merge vào develop.
 - T301 migration booking/items/passengers/holds/events/notes/idempotency/lookup tokens áp dụng được trên schema PostgreSQL sạch trong integration suite. Không sửa migration đã có.
 - T302–T306 kiểm thử đầu tiên PASS (`go test -race -count=1 ./internal/platform -run "TestBooking|TestGuestLookup|TestAdminCancel"`, 11.240s): web/manual tranh 3 chỗ từ 12 request, replay, conflict payload, snapshot defaults, stale price, tuổi sai, sweep hai lần, IDOR/lookup masking/TTL/CSRF, rollback trigger lỗi và cancel lặp. Còn bổ sung biên tuổi/cọc/complete và HTTP contract.
+
+### M3 — Kiểm chứng backend mở rộng
+- `go vet` và toàn bộ `go test -race -count=1 ./...` PASS; platform 58.738s. Thêm biên ngày sinh đúng sinh nhật, cọc làm tròn lên, phụ thu bắt buộc/tuỳ chọn, báo giá hết hạn và chỉ full khi quá hạn cọc.
+- Complete chỉ nhận chuyến đã kết thúc, giữ confirmed_seats và không tự ghi nhận tiền; cancel/retry không nhả chỗ lần hai.
+- T302 đạt gate backend; task khác tiếp tục có bằng chứng riêng.

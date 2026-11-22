@@ -6,6 +6,7 @@ import (
 	_ "embed"
 	"encoding/json"
 	"fmt"
+	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/booking"
 	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/catalog"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -70,7 +71,7 @@ func (a *App) Router() *gin.Engine {
 		ctx, cancel := context.WithTimeout(c.Request.Context(), 2*time.Second)
 		defer cancel()
 		var ready bool
-		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000002_settings.sql')").Scan(&ready)
+		e := a.DB.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM schema_migrations WHERE version='000004_booking.sql')").Scan(&ready)
 		if e != nil || !ready {
 			c.JSON(503, gin.H{"status": "not_ready"})
 			return
@@ -101,7 +102,9 @@ func (a *App) Router() *gin.Engine {
 	admin.PUT("/site-settings/:key", a.permission("settings.write"), a.putSetting)
 	admin.GET("/audit-logs", a.permission("audit.read"), a.audit)
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
-	catalogServer := &catalog.Server{DB: a.DB, UserID: func(c *gin.Context) string { return c.MustGet("user").(User).ID }, Media: catalog.NewMediaStore(a.Config.CSRFSecret)}
+	bookingServer := a.BookingServer()
+	bookingServer.Register(v, admin, a.guestAccess, a.origin, a.limit("lookup", 5, 900), a.limit("checkout", 10, 600), a.permission("booking.read"), a.permission("booking.write"))
+	catalogServer := &catalog.Server{Expire: bookingServer.Expire, DB: a.DB, UserID: func(c *gin.Context) string { return c.MustGet("user").(User).ID }, Media: catalog.NewMediaStore(a.Config.CSRFSecret)}
 	catalogServer.Register(v, admin, a.permission("catalog.write"), a.permission("content.write"), a.permission("media.write"), a.permission("media.private.write"))
 	r.NoRoute(func(c *gin.Context) { fail(c, 404, "NOT_FOUND") })
 	return r
@@ -505,4 +508,37 @@ func (a *App) audit(c *gin.Context) {
 		out = append(out, gin.H{"id": id, "action": action, "entity_type": entity, "created_at": at})
 	}
 	ok(c, 200, out)
+}
+
+func (a *App) guestAccess(c *gin.Context) {
+	token, _ := c.Cookie("guest_session")
+	var id string
+	if token == "" || a.DB.QueryRow(c.Request.Context(), "SELECT id FROM guest_sessions WHERE token_hash=$1 AND revoked_at IS NULL AND expires_at>clock_timestamp()", hash(token)).Scan(&id) != nil {
+		fail(c, 401, "UNAUTHORIZED")
+		return
+	}
+	if c.Request.Method != "GET" && !hmac.Equal([]byte(c.GetHeader("X-CSRF-Token")), []byte(a.csrf(token))) {
+		fail(c, 403, "CSRF_FAILED")
+		return
+	}
+	c.Set("guest_id", id)
+	c.Next()
+}
+func (a *App) BookingServer() *booking.Server {
+	return &booking.Server{DB: a.DB, Captcha: a.captcha, Principal: func(c *gin.Context, staff bool) (booking.Principal, bool) {
+		if staff {
+			u, ok := c.Get("user")
+			if !ok {
+				fail(c, 401, "UNAUTHORIZED")
+				return booking.Principal{}, false
+			}
+			return booking.Principal{ID: u.(User).ID, Staff: true}, true
+		}
+		id := c.GetString("guest_id")
+		if id == "" {
+			fail(c, 401, "UNAUTHORIZED")
+			return booking.Principal{}, false
+		}
+		return booking.Principal{ID: id}, true
+	}}
 }
