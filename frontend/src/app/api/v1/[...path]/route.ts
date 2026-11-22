@@ -59,7 +59,7 @@ async function proxy(request: NextRequest) {
       signal: AbortSignal.timeout(30000),
     });
     const output = new Headers({ "Cache-Control": "no-store" });
-    for (const name of ["content-type", "x-request-id", "retry-after"]) {
+    for (const name of ["content-type", "content-disposition", "x-content-type-options", "x-request-id", "retry-after"]) {
       const value = response.headers.get(name);
       if (value) output.set(name, value);
     }

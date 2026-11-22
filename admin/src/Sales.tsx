@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { authorized } from "./lib/session";
+import { authorized, downloadAuthorized } from "./lib/session";
 
 const groupPath = "/admin/group-requests";
 const callbackPath = "/admin/callback-requests";
@@ -298,6 +298,10 @@ function LeadEditor({ path, staff, canAttach, reload }: {
             <div key={item.id}>
               <h5>Phiên bản {item.version} · {item.title} · {labels[item.status]}</h5>
               <p>{money.format(Number(item.total_amount))} · Hiệu lực đến {item.valid_until}</p>
+              <button type="button" disabled={busy} onClick={() => void perform(() =>
+                downloadAuthorized("/admin/group-quotes/" + item.id + "/document.pdf", "bao-gia-v" + item.version + ".pdf"))}>
+                Tải PDF báo giá
+              </button>
               <details>
                 <summary>Xem nội dung báo giá</summary>
                 <p>Lịch trình</p><p style={{ whiteSpace: "pre-wrap" }}>{item.itinerary}</p>

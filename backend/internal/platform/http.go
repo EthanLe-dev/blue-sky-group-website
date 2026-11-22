@@ -105,6 +105,8 @@ func (a *App) Router() *gin.Engine {
 	admin.GET("/auth/mock-reset-deliveries", a.permission("staff.write"), a.resetPreviews)
 	a.registerSales(v, admin)
 	a.registerCustomers(admin)
+	v.GET("/tours/:slug/itinerary.pdf", a.tourPDF)
+	admin.GET("/group-quotes/:id/document.pdf", a.permission("lead.write"), a.groupQuotePDF)
 	admin.GET("/reports/revenue/export", a.permission("report.export"), a.exportRevenue)
 	admin.GET("/bookings/export", a.permission("report.export"), a.permission("booking.read"), a.BookingServer().Export)
 	admin.GET("/tours/export", a.permission("catalog.write"), a.exportTours)
