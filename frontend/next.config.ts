@@ -2,8 +2,14 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  cacheComponents: true,
-  partialPrefetching: true,
+  htmlLimitedBots: /.*/,
+  images: {
+    localPatterns: [
+      { pathname: "/brand/**", search: "" },
+      { pathname: "/images/**", search: "" },
+      { pathname: "/api/v1/media/*", search: "" },
+    ],
+  },
   turbopack: {
     rules: {
       "*.css": {

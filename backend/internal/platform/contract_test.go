@@ -28,7 +28,7 @@ func TestOpenAPIResponses(t *testing.T) {
 	if e != nil {
 		t.Fatal(e)
 	}
-	for _, tc := range []struct{ method, path, body string }{{"GET", "/healthz", ""}, {"GET", "/readyz", ""}, {"GET", "/api/v1/booking-defaults", ""}, {"POST", "/api/v1/guest-sessions", "{}"}, {"POST", "/api/v1/admin/auth/login", `{"email":"admin@example.com","password":"test-password-123","turnstile_token":"local-test-token"}`}} {
+	for _, tc := range []struct{ method, path, body string }{{"GET", "/api/v1/tours", ""}, {"GET", "/api/v1/tours/not-existing", ""}, {"GET", "/api/v1/home", ""}, {"GET", "/api/v1/gallery", ""}, {"GET", "/healthz", ""}, {"GET", "/readyz", ""}, {"GET", "/api/v1/booking-defaults", ""}, {"POST", "/api/v1/guest-sessions", "{}"}, {"POST", "/api/v1/admin/auth/login", `{"email":"admin@example.com","password":"test-password-123","turnstile_token":"local-test-token"}`}} {
 		req := httptest.NewRequest(tc.method, "http://localhost:8080"+tc.path, strings.NewReader(tc.body))
 		req.Header.Set("Origin", "http://localhost:5173")
 		req.Header.Set("Content-Type", "application/json")

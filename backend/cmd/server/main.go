@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	demoassets "github.com/EthanLe-dev/blue-sky-group-website/backend/demo-assets"
+	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/catalog"
 	"github.com/EthanLe-dev/blue-sky-group-website/backend/internal/platform"
 	"log/slog"
 	"net/http"
@@ -56,7 +58,17 @@ func main() {
 		}
 		return
 	}
+	if len(os.Args) > 1 && os.Args[1] == "seed-demo" {
+		if e = catalog.Seed(context.Background(), p, catalog.NewMediaStore(c.CSRFSecret), demoassets.Files); e != nil {
+			slog.Error("demo seed failed", "reason", e.Error())
+			os.Exit(1)
+		}
+		return
+	}
 	app := platform.New(c, p)
+	workerCtx, stopWorker := context.WithCancel(context.Background())
+	defer stopWorker()
+	go app.BookingServer().RunWorker(workerCtx)
 	srv := &http.Server{Addr: c.Address, Handler: app.Router(), ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 15 * time.Second, WriteTimeout: 30 * time.Second, IdleTimeout: 60 * time.Second}
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, syscall.SIGINT, syscall.SIGTERM)

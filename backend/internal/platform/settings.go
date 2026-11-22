@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"net/mail"
 	"net/url"
 	"sort"
@@ -105,7 +106,17 @@ func validateSetting(key string, raw []byte) bool {
 		if b.Office != nil && (b.Office.Latitude < -90 || b.Office.Latitude > 90 || b.Office.Longitude < -180 || b.Office.Longitude > 180) {
 			return false
 		}
-		return len(b.Documents) == 0
+		if len(b.Documents) > 20 {
+			return false
+		}
+		seen := map[string]bool{}
+		for _, id := range b.Documents {
+			if uuid.Validate(id) != nil || seen[id] {
+				return false
+			}
+			seen[id] = true
+		}
+		return true
 	}
 	return false
 }
@@ -140,6 +151,19 @@ func (a *App) putSetting(c *gin.Context) {
 		return
 	}
 	defer tx.Rollback(ctx)
+	if key == "company_profile" {
+		var profile struct {
+			Documents []string `json:"document_media_ids"`
+		}
+		json.Unmarshal(b.Value, &profile)
+		for _, id := range profile.Documents {
+			var valid bool
+			if tx.QueryRow(ctx, "SELECT EXISTS(SELECT 1 FROM media_assets WHERE id=$1 AND visibility='public' AND status='ready' AND kind IN('image','document'))", id).Scan(&valid) != nil || !valid {
+				fail(c, 422, "VALIDATION_ERROR")
+				return
+			}
+		}
+	}
 	u := c.MustGet("user").(User)
 	tag, e := tx.Exec(ctx, "UPDATE site_settings SET value=$2,version=version+1,updated_by=$3,updated_at=now() WHERE key=$1 AND version=$4", key, b.Value, u.ID, b.Version)
 	if e != nil {

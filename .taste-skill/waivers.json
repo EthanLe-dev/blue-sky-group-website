@@ -1,0 +1,12 @@
+[
+  {
+    "check": "hero-enter",
+    "target": "main#main > section.hero.hero--photo",
+    "reason": "Yêu cầu repo dùng GSAP: hero dùng useGSAP có matchMedia/cleanup và SSR nội dung hiện sẵn; không thêm head script m-enter để giấu toàn hero trước hydration."
+  },
+  {
+    "check": "effect-kind",
+    "target": "(the page)",
+    "reason": "GSAP core bundle có chuỗi ScrollTrigger nhưng trang không import/register ScrollTrigger, không scroll tween/pin. picture-develops là moment film hợp lệ cho service và chỉ chạy một lần."
+  }
+]

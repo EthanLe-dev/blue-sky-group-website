@@ -90,3 +90,11 @@ Khi có test artifact, lưu report JUnit/coverage/Playwright trace/screenshot/lo
 - Q20: sửa contact/license/SLA, reload public thấy đúng giá trị; placeholder không thành thông tin công ty thật, input XSS bị chặn. Không public secret/audit.
 - Q21: upload/thay poster sai MIME/quá lớn bị reject; ảnh dọc/ngang/mobile không mất chữ. Đổi giá/lịch làm poster mất xác nhận; xác nhận revision cũ409; poster chưa xác nhận không public. Tính tiền không phụ thuộc chữ trong ảnh.
 - Render/Neon demo: kiểm cold start, restart không mất dữ liệu, tạo PDF với giới hạn tài nguyên; kiểm dashboard quota và thiết lập tránh vượt chi phí. Nếu gói miễn phí không đủ, báo kết quả và chọn giải pháp trước khi nâng gói.
+
+## Evidence M2/M3
+
+`backend/internal/platform/catalog_test.go`, `catalog_schema_test.go`, `booking_test.go` dùng PostgreSQL thật/schema riêng và TEST_DATABASE_URL hậu tố `_test`. `internal/booking/model_test.go` kiểm biên ngày sinh; catalog/media_test.go kiểm magic/surcharge và AWS4 adapter. Trigger inject failure kiểm rollback toàn transaction, concurrent web/manual kiểm capacity3 từ12 request, idempotency conflict/replay, expire/cancel lặp và giờ sau lock. Không SQLite.
+
+`admin/e2e/catalog-booking.spec.ts`: public filter/poster/favourites→checkout→masked lookup→admin cancel, tour save/reload/poster verify, mobile menu/reduced motion/overflow 320..1440 và CMS404. Fixture là seed-demo; test phục hồi summary/defaults và huỷ đơn của chính test, không xoá dữ liệu khác. CI bootstrap bằng secret ngẫu nhiên riêng rồi seed. Trace tắt để tránh thu credentials; artifacts lỗi chỉ chứa dữ liệu demo.
+
+Taste gate và screenshot dùng skill scripts riêng, không coi Playwright responsive là taste PASS. Nếu có FAIL thẩm mỹ còn mở, ghi rõ số lượng/waiver và không đánh dấu T703 nghiệm thu hoàn tất. Không biến QA app thành phép deploy production.

@@ -2,6 +2,8 @@
 
 ## Bàn giao nhanh — 22/11/2026
 
+- Đã cài `bluesky run` mở/build app và `bluesky off` dừng/giữ volume trên máy người dùng. Mở PowerShell mới, dùng từ bất kỳ thư mục; không khởi động app khi cài.
+
 - Cập nhật mới nhất: người dùng yêu cầu tự chạy app. Đã dừng toàn bộ Compose của dự án bằng down (không -v); dữ liệu volume giữ nguyên. Agent không tự khởi động lại app/Docker/service local nếu chưa được yêu cầu rõ. Hướng dẫn chạy trong README.
 - Giai đoạn: M0 inventory/wireframe đã đủ bằng dữ liệu demo; M1 có ứng dụng nền tảng chạy local Docker. Chưa có catalog/booking/payment hoàn chỉnh (M2–M4).
 - Nhánh hiện tại `develop`. PR #1 đã qua CI và merge tại ce0bbb9; chứa cả tài liệu quyết định, frontend/GSAP/ponytail và nền tảng M0/M1. Main giữ nguyên f80a064.
@@ -142,3 +144,81 @@ Có thể tiếp tục M2: T201/T202 UI tokens/layout, T203 catalog. T108b chỉ
 ### Người dùng yêu cầu dừng app và tự chạy local
 
 Đã chạy `docker compose --profile app --profile production-tools down` không kèm `-v`; `compose ps` không còn service chạy. Không dừng ứng dụng/container khác ngoài dự án. Cập nhật AGENTS để không tự khởi động app/Docker/service local; kiểm thử cần service phải xin phép trước. README có hướng dẫn chạy lại bằng up, xem logs và down; .env/Admin/dữ liệu đã có không cần bootstrap lại. Các ghi chú “Docker vẫn chạy” ở mục lịch sử phía trên là trạng thái cũ.
+
+### Lệnh tắt bluesky run/off
+
+Người dùng yêu cầu lệnh mở/tắt app. Đã thêm scripts/bluesky.cmd và install_shortcuts.ps1, cài launcher vào LOCALAPPDATA/BlueSky/bin, user PATH và refresh PATH trong profile PowerShell7/Windows PowerShell, giữ nội dung/encoding profile cũ. Run kiểm Docker có sẵn rồi up -d --build; off down cả app/Redis không -v. `python scripts/test_shortcuts.py` PASS bằng Docker giả (dispatch run/off, invalid action, daemon lỗi); `bluesky help` và command discovery PASS. Không chạy app hoặc service mới. Nhánh chore/bluesky-shortcuts từ develop, độc lập PR #2.
+
+### Đặt lại mật khẩu Admin local theo yêu cầu người dùng
+
+Đã đổi hash mật khẩu tài khoản bootstrap hiện có theo giá trị tạm người dùng yêu cầu; thu hồi các phiên/token reset cũ và ghi audit. Giá trị chỉ lưu tham chiếu trong .env ignored, không ghi vào Git. Kiểm login qua Admin5173 và API8080 đều200, logout các phiên kiểm tra. Không khởi động/restart app; thao tác trên PostgreSQL và API đã chạy sẵn. Chính sách mật khẩu tối thiểu12bytes của bootstrap/reset API giữ nguyên; tài khoản local hiện tại đã đổi trực tiếp, không chạy lại bootstrap với mật khẩu tạm ngắn.
+
+### Bắt đầu M2/M3 — dùng logo công ty
+
+Người dùng chỉ định blue-sky-group-logo.jpg và cho phép chạy local để kiểm thử rồi dừng khi xong đợt này. Nhánh feature/catalog từ develop có giữ lệnh bluesky. T203 DOING trước, tiếp theo API/catalog/Admin/public và booking trên nhánh riêng. Không đổi mật khẩu Admin hoặc reset volume.
+
+T203: migration000003_catalog tạo media/tours/destinations/categories/departures/prices/quotes/CMS với FK/unique/check tiền/chỗ/ngày. PostgreSQL integration/race/vet PASS, gồm thử capacity âm, ngày kết thúc sai, giữ quá capacity, giá âm đều bị từ chối. Không migration DB ứng dụng trong bước này; test dùng blue_sky_test/schema riêng.
+
+### M2 — API catalog/media, 22/11/2026
+- Người dùng cho phép chạy local để kiểm thử rồi dừng; PostgreSQL dùng database test và schema cô lập.
+- CRUD/clone/publish tour, bulk departure rollback, price version, bộ lọc cùng departure, CMS sanitize, media magic bytes/private signed URL, poster revision và seed idempotent đã có integration tests.
+- `go vet ./...` và `go test -race -count=1 ./...`: PASS (platform 36.348s, catalog PASS).
+- M2 đang thực hiện; UI, OpenAPI, kiểm thử trình duyệt còn tiếp tục. Chưa đánh dấu toàn module DONE.
+
+### M3 — Nền tảng transaction, 22/11/2026
+- Nhánh feature/booking tạo từ develop và merge dependency feature/catalog trước khi code. M2 UI vẫn đang QA, chưa merge vào develop.
+- T301 migration booking/items/passengers/holds/events/notes/idempotency/lookup tokens áp dụng được trên schema PostgreSQL sạch trong integration suite. Không sửa migration đã có.
+- T302–T306 kiểm thử đầu tiên PASS (`go test -race -count=1 ./internal/platform -run "TestBooking|TestGuestLookup|TestAdminCancel"`, 11.240s): web/manual tranh 3 chỗ từ 12 request, replay, conflict payload, snapshot defaults, stale price, tuổi sai, sweep hai lần, IDOR/lookup masking/TTL/CSRF, rollback trigger lỗi và cancel lặp. Còn bổ sung biên tuổi/cọc/complete và HTTP contract.
+
+### M3 — Kiểm chứng backend mở rộng
+- `go vet` và toàn bộ `go test -race -count=1 ./...` PASS; platform 58.738s. Thêm biên ngày sinh đúng sinh nhật, cọc làm tròn lên, phụ thu bắt buộc/tuỳ chọn, báo giá hết hạn và chỉ full khi quá hạn cọc.
+- Complete chỉ nhận chuyến đã kết thúc, giữ confirmed_seats và không tự ghi nhận tiền; cancel/retry không nhả chỗ lần hai.
+- T302 đạt gate backend; task khác tiếp tục có bằng chứng riêng.
+
+### M3 — Kiểm thử giao diện
+- Playwright 5/5 PASS (11.3s): guest proxy/CSRF, login/settings save-reload/logout, catalog filter/poster Escape/favourites, checkout 3 bước → lookup che PII → admin cancel; tour editor save/reload/verify poster; responsive320/390/768/820/1024/1440 và trang CMS/slug404. Dữ liệu E2E giả; đơn vừa tạo được huỷ qua Admin, nội dung và cấu hình được phục hồi.
+- T307 hoàn thành luồng quote/validation/hold/countdown/retry idempotency; PII chỉ trong React memory. Payment CTA disabled có giải thích M4, không ghi thu tiền.
+- T308 có lookup chỉ đọc và Admin list/detail/edit/notes/manual/cancel/complete.
+
+### M2 — UI và hợp đồng
+- Tour editor/departure bulk/price-version, CMS theo resource, thư viện upload/metadata/private link, company document IDs và đối chiếu poster đã nối API thật. Các trường nâng cao itinerary/stops/prices dùng JSON có hướng dẫn; chưa có visual rich-text/drag-drop editor.
+- Public dùng logo thật, Be Vietnam Pro tự host, GSAP scoped entrance/reduced motion, native dialog gallery/menu, filter URL/suggestions, saved/recent/share, CMS/blog/destinations/policies, lazy OpenStreetMap, metadata/sitemap/robots/JSON-LD. Không review giả.
+- Docker frontend bổ sung public assets; media_data giữ tệp. .env.example có SITE_URL, Compose truyền env Turnstile runtime.
+- OpenAPI M1–M3 validate PASS; bổ sung response validator cho catalog/home/gallery/404. Các test full race gần nhất platform57.587s PASS; kiểm browser5/5 PASS. Taste gate vẫn đang kiểm, T703 chưa đóng.
+
+### Đóng chức năng M2/M3, tách nghiệm thu UI
+- Go vet/race toàn suite PASS gần nhất57.587s; OpenAPI validate và M2 response cases PASS; Playwright5/5 PASS. Đã sửa 404 SSR, xác minh poster confirmed:true, metadata/media proxy headers và scope limiter checkout theo guest+IP.
+- T201–T218 và T301–T308 đã có chức năng/kiểm chứng; T703 taste/UAT còn mở: `GATE: OPEN 19 (rounds used up)`, chi tiết docs/ui-qa-m2-m3.md. Không gắn nhãn hoàn tất nghiệm thu giao diện.
+- PR #3 feature/booking→develop gồm dependency feature/catalog; chờ CI trước merge. Main không thay đổi; không deploy cloud.
+
+### T306 — Ma trận vai trò
+- TestBookingRoleMatrix PASS race3.771s: admin đọc/tạo quote/catalog; sales đọc/tạo quote nhưng không sửa catalog; product_manager có catalog nhưng bị chặn booking; accountant chỉ đọc booking; executive không có booking PII. Backend kiểm quyền trực tiếp từng route.
+
+### T304 — Lazy expiry khi Admin sửa lịch
+- Dùng cùng ExpireLocked trong transaction đã khoá departure; Admin giảm capacity không bị giữ bởi hold đã hết hạn khi worker chưa sweep. TestCapacityEditExpiresHoldsWhileLocked PASS, cùng bộ booking/race26.835s.
+- Go vet và full race M2/M3 gần nhất68.957s PASS, gồm related posts không lộ draft và tag filter.
+
+### T305 — Lookup và giới hạn theo mã
+- Lookup token vẫn chỉ lưu hash/TTL15 phút, che contact và không cấp creator quyền. Bucket lookup dùng IP+mã đơn đã chuẩn hoá; không khoá nhầm mã đơn khác qua cùng proxy. TestLookupLimiterIsBoundToBookingCode và GuestLookup privacy PASS race7.368s. Không lưu contact/token vào URL hoặc localStorage.
+
+T304: sau khi tách test inventory sang file riêng, bước compile báo thiếu import booking; đã bổ sung import. Không thay logic transaction; kiểm tra lại sau chỉnh file trước merge.
+
+T304 compile sau tách file đã kiểm lại PASS; capacity/lookup/related-posts/public-image-cover tests PASS race12.330s.
+
+M2 bổ sung theo MVP: Leaflet tải sau click với markers/attribution/cleanup; home search; blog category/tag/related approved-only; gallery kind/collection + viewer; tour advanced facets; phụ thu optional web/manual. Browser6/6 PASS15.0s, gồm tile mock để CI không phụ thuộc OSM network.
+
+### Bản tích hợp cuối M2/M3
+- Commit theo task đã push trên feature/booking, chứa dependency feature/catalog. Những sửa liên kết/kiểm thử của T304 có commit riêng bổ sung; không force-push hoặc sửa lịch sử để giấu lỗi compile đã ghi.
+- Full Go vet/race M2/M3 PASS68.957s; targeted sau đó lookup/privacy7.368s, capacity/related-post/image-cover12.330s PASS. Browser6/6 PASS15.0s. Lint/typecheck/unit/build đều đã chạy, kiểm lại CI trên SHA cuối tại PR#3 trước merge.
+- Perf0 FAIL4 WARN sau tối ưu ảnh, chi tiết docs/ui-qa-m2-m3.md. Nghiệm thu taste vẫn OPEN19 từ vòng3, T703 chưa DONE và chưa UAT thiết bị thật.
+- Chưa triển khai M4/M5/M6, chưa deploy cloud. Seed/local giữ mật khẩu hiện tại, volume và sửa đổi người dùng. Khi bàn giao dừng toàn bộ service kiểm thử, không dùng down -v. Trạng thái CI/merge thực tế xem PR#3; main giữ nguyên.
+
+T215 log privacy: Nginx access log chỉ ghi method/uri không query, media location tắt error log có thể chứa signed URL khi upstream lỗi. Backend không log body/query/token. Kiểm nginx -t và query redaction trong vòng kiểm thử cuối.
+
+### Bàn giao kiểm chứng cuối
+
+- Code0ee97b82 CI44998866529 **PASS toàn bộ6 jobs**: docs/config, public quality, admin quality, Go+PostgreSQL, container/browser, aggregate CI result.
+- Local trên bản tích hợp cuối: `go vet ./... && go test -race -count=1 ./... && go build ./...` PASS (platform80.297s); lint/typecheck frontend/admin, frontend1unit/admin4unit và Docker builds PASS; Playwright6/6 PASS13.6s. Một warning stylesheet vendor đã ghi rõ, không tắt check để báo xanh.
+- `nginx -t` cả hai proxy PASS; request signed query giả qua8088/5173 không xuất hiện trong log. Không in/log token thật.
+- Đã dừng bằng `docker compose --profile app --profile production-tools down` (không -v), `compose ps` không còn service. Không khởi động lại sau bàn giao; người dùng tự `bluesky run` / `bluesky off`.
+- PR#3 chứa cả dependency catalog và booking, dùng develop làm nhánh tích hợp. Kết quả merge/SHA cuối xem PR trực tiếp; main không nhận đợt này. Commit bàn giao docs không đổi code đã kiểm chứng, vẫn chờ CI theo quy trình.

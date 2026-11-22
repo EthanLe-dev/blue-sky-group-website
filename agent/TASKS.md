@@ -33,7 +33,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 | T106 | DONE — Login/logout/refresh rotation/reset password mock | T105 | Sai mật khẩu, expired, refresh reuse, revoke session đều có test |
 | T107 | DONE — Middleware RBAC, CSRF, Origin/CORS, rate limit, Turnstile adapter | T106 | Ma trận 401/403, reset/restart limiter, captcha fail; production chặn mock |
 | T108a | DONE — Guest session storage/cookie/CSRF | T105,T107 | Token hash, reuse/TTL/origin, session isolation qua API |
-| T108b | Lookup token storage/FK booking (chuyển M3) | T301 | Token hash/TTL/read-only và không cấp quyền thanh toán |
+| T108b | DONE — Lookup token storage/FK booking (chuyển M3) | T301 | Token hash/TTL/read-only và không cấp quyền thanh toán |
 | T109 | DONE — Chuyển api-spec thành OpenAPI và response validator test | T103 | Spec parse hợp lệ, envelope/error/money/date khớp contract |
 | T110 | DONE — Public/admin API clients và same-origin proxy | T101,T102,T108a | Cookie/Set-Cookie/CSRF đi qua proxy; lỗi mạng/refresh không tạo vòng lặp |
 | T111 | DONE — Dockerfile từng app + Compose app/Nginx | T101,T102,T103 | Build sạch, health check, routing; không đóng gói secret |
@@ -46,38 +46,38 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T201 | Tokens, font Việt, Button/Input/Dialog/Toast/empty-error states | T101,T004 | Keyboard, 320px/390px, zoom200%, dấu Việt, reduced motion |
-| T202 | Layout public: nav/mobile menu/footer/hotline | T201 | Focus trap/restore, skip link, safe area, liên hệ thật hoặc demo rõ |
-| T203 | Migration media/content/catalog/departures/prices/quotes | T104 | Up/FK/checks; capacity âm và ngày sai bị từ chối |
-| T204 | Catalog read API, search/filter/sort/autocomplete | T203,T109 | Bộ lọc ngày/giá/chỗ cùng departure; draft không public, pagination đúng |
-| T205 | Service CRUD/clone/publish/archive tour | T203,T107 | Clone không copy booking; publish thiếu dữ liệu fail; RBAC |
-| T206 | Departure bulk/pricing/capacity/open-close API | T205 | Bulk rollback toàn bộ; price_version tăng đúng; capacity không dưới chỗ đã dùng |
-| T207 | Admin tour editor và departure/pricing forms | T102,T205,T206 | Save/reload giữ dữ liệu, lỗi field/stale version đúng; không nhận số tiền float |
-| T208 | Home với ảnh thật, tìm kiếm, tour nổi bật và CMS sections | T202,T204 | Browser desktop/mobile, hero không che search/CTA; taste review |
-| T209 | Tour list/filter URL/sort/autocomplete UI | T202,T204 | Back giữ filter, empty/error, keyboard suggestions và retry |
-| T210 | Tour detail/gallery/itinerary/price calendar/sticky CTA | T202,T204 | Gallery bằng phím/vuốt; lịch sold-out; CTA không che nội dung |
-| T211 | Favourite/recent/share bằng ID/slug | T209,T210 | Storage hỏng/disabled vẫn dùng được; không lưu PII |
-| T212 | CMS CRUD posts/pages/banner/FAQ/reviews + admin editor | T203,T107,T102 | Rich text sanitize, approved-only, draft/publish và quyền |
-| T213 | Blog/detail/destination/FAQ/about/policies/gallery | T202,T212 | Slug404, ảnh alt, heading/link đúng, loading/empty/error |
-| T214 | School/company/contact pages và bản đồ markers/office | T202,T212 | Map lazy load, attribution, fallback địa chỉ, không bịa toạ độ |
-| T215 | Media upload local/R2 và private download authorization | T203,T107 | Magic bytes/size/path traversal/private object và signed URL expiry |
-| T216 | SEO meta/canonical/OG/sitemap/robots/schema | T208,T210,T213 | HTML SSR có nội dung; draft không index; structured data không bịa rating |
+| T201 | DONE — Tokens, font Việt, Button/Input/Dialog/Toast/empty-error states | T101,T004 | Keyboard, 320px/390px, zoom200%, dấu Việt, reduced motion |
+| T202 | DONE — Layout public: nav/mobile menu/footer/hotline | T201 | DONE — Focus trap/restore, skip link, safe area, liên hệ thật hoặc demo rõ |
+| T203 | DONE — Migration media/content/catalog/departures/prices/quotes | T104 | Up/FK/checks; capacity âm và ngày sai bị từ chối |
+| T204 | DONE — Catalog read API, search/filter/sort/autocomplete | T203,T109 | Bộ lọc ngày/giá/chỗ cùng departure; draft không public, pagination đúng |
+| T205 | DONE — Service CRUD/clone/publish/archive tour | T203,T107 | Clone không copy booking; publish thiếu dữ liệu fail; RBAC |
+| T206 | DONE — Departure bulk/pricing/capacity/open-close API | T205 | DONE — Bulk rollback toàn bộ; price_version tăng đúng; capacity không dưới chỗ đã dùng |
+| T207 | DONE — Admin tour editor và departure/pricing forms | T102,T205,T206 | Save/reload giữ dữ liệu, lỗi field/stale version đúng; không nhận số tiền float |
+| T208 | DONE chức năng; taste OPEN19 ở T703 — Home với ảnh thật, tìm kiếm, tour nổi bật và CMS sections | T202,T204 | Browser desktop/mobile, hero không che search/CTA; taste review |
+| T209 | DONE — Tour list/filter URL/sort/autocomplete UI | T202,T204 | Back giữ filter, empty/error, keyboard suggestions và retry |
+| T210 | DONE — Tour detail/gallery/itinerary/price calendar/sticky CTA | T202,T204 | Gallery bằng phím/vuốt; lịch sold-out; CTA không che nội dung |
+| T211 | DONE — Favourite/recent/share bằng ID/slug | T209,T210 | Storage hỏng/disabled vẫn dùng được; không lưu PII |
+| T212 | DONE — CMS CRUD posts/pages/banner/FAQ/reviews + admin editor | T203,T107,T102 | Rich text sanitize, approved-only, draft/publish và quyền |
+| T213 | DONE — Blog/detail/destination/FAQ/about/policies/gallery | T202,T212 | Slug404, ảnh alt, heading/link đúng, loading/empty/error |
+| T214 | DONE — School/company/contact pages và bản đồ markers/office | T202,T212 | Map lazy load, attribution, fallback địa chỉ, không bịa toạ độ |
+| T215 | DONE — Media upload local/R2 và private download authorization | T203,T107 | Magic bytes/size/path traversal/private object và signed URL expiry |
+| T216 | DONE — SEO meta/canonical/OG/sitemap/robots/schema | T208,T210,T213 | HTML SSR có nội dung; draft không index; structured data không bịa rating |
 
-| T217 | Schema/API poster media/revision/verification và invalidate khi sửa tour/giá/lịch | T205,T206,T215 | Q21: stale revision, public filtering, MIME; không lấy giá từ ảnh |
-| T218 | Admin upload/preview/verify poster và public viewer responsive | T217,T210 | Ảnh không crop chữ, zoom/keyboard/mobile, structured content vẫn đầy đủ |
+| T217 | DONE — Schema/API poster media/revision/verification và invalidate khi sửa tour/giá/lịch | T205,T206,T215 | Q21: stale revision, public filtering, MIME; không lấy giá từ ảnh |
+| T218 | DONE — Admin upload/preview/verify poster và public viewer responsive | T217,T210 | Ảnh không crop chữ, zoom/keyboard/mobile, structured content vẫn đầy đủ |
 
 ## M3 — Giá và đặt chỗ (FR-20–25,31,83–84)
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
-| T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
-| T303 | Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
-| T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |
-| T305 | Creator read và guest lookup read-only che PII | T303,T108b | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
-| T306 | Admin tạo/sửa/notes/cancel/complete dùng chung service | T303,T304,T107 | Manual+web tranh cùng kho; cancel hai lần; completed không nhả chỗ |
-| T307 | Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
-| T308 | Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |
+| T301 | DONE — Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
+| T302 | DONE — Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
+| T303 | DONE — Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
+| T304 | DONE — Lazy expiry + restart-safe sweep | T303 | DONE — Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |
+| T305 | DONE — Creator read và guest lookup read-only che PII | T303,T108b | IDOR, wrong contact cùng lỗi, lookup token không confirm payment/đọc passenger |
+| T306 | DONE — Admin tạo/sửa/notes/cancel/complete dùng chung service | T303,T304,T107 | Manual+web tranh cùng kho; cancel hai lần; completed không nhả chỗ |
+| T307 | DONE — Checkout 3 bước, quote/update/validation và hold countdown | T110,T210,T302,T303,T304 | Quay lại giữ input, server total, timeout/sold-out/price changed; không lưu PII localStorage |
+| T308 | DONE — Lookup UI và admin booking list/detail | T305,T306,T102 | Filter/query, privacy, stale version; keyboard và error states |
 
 ## M4 — Payment/notification mock (FR-27–29)
 

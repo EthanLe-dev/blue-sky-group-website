@@ -61,7 +61,9 @@ services:
     environment:
       HOST: 0.0.0.0
       PORT: "8080"
+      LOCAL_STORAGE_PATH: /app/storage
       DATABASE_URL: postgresql://${POSTGRES_USER:-blue_sky}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-blue_sky_group}?sslmode=disable
+    volumes: ["media_data:/app/storage"]
     ports: ["127.0.0.1:8080:8080"]
     depends_on:
       migrate:
@@ -77,6 +79,10 @@ services:
     build: ./frontend
     environment:
       API_UPSTREAM_URL: http://backend:8080
+      APP_ENV: ${APP_ENV:-local}
+      TURNSTILE_MODE: ${TURNSTILE_MODE:-real}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY:-}
+      SITE_URL: ${SITE_URL:-http://localhost:3000}
     ports: ["127.0.0.1:3000:3000"]
     depends_on:
       backend:
@@ -111,3 +117,4 @@ services:
 volumes:
   postgres_data:
   redis_data:
+  media_data:

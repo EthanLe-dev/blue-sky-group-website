@@ -61,7 +61,7 @@ MVP quyết định tính năng nào làm ngay; final không tự động mở r
 
 **Quyền chạy app:** người dùng tự chạy local. Agent không tự khởi động app, dev server, Docker Desktop hoặc các service/container local nếu chưa được người dùng yêu cầu rõ trong phiên đó. Nếu kiểm thử cần khởi động service, giải thích và xin phép trước; có thể tiếp tục kiểm tra tĩnh/build không khởi động app. Workflow CI vẫn chạy trong môi trường CI theo cấu hình đã có. Chỉ dẫn này ưu tiên hơn các lệnh chạy/test tự động khác trong tài liệu dự án.
 
-Đã có khung frontend/admin/backend, migration identity/settings và Dockerfiles M1. Chưa có module catalog/booking/payment đầy đủ. Xem README để chạy ứng dụng.
+Đã có frontend/admin/backend M1–M3, catalog/CMS/media, quote/booking/holds/lookup và Dockerfiles. Payment/notification M4 chưa triển khai; nghiệm thu taste T703 còn mở (docs/ui-qa-m2-m3.md). Xem README để chạy ứng dụng.
 
 ```powershell
 Copy-Item .env.example .env  # chỉ khi chưa có .env

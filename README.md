@@ -4,6 +4,15 @@ Nền tảng demo: Next.js public, React Admin, Go/Gin API, PostgreSQL17. Chức
 
 ## Chạy local bằng Docker
 
+Đã có lệnh tắt trên máy hiện tại (mở PowerShell mới để nhận lệnh):
+
+```powershell
+bluesky run   # Build và mở app
+bluesky off   # Tắt app, giữ dữ liệu
+```
+
+Hai lệnh dùng được ở bất kỳ thư mục nào. `bluesky run` yêu cầu Docker Desktop đã mở, không tự tạo `.env` hoặc bootstrap lại Admin. Khi clone/chuyển thư mục dự án, chạy `./scripts/install_shortcuts.ps1` một lần để đăng ký lại đường dẫn. Cài lệnh không khởi động app.
+
 Người dùng tự chạy app; Agent chỉ khởi động local khi được yêu cầu rõ. Mở Docker Desktop, rồi mở PowerShell tại thư mục repository. Với máy hiện tại đã có `.env`, Admin và dữ liệu, chỉ cần:
 
 ```powershell
