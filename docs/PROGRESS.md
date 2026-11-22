@@ -185,3 +185,8 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - Public dùng logo thật, Be Vietnam Pro tự host, GSAP scoped entrance/reduced motion, native dialog gallery/menu, filter URL/suggestions, saved/recent/share, CMS/blog/destinations/policies, lazy OpenStreetMap, metadata/sitemap/robots/JSON-LD. Không review giả.
 - Docker frontend bổ sung public assets; media_data giữ tệp. .env.example có SITE_URL, Compose truyền env Turnstile runtime.
 - OpenAPI M1–M3 validate PASS; bổ sung response validator cho catalog/home/gallery/404. Các test full race gần nhất platform57.587s PASS; kiểm browser5/5 PASS. Taste gate vẫn đang kiểm, T703 chưa đóng.
+
+### Đóng chức năng M2/M3, tách nghiệm thu UI
+- Go vet/race toàn suite PASS gần nhất57.587s; OpenAPI validate và M2 response cases PASS; Playwright5/5 PASS. Đã sửa 404 SSR, xác minh poster confirmed:true, metadata/media proxy headers và scope limiter checkout theo guest+IP.
+- T201–T218 và T301–T308 đã có chức năng/kiểm chứng; T703 taste/UAT còn mở: `GATE: OPEN 19 (rounds used up)`, chi tiết docs/ui-qa-m2-m3.md. Không gắn nhãn hoàn tất nghiệm thu giao diện.
+- PR #3 feature/booking→develop gồm dependency feature/catalog; chờ CI trước merge. Main không thay đổi; không deploy cloud.

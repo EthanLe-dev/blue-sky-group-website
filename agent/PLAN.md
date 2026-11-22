@@ -156,3 +156,9 @@ Người dùng yêu cầu cài GSAP cho animation. T101 scaffold Next.js App Rou
 README và docs/platform-runbook.md là nguồn lệnh chạy hiện tại. Docker profile app thực thi migration trước API, bootstrap tách riêng; credentials trong .env ignored. PR #1 vào develop chứa M0/M1. Main giữ nguyên cho tới release nghiệm thu. CI remote là cổng merge, xem trạng thái trực tiếp trên PR.
 
 Mốc xác nhận: PR #1 đã PASS CI run44953203198 và merge develop tại ce0bbb9 ngày22/11/2026. Main chưa nhận M1. M0/M1 nền tảng đã bàn giao, tiếp tục M2; source code chưa có catalog/booking/payment.
+
+### Triển khai M2/M3 — đang QA ngày 22/11/2026
+- Feature/catalog chứa schema/API/catalog/media; feature/booking tiếp nối dependency catalog để kết nối checkout hoàn chỉnh. Main giữ nguyên.
+- Logo dùng file JPG công ty chỉ định. Ảnh điểm đến public domain ghi nguồn trong docs/media-credits.md; poster gốc được nhúng không cắt chữ. Dữ liệu bổ sung có nhãn demo, sửa qua Admin.
+- Đã cho phép chạy local kiểm thử rồi dừng trong đợt này. Không bootstrap lại, không đổi mật khẩu hay xoá volume.
+- Module UI/CMS/booking đã có code, đang kiểm browser/contract/taste gate và CI; chưa coi toàn bộ DONE. M4 thanh toán/thông báo và M5 form khách đoàn chưa bật.
