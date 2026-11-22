@@ -70,7 +70,7 @@ Ngày 22/11/2026. Nguồn: [PLAN](PLAN.md), [API](../docs/api-spec.md), [schema]
 
 | ID | Task và đầu ra | Phụ thuộc | Kiểm chứng hoàn thành |
 | --- | --- | --- | --- |
-| T301 | Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
+| T301 | DONE — Migration booking/items/passengers/holds/events/idempotency | T203,T108a | Unique quote/code, FK, constraints; migrations trên DB sạch |
 | T302 | Quote service: tuổi, tiền, phụ thu, cọc, snapshot/version | T301,T206,T113 | Boundary tuổi/ngày/cọc làm tròn; stale quote; dùng luật đề xuất chỉ cho demo |
 | T303 | Booking create transaction + idempotency + counters | T302 | N request tranh K chỗ, rollback giữa transaction, duplicate key/hash conflict |
 | T304 | Lazy expiry + restart-safe sweep | T303 | Expire chạy hai lần; clock sau lock; process ngủ/restart không giữ chỗ sai |

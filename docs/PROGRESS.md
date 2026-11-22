@@ -164,3 +164,8 @@ T203: migration000003_catalog tạo media/tours/destinations/categories/departur
 - CRUD/clone/publish tour, bulk departure rollback, price version, bộ lọc cùng departure, CMS sanitize, media magic bytes/private signed URL, poster revision và seed idempotent đã có integration tests.
 - `go vet ./...` và `go test -race -count=1 ./...`: PASS (platform 36.348s, catalog PASS).
 - M2 đang thực hiện; UI, OpenAPI, kiểm thử trình duyệt còn tiếp tục. Chưa đánh dấu toàn module DONE.
+
+### M3 — Nền tảng transaction, 22/11/2026
+- Nhánh feature/booking tạo từ develop và merge dependency feature/catalog trước khi code. M2 UI vẫn đang QA, chưa merge vào develop.
+- T301 migration booking/items/passengers/holds/events/notes/idempotency/lookup tokens áp dụng được trên schema PostgreSQL sạch trong integration suite. Không sửa migration đã có.
+- T302–T306 kiểm thử đầu tiên PASS (`go test -race -count=1 ./internal/platform -run "TestBooking|TestGuestLookup|TestAdminCancel"`, 11.240s): web/manual tranh 3 chỗ từ 12 request, replay, conflict payload, snapshot defaults, stale price, tuổi sai, sweep hai lần, IDOR/lookup masking/TTL/CSRF, rollback trigger lỗi và cancel lặp. Còn bổ sung biên tuổi/cọc/complete và HTTP contract.
