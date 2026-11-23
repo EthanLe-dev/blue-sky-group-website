@@ -326,3 +326,18 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 
 - `feature/admin-conversion` từ develop: sidebar navy/active vàng, tiêu đề module, login, nút/lỗi/status/list/media đồng bộ. Editor tour chia 4 fieldset, thanh lưu sticky và giữ input khi lỗi; destructive actions có màu riêng, không sửa xác nhận/service. Báo cáo có 4 tổng hợp từ response hiện có, không API mới.
 - Local lint/types/5 unit/build PASS; unit mới kiểm field grouping và nội dung chưa lưu sau lỗi. Browser mở rộng editor/report và screenshot desktop/mobile chờ CI. Không khởi động app/service local.
+## Nâng cấp giao diện ưu tiên Zalo — 23/11/2026
+
+- Đang làm T703l trên `feature/public-conversion`, theo kế hoạch người dùng duyệt: phong cách rực rỡ, public + Admin, CTA Zalo chính. Không đổi backend, không chạy app local. Tái dùng Nunito Sans/GSAP/Radix và ảnh có nguồn.
+
+- T703l DONE: Nunito Sans toàn public, màu/nav/form/nút/status chung tại conversion.css; frontend lint/types/4 unit PASS (1 warning stylesheet vendor cũ). Build/browser tiếp tục ở T703m/p. Backend không đổi.
+
+- T703m DONE phần code: hero CTA Zalo, closing photo, contact resolver ưu tiên cấu hình Admin đã xác minh và fallback số đã duyệt; hỗ trợ chung responsive. Frontend lint/types/4 unit và build Webpack PASS. Bổ sung Playwright 320–1440/hero/link channels, chờ CI browser ở T703p.
+
+- T703n DONE phần code: cards dùng chung ảnh/giá/2 link độc lập, bộ lọc có tóm tắt, chi tiết có Zalo/lịch & giá và summary sticky riêng; contact/group có ảnh và lựa chọn liên hệ. Không đổi API/giá/chỗ/form submission. Frontend lint/types/4 unit/build Webpack và Admin types PASS; browser hồi quy mới chạy trong T703p/CI.
+
+- T703p đang làm: contact_click/select_item qua listener có cleanup và consent, payload allowlist channel/position/UUID không href/PII. 6 frontend unit PASS gồm consent, dữ liệu không hợp lệ và fallback contact/Admin; lint/types PASS. Browser/taste/perf chưa nghiệm thu; không khởi động local.
+
+- T703p review SSR: gom settings công ty bằng React.cache theo request, tránh mỗi card tạo một request settings riêng; không cache giá/chỗ hoặc dữ liệu khách. CI đang kiểm.
+
+- Public PR #21 merge develop `25048a57` sau [CI 45208665160](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45208665160) đạt 6/6: Chromium18, Firefox6, WebKit6; mỗi engine phụ skip đúng một ca live video chỉ dành Chromium. Giữ cả tiến độ public và Admin khi tích hợp tài liệu.

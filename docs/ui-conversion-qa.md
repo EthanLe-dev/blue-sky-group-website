@@ -10,7 +10,7 @@ Phạm vi đã duyệt: du lịch rực rỡ, Zalo chính, public và Admin. Kh�
 
 ## Browser và bằng chứng
 
-- PR public #21: CI Linux build mặc định, PostgreSQL và Chromium/Firefox/WebKit. Kiểm hero không quảng cáo tour cụ thể, video lặp/fallback, font tiếng Việt, keyboard/menu, ba kênh liên hệ, 320–1440px, detail và form không bị thanh đáy che. Đang chờ kết quả cuối.
+- PR public #21: CI Linux build mặc định, PostgreSQL và Chromium/Firefox/WebKit. Kiểm hero không quảng cáo tour cụ thể, video lặp/fallback, font tiếng Việt, keyboard/menu, ba kênh liên hệ, 320–1440px, detail và form không bị thanh đáy che. [CI 45208665160](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45208665160) đạt 6/6 jobs: Chromium18, Firefox6, WebKit6; live video chỉ Chromium (skip có lý do trên engine phụ).
 - Mở rộng analytics kiểm link hoạt động trước consent, contact_click/select_item sau consent, dừng sau từ chối; không điện thoại/href trong event.
 - PR Admin sẽ kiểm menu dọc/Sheet/focus, trạng thái lỗi/empty/loading, lưu/reload, form grouped, report/export và ảnh desktop/mobile.
 - Ảnh CI dùng dữ liệu demo. Cần người dùng duyệt trực quan; screenshot CI không thay UAT độc lập và không có dữ liệu CTR thực tế.

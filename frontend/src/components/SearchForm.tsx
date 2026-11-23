@@ -43,7 +43,7 @@ export default function SearchForm({
           }}
           maxLength={100}
           autoComplete="off"
-          placeholder="Tìm Ninh Chữ, Vĩnh Hy…"
+          placeholder="Nhập tên tour hoặc điểm đến"
         />
         {q.length >= 2 && items.length > 0 && (
           <ul className="suggestions" aria-label="Tour gợi ý">
@@ -214,6 +214,17 @@ export default function SearchForm({
         </div>
       </details>
       <button className="btn">Tìm tour</button>
+      {[...params].some(([key, value]) => value && key !== "page") && (
+        <p className="applied-filters">Đang lọc theo {[
+          q && "từ khóa", params.get("destination") && "điểm đến", params.get("category") && "danh mục",
+          (params.get("depart_from") || params.get("depart_to")) && "ngày đi",
+          (params.get("budget_min") || params.get("budget_max")) && "ngân sách",
+          params.get("audience") && "đối tượng", params.get("travellers") && "số chỗ",
+          params.get("region") && "khu vực", (params.get("duration_min") || params.get("duration_max")) && "thời lượng",
+          params.get("transport") && "phương tiện", params.get("difficulty") && "mức vận động",
+          params.get("min_rating") && "đánh giá", params.get("sort") && "sắp xếp",
+        ].filter(Boolean).join(", ") || "lựa chọn của bạn"}.</p>
+      )}
       <Link className="text-action" href="/tours">
         Xoá bộ lọc
       </Link>
