@@ -571,15 +571,16 @@ body:has(.home-shell) {
   box-shadow: 0 3px 14px #123b5630, 0 0 0 1px #b9d3e3;
   transition: transform 180ms var(--home-ease), box-shadow 180ms;
 }
-.contact-float-zalo { color: #0867ce; background: #fff; }
+.contact-float-zalo { --contact-ring: #0867ce; color: #0867ce; background: #fff; }
 .contact-float-zalo .contact-zalo-mark { font-size: 20px; }
-.contact-float-facebook { color: #fff; background: #0866df; }
-.contact-float-phone { color: #fff; background: #d82e2a; }
-.contact-float-phone::before {
+.contact-float-facebook { --contact-ring: #0866df; color: #fff; background: #0866df; }
+.contact-float-phone { --contact-ring: #d82e2a; color: #fff; background: #d82e2a; }
+.contact-float::before {
   content: "";
   position: absolute;
   inset: -5px;
-  border: 2px solid #d82e2a;
+  border: 2px solid var(--contact-ring);
+  opacity: 0;
   border-radius: inherit;
   pointer-events: none;
 }
@@ -603,15 +604,23 @@ body:has(.home-shell) {
 .contact-float:hover .contact-tooltip,
 .contact-float:focus-visible .contact-tooltip { opacity: 1; }
 @media (prefers-reduced-motion: no-preference) {
-  .contact-float { animation: contact-arrive 450ms var(--home-ease) both; }
-  .contact-float-facebook { animation-delay: 100ms; }
-  .contact-float-phone { animation-delay: 200ms; }
-  .contact-float-phone::before { animation: contact-ring 1600ms ease-out 3; }
+  .contact-float {
+    animation: contact-arrive 450ms var(--home-ease) both, contact-pulse 2400ms ease-in-out infinite;
+    animation-delay: 0ms, 450ms;
+  }
+  .contact-float-facebook { animation-delay: 100ms, 850ms; }
+  .contact-float-phone { animation-delay: 200ms, 1250ms; }
+  .contact-float::before { animation: contact-ring 2400ms ease-out infinite; }
+  .contact-float-facebook::before { animation-delay: 400ms; }
+  .contact-float-phone::before { animation-delay: 800ms; }
+  .contact-float:is(:hover, :focus-visible),
+  .contact-float:is(:hover, :focus-visible)::before { animation-play-state: paused; }
   .home-support-phone svg { animation: contact-nudge 700ms ease-in-out 3; }
   .home-support-zalo { animation: contact-highlight 1200ms ease-out 3; }
   .contact-float:hover { transform: translateY(-2px); }
 }
 @keyframes contact-arrive { from { opacity: .3; transform: translateY(8px); } }
+@keyframes contact-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .78; } }
 @keyframes contact-ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
 @keyframes contact-nudge { 30% { transform: rotate(-10deg); } 60% { transform: rotate(10deg); } }
 @keyframes contact-highlight { 50% { box-shadow: 0 0 0 4px #bde8ff70; } }

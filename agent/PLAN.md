@@ -6,6 +6,8 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
+- T703j: Thêm hiệu ứng nhấp sáng chậm, lệch nhịp cho ba nút liên hệ nổi; giữ trạng thái tĩnh khi bật giảm chuyển động.
+
 - T703i: Liên hệ nổi gồm Zalo, Facebook, hotline và hai liên kết trên header. Dùng thông tin người dùng xác nhận, hiệu ứng hữu hạn và kiểm href/responsive trên CI.
 
 - T703h: Bỏ nút trên video nền Trang chủ và tiếp tục phát lặp theo yêu cầu. Giữ chế độ giảm chuyển động, ảnh dự phòng và tạm nghỉ ngoài khung nhìn.
