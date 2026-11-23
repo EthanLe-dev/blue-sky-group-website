@@ -1,0 +1,251 @@
+/* Shared public language: sea blue, sun yellow, local Vietnamese typography. */
+:root {
+  --bg: #f4f9fd;
+  --surface: #eaf4fb;
+  --ink: #123b56;
+  --muted: #496477;
+  --accent: #075a91;
+  --yellow: #f4c84c;
+  --line: #cbdde7;
+  --radius: 18px;
+  font-family: "Nunito Sans Variable", system-ui, sans-serif;
+  font-size: 17px;
+}
+h1, h2, h3 { font-weight: 850; letter-spacing: -.025em; }
+h1 { max-width: 24ch; text-wrap: balance; }
+label, .site-header nav, .text-action { font-size: 1rem; }
+label { font-weight: 750; }
+.eyebrow { font-size: .875rem; font-weight: 800; letter-spacing: .08em; }
+.btn, .home-button, .header-contact { font-size: 1rem; font-weight: 800; border-radius: 12px; }
+.btn { box-shadow: 0 4px 0 #034773; transition: transform 180ms var(--ease), background-color 180ms var(--ease); }
+.btn:active { transform: translateY(2px); }
+.cta-zalo, .home-shell .cta-zalo {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 12px 20px; border-radius: 12px;
+  border: 1px solid #f4c84c; background: #f4c84c; color: #123b56;
+  font-size: 1rem; font-weight: 900; text-align: center;
+  box-shadow: 0 4px 0 #b78d15; transition: transform 180ms var(--ease), background-color 180ms var(--ease);
+}
+.cta-zalo:hover, .home-shell .cta-zalo:hover { background: #ffda67; color: #123b56; text-decoration: none; }
+.cta-zalo:active { transform: translateY(2px); }
+.cta-zalo .contact-zalo-mark { background: white; color: #0867ce; padding: 5px; border-radius: 6px; }
+.site-header:not(.home-header) { position: sticky; top: 0; height: 84px; box-shadow: 0 3px 20px #123b560b; }
+.site-header:not(.home-header) .brand img { width: 56px; height: 56px; }
+.site-header:not(.home-header) .header-contact { background: #f4c84c; padding: 10px 16px; color: #123b56; }
+.page { padding-block: 40px 72px; }
+.page > .lead { font-size: 1.125rem; }
+.page > h1 { margin-bottom: 20px; }
+.state, .notice { border-radius: 16px; border: 1px solid var(--line); background: white; padding: 22px; }
+.state { border-top: 4px solid var(--yellow); }
+.state h2 { font-size: 1.5rem; }
+.filters { background: white; border: 1px solid var(--line); border-top: 4px solid var(--yellow); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px #123b5608; }
+:is(input,select,textarea):focus-visible { outline: 3px solid #075a91; outline-offset: 2px; }
+.filter-advanced summary { min-height: 44px; padding: 10px 0; font-weight: 800; color: var(--accent); cursor: pointer; }
+:is(.booking-panel,.detail-section,.content-list > article) { border-radius: 18px; }
+.detail-section { background: white; padding: clamp(18px, 3vw, 32px); border: 1px solid var(--line); margin-block: 24px; }
+.detail-section h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+.itinerary { border-inline-start: 3px solid var(--yellow); padding-inline-start: 20px; }
+.detail-section .itinerary .eyebrow { color: #075a91; }
+.breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+.gallery-grid { border-radius: 20px; overflow: hidden; }
+.prose-page > .prose { background: white; padding: clamp(18px, 3vw, 32px); border-radius: 18px; }
+.page :is(form,section,aside) { scroll-margin-top: 110px; }
+.page :is(button,.btn):disabled { box-shadow: none; }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover, .cta-zalo:hover { transform: translateY(-1px); }
+}
+@media (max-width: 680px) {
+  .wrap { width: calc(100% - 32px); }
+  .page { padding-top: 26px; }
+  .filters { padding: 18px; }
+  .site-header:not(.home-header) { height: 72px; }
+  .site-header:not(.home-header) .brand { font-size: .875rem; gap: 8px; }
+  .site-header:not(.home-header) .brand img { width: 44px; height: 44px; }
+  .page h1 { font-size: clamp(2rem, 7vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn, .cta-zalo { transition: none; }
+  .btn:is(:hover,:active), .cta-zalo:is(:hover,:active) { transform: none; }
+}
+
+.home-actions {
+  position: fixed;
+  z-index: 10;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.contact-float {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 3px 14px #123b5630, 0 0 0 1px #b9d3e3;
+  transition: transform 180ms var(--home-ease), box-shadow 180ms;
+}
+.contact-float-zalo { --contact-ring: #0867ce; color: #0867ce; background: #fff; }
+.contact-float-zalo .contact-zalo-mark { font-size: 20px; }
+.contact-float-facebook { --contact-ring: #0866df; color: #fff; background: #0866df; }
+.contact-float-phone { --contact-ring: #d82e2a; color: #fff; background: #d82e2a; }
+.contact-float::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--contact-ring);
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.contact-float:focus-visible { outline: 3px solid #075a91; outline-offset: 5px; }
+.contact-float:hover { text-decoration: none; box-shadow: 0 6px 20px #123b5640; }
+.contact-tooltip {
+  position: absolute;
+  inset-inline-end: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--home-deep);
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  font-size: .9375rem;
+  font-weight: 700;
+}
+.contact-float:hover .contact-tooltip,
+.contact-float:focus-visible .contact-tooltip { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .contact-float {
+    animation: contact-arrive 450ms var(--home-ease) both, contact-pulse 2400ms ease-in-out infinite;
+    animation-delay: 0ms, 450ms;
+  }
+  .contact-float-facebook { animation-delay: 100ms, 850ms; }
+  .contact-float-phone { animation-delay: 200ms, 1250ms; }
+  .contact-float::before { animation: contact-ring 2400ms ease-out infinite; }
+  .contact-float-facebook::before { animation-delay: 400ms; }
+  .contact-float-phone::before { animation-delay: 800ms; }
+  .contact-float:is(:hover, :focus-visible),
+  .contact-float:is(:hover, :focus-visible)::before { animation-play-state: paused; }
+  .home-support-phone svg { animation: contact-nudge 700ms ease-in-out 3; }
+  .home-support-zalo { animation: contact-highlight 1200ms ease-out 3; }
+  .contact-float:hover { transform: translateY(-2px); }
+}
+@keyframes contact-arrive { from { opacity: .3; transform: translateY(8px); } }
+@keyframes contact-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .78; } }
+@keyframes contact-ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+@keyframes contact-nudge { 30% { transform: rotate(-10deg); } 60% { transform: rotate(10deg); } }
+@keyframes contact-highlight { 50% { box-shadow: 0 0 0 4px #bde8ff70; } }
+.home-back-top {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: #fff;
+  color: var(--home-sea);
+  border: 1px solid #a9c2d3;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+
+.contact-zalo-mark { font-size: 16px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.contact-facebook-mark { font: 900 36px/1 Arial, sans-serif; }
+.home-actions { --home-deep: #123b56; --home-sea: #075a91; --home-ease: cubic-bezier(.22,1,.36,1); z-index: 25; }
+.home-actions svg { width: 25px; height: 25px; }
+.contact-float-zalo { width: 64px; height: 64px; border-color: #f4c84c; }
+.contact-mobile-label, .contact-mobile-schedule { display: none; }
+.header-zalo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 850; font-size: .9375rem; color: #075a91; }
+.contact-closing { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); overflow: hidden; border-radius: 24px; background: #123b56; color: white; margin-block: 64px; }
+.contact-closing-photo { min-width: 0; min-height: 300px; }
+.contact-closing-photo img { width: 100%; height: 100%; object-fit: cover; }
+.contact-closing-copy { padding: clamp(24px, 4vw, 56px); }
+.contact-closing .eyebrow { color: #f4c84c; }
+.contact-closing h2 { max-width: 20ch; font-size: clamp(1.7rem, 3vw, 2.7rem); }
+.closing-hotline { display: flex; align-items: center; min-height: 44px; margin-top: 12px; font-weight: 750; }
+@media (max-width: 1300px) { .header-zalo { display: none; } }
+@media (max-width: 680px) {
+  body:has(.home-actions) { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .home-shell .home-actions, .home-actions { inset: auto 0 0; width: 100%; flex-direction: row; justify-content: center; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid #cbdde7; background: #fff; box-shadow: 0 -4px 24px #123b5614; }
+  .home-actions .contact-float { flex: 0 0 44px; width: 44px; height: 44px; border-width: 2px; }
+  .home-actions .contact-float-zalo { display: flex; justify-content: center; gap: 8px; flex: 1 1 auto; width: auto; max-width: 210px; border-radius: 10px; border-color: #f4c84c; background: #f4c84c; }
+  .contact-mobile-label { display: inline; font-size: 1rem; font-weight: 900; color: #123b56; }
+  .home-actions[data-detail] .contact-float-zalo { gap: 4px; }
+  .home-actions[data-detail] .contact-mobile-label { display: none; }
+  .home-actions[data-detail] .contact-mobile-schedule { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 10px; border-radius: 10px; background: #075a91; color: white; font-weight: 800; font-size: .9375rem; white-space: nowrap; }
+  .home-actions .contact-float::before { inset: -2px; }
+  .home-actions .contact-tooltip { display: none; }
+  .home-actions .home-back-top { position: absolute; right: 16px; bottom: calc(100% + 12px); box-shadow: 0 2px 8px #123b5620; }
+  .contact-closing { grid-template-columns: minmax(0,1fr); margin-block: 36px; }
+  .contact-closing-photo { min-height: 0; aspect-ratio: 16/9; }
+  .contact-closing-copy { padding: 24px; }
+}
+
+.conversion-tour-card { display: flex; flex-direction: column; border: 1px solid #cbdde7; border-radius: 20px; background: white; box-shadow: 0 6px 20px #123b560a; min-width: 0; }
+.conversion-tour-card > .tour-card-photo { display: block; height: auto; flex: 0 0 auto; }
+.conversion-tour-card .card-image { position: relative; height: auto; aspect-ratio: 4/3; }
+.conversion-tour-card .card-image img { transition: transform 220ms var(--ease); }
+.tour-cover-empty { display: grid; height: 100%; min-height: 180px; place-items: center; padding: 56px 16px 16px; color: #496477; }
+.tour-card-badges { position: absolute; inset: 12px 12px auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.tour-card-badges > span { background: white; color: #123b56; padding: 5px 10px; border-radius: 8px; font-size: .875rem; font-weight: 850; }
+.tour-card-badges .tour-card-demo { background: #ffedb8; }
+.conversion-tour-card .card-body { display: flex; flex: 1; flex-direction: column; padding: clamp(16px,2vw,24px); }
+.conversion-tour-card h3 { font-size: clamp(1.25rem,2vw,1.5rem); margin-bottom: 12px; }
+.conversion-tour-card .card-body p { font-size: 1rem; }
+.conversion-tour-card .tour-card-origin { font-size: .875rem; font-weight: 800; color: #075a91; margin-bottom: 10px; }
+.tour-card-summary { margin-bottom: 20px; }
+.tour-card-price { margin-top: auto; padding-block: 14px; border-top: 1px solid #cbdde7; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 6px; }
+.tour-card-price > span { font-size: .875rem; }
+.tour-card-price > span:first-child { flex-basis: 100%; }
+.tour-card-price strong { color: #075a91; font-size: 1.45rem; font-weight: 900; }
+.tour-card-actions { display: grid; gap: 10px; }
+.tour-card-actions .btn { padding: 10px 14px; }
+.tour-card-zalo { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #b2d0e3; border-radius: 10px; color: #075a91; font-size: .9375rem; font-weight: 800; }
+.tour-card-zalo .contact-zalo-mark { color: #0867ce; }
+.tour-card-zalo:hover { background: #eaf4fb; text-decoration: none; }
+.conversion-tour-card:focus-within { outline: 2px solid #075a91; outline-offset: 3px; }
+.contact-intro { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); overflow: hidden; border-radius: 20px; border: 1px solid #cbdde7; background: #fff8e6; margin-block: 28px; }
+.contact-intro-photo { position: relative; min-width: 0; }
+.contact-intro-photo img { height: 100%; width: 100%; object-fit: cover; }
+.contact-intro-photo > span { position: absolute; bottom: 12px; right: 12px; padding: 3px 8px; background: #123b56; color: white; border-radius: 6px; font-size: .8125rem; }
+.contact-intro-copy { padding: clamp(20px,3vw,32px); }
+.contact-intro-copy h2 { font-size: clamp(1.5rem,2.6vw,2rem); }
+.detail-conversion { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 22px 24px; border-radius: 18px; border: 1px solid #cbdde7; border-inline-start: 5px solid #f4c84c; background: white; margin-block: 24px; }
+.detail-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.detail-price strong { font-size: 1.7rem; font-weight: 900; color: #075a91; }
+.detail-price > span { font-size: .9375rem; }
+.detail-schedule-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; color: #075a91; }
+.detail-section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+.detail-section-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid #cbdde7; background: white; border-radius: 10px; font-weight: 800; }
+.detail-grid { gap: 28px; }
+.booking-panel { position: static; padding: 0; background: white; }
+.booking-summary { position: sticky; top: 100px; z-index: 2; padding: 22px; border-radius: 18px 18px 0 0; background: #eaf4fb; border-top: 5px solid #f4c84c; border-bottom: 1px solid #cbdde7; }
+.booking-summary h2 { font-size: 1.6rem; }
+.booking-summary p { font-size: .9375rem; }
+.booking-summary .cta-zalo { width: 100%; }
+.booking-panel .departure { padding: 22px; margin: 0; }
+.booking-panel .departure p, .booking-panel .departure ul, .booking-panel .departure .btn { font-size: 1rem; }
+.booking-panel > .text-action { margin: 8px 22px; }
+.applied-filters { grid-column: 1/-1; font-size: 1rem; background: #eaf4fb; padding: 10px 14px; border-radius: 10px; margin: 0; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .conversion-tour-card:hover { transform: translateY(-2px); }
+  .conversion-tour-card:hover .card-image img { transform: scale(1.025); }
+}
+@media (max-width:850px) { .booking-summary { position: static; } }
+@media (max-width:680px) {
+  .contact-intro { grid-template-columns: minmax(0,1fr); }
+  .contact-intro-photo { aspect-ratio: 16/9; }
+  .detail-conversion { padding: 18px; gap: 14px; }
+  .detail-conversion .cta-zalo { width: 100%; }
+  .detail-price strong { font-size: 1.5rem; }
+}
+@media (prefers-reduced-motion:reduce) { .conversion-tour-card .card-image img { transition: none; } }
+
+.conversion-tour-card h3 a { display: flex; align-items: center; min-height: 44px; }

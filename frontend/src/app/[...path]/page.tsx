@@ -12,6 +12,7 @@ import {
   type Tour,
 } from "@/lib/catalog";
 import TourCard from "@/components/TourCard";
+import ContactIntro from "@/components/ContactIntro";
 import LeadForm from "@/components/LeadForm";
 const names: Record<string, string> = {
   about: "Về Blue Sky Group",
@@ -296,6 +297,7 @@ export default async function ContentPage({
       ? filter.tour : undefined;
     body = (
       <>
+        {hasLeadForm && <ContactIntro kind={key as "contact" | "schools" | "companies"} />}
         <div
           className="prose"
           dangerouslySetInnerHTML={{ __html: page.body }}

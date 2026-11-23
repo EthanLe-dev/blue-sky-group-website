@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
+import ContactIcon from "./ContactIcon";
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import HeroVideo from "./HeroVideo";
 gsap.registerPlugin(useGSAP);
-export default function Hero({ destinations }: { destinations: { slug: string; name: string }[] }) {
+export default function Hero({ destinations, zaloHref }: { zaloHref: string; destinations: { slug: string; name: string }[] }) {
   const scope = useRef<HTMLElement>(null);
   useGSAP(
     () => {
@@ -14,8 +15,8 @@ export default function Hero({ destinations }: { destinations: { slug: string; n
         gsap.from("[data-enter-text]", {
           y: 14,
           opacity: 0.25,
-          duration: 0.58,
-          stagger: 0.11,
+          duration: 0.65,
+          stagger: 0.07,
           ease: "power3.out",
         });
       });
@@ -38,8 +39,15 @@ export default function Hero({ destinations }: { destinations: { slug: string; n
         />
         <HeroVideo />
         <div className="wrap home-hero-copy">
+          <p className="hero-kicker" data-enter-text="">Du lịch · Sự kiện · Trải nghiệm</p>
           <h1 id="hero-title" data-enter-text="">Kiến tạo hành trình</h1>
-          <p data-enter-text="">Khám phá Việt Nam cùng Blue Sky Group và tìm chuyến đi dành cho bạn.</p>
+          <p data-enter-text="">Tour du lịch cho gia đình, trường học và doanh nghiệp. Cùng Blue Sky Group lên kế hoạch cho chuyến đi của bạn.</p>
+          <div className="hero-actions" data-enter-text="">
+            <a className="cta-zalo" href={zaloHref} target="_blank" rel="noopener noreferrer" data-contact-channel="zalo" data-contact-position="hero">
+              <ContactIcon channel="zalo" />Nhắn Zalo tư vấn <span aria-hidden="true">↗</span>
+            </a>
+            <a className="hero-browse" href="#journeys">Khám phá tour <span aria-hidden="true">↓</span></a>
+          </div>
         </div>
       </div>
       <div className="wrap home-search-panel">

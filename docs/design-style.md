@@ -108,3 +108,14 @@ Admin có các mục “Cài đặt đặt tour”, “Thông tin công ty”, �
 ## Triển khai GSAP
 
 GSAP là thư viện animation được chọn cho public frontend. Mỗi route marketing có một timeline hero vào trang và tối đa hai điểm nhấn ảnh/chữ phù hợp nội dung, dùng `@gsap/react` để scope selector và dọn animation khi đổi route. Component động cần reduced-motion branch, không đặt trạng thái ẩn làm mặc định trong HTML/SSR; chỉ áp dụng trạng thái animation sau khi client sẵn sàng. Dùng transform/opacity, giữ LCP image hiển thị, không animate giá/chỗ/tổng tiền hay trì hoãn form. ScrollTrigger chỉ cho tình huống có mục đích rõ và phải refresh/cleanup khi layout thay đổi; không pin/scroll hijack cho checkout. Kiểm điểm đầu/giữa/cuối timeline, resize, Back navigation, reduced motion và mobile trong T703.
+
+
+## Giao diện rực rỡ, ưu tiên tư vấn — 23/11/2026
+
+Người dùng chọn public và Admin, phong cách du lịch rực rỡ, Zalo là CTA chính. Nunito Sans local toàn luồng, xanh biển/navy/vàng. Giữ logo/ảnh có nguồn, video hero lặp và ba nút liên hệ pulse nhẹ; giữ nhãn demo, không có khan hiếm/ưu đãi/chứng thực bịa.
+
+Hero: slogan được người dùng giữ, lời dẫn tour cho gia đình/trường/doanh nghiệp, nút Nhắn Zalo tư vấn + Khám phá tour. Không tour cụ thể ở hero. Giữ ô tìm kiếm thật. Public có closing photo + Zalo/hotline. CTA và nội dung vẫn hiện khi JS tắt. Hero 650ms/stagger70ms, photo moments 450–650ms một lần, hover/press 150–220ms. GSAP scope/cleanup, reduced-motion tĩnh; không áp dụng 2 hệ motion cho cùng ảnh/thẻ.
+
+Desktop giữ ba kênh nổi, Zalo nhấn vàng; mobile một thanh đáy ba kênh, detail thêm lịch & giá trong cùng thanh. Chừa safe area và không che form; checkout/lookup không thêm marketing bar. Admin giữ sidebar trái và Sheet mobile, nền workspace sáng, nút chính/màu trạng thái và lỗi rõ; không thêm số liệu kinh doanh giả.
+
+Nghiệm thu qua screenshot/interactions CI; không chạy app local khi chưa được phép. Gate taste khởi tạo nhưng browser checker/perf local chưa chạy; không coi đó là PASS. Các ngoại lệ SSR, demo, số điện thoại, section theo nội dung và GSAP theo quyết định dự án vẫn áp dụng.

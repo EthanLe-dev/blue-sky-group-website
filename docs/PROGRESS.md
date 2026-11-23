@@ -320,3 +320,18 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 
 - T703b trên `feature/admin-refresh`: Nunito Sans, sidebar desktop có biểu tượng, menu mobile dạng Sheet, cập nhật màn đăng nhập, tiêu đề và form. Danh sách đơn tách nhãn trạng thái, tên và tổng tiền, hiển thị riêng đang tải, lỗi có nút thử lại và kết quả trống.
 - Ca Playwright hiện có kiểm menu, focus, font tiếng Việt và trạng thái danh sách đơn. Ảnh desktop/mobile được lưu qua CI. App local không được khởi động.
+
+
+## Nâng cấp giao diện ưu tiên Zalo — 23/11/2026
+
+- Đang làm T703l trên `feature/public-conversion`, theo kế hoạch người dùng duyệt: phong cách rực rỡ, public + Admin, CTA Zalo chính. Không đổi backend, không chạy app local. Tái dùng Nunito Sans/GSAP/Radix và ảnh có nguồn.
+
+- T703l DONE: Nunito Sans toàn public, màu/nav/form/nút/status chung tại conversion.css; frontend lint/types/4 unit PASS (1 warning stylesheet vendor cũ). Build/browser tiếp tục ở T703m/p. Backend không đổi.
+
+- T703m DONE phần code: hero CTA Zalo, closing photo, contact resolver ưu tiên cấu hình Admin đã xác minh và fallback số đã duyệt; hỗ trợ chung responsive. Frontend lint/types/4 unit và build Webpack PASS. Bổ sung Playwright 320–1440/hero/link channels, chờ CI browser ở T703p.
+
+- T703n DONE phần code: cards dùng chung ảnh/giá/2 link độc lập, bộ lọc có tóm tắt, chi tiết có Zalo/lịch & giá và summary sticky riêng; contact/group có ảnh và lựa chọn liên hệ. Không đổi API/giá/chỗ/form submission. Frontend lint/types/4 unit/build Webpack và Admin types PASS; browser hồi quy mới chạy trong T703p/CI.
+
+- T703p đang làm: contact_click/select_item qua listener có cleanup và consent, payload allowlist channel/position/UUID không href/PII. 6 frontend unit PASS gồm consent, dữ liệu không hợp lệ và fallback contact/Admin; lint/types PASS. Browser/taste/perf chưa nghiệm thu; không khởi động local.
+
+- T703p review SSR: gom settings công ty bằng React.cache theo request, tránh mỗi card tạo một request settings riêng; không cache giá/chỗ hoặc dữ liệu khách. CI đang kiểm.

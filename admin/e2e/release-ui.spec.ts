@@ -78,11 +78,11 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
       await page.screenshot({ path: test.info().outputPath("homepage-full-" + width + ".png"), animations: "disabled", fullPage: true });
     }
   }
-  const tour = page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]');
+  const tour = page.locator("#journeys .tour-card").filter({ has: page.locator('a[href="/tours/ninh-chu-2-ngay-1-dem"]') });
   await expect(tour.locator(".card-image").getByText("2 ngày · 1 đêm")).toBeVisible();
   await expect(tour.locator(".card-image").getByText("Tour demo")).toBeVisible();
-  await expect(tour.getByText("Xem chi tiết")).toBeVisible();
-  await tour.click();
+  await expect(tour.getByRole("link", { name: /Xem lịch & giá/ })).toBeVisible();
+  await tour.getByRole("heading").getByRole("link").click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
   await page.getByRole("button", { name: /Xem poster đầy đủ/ }).click();
@@ -188,4 +188,94 @@ test("homepage video loops without controls and pauses outside the viewport", as
   await page.goto("http://localhost:3000/?video=fallback");
   await expect(video).toHaveAttribute("data-frame", "false");
   await expect(page.locator(".hero-photo")).toBeVisible();
+});
+
+
+test("Zalo is one click from hero and mobile support stays inside the viewport", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("http://localhost:3000/");
+  const heroContact = page.locator(".hero").getByRole("link", { name: /Nhắn Zalo tư vấn/ });
+  await expect(heroContact).toHaveAttribute("href", "https://zalo.me/0989876847");
+  await expect(heroContact).toHaveAttribute("target", "_blank");
+  await expect(heroContact).toBeVisible();
+  await expect(page.locator(".contact-closing").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("href", "https://zalo.me/0989876847");
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const support = page.getByRole("navigation", { name: "Hỗ trợ nhanh" });
+    await expect(support).toBeVisible();
+    const links = support.locator("a.contact-float");
+    await expect(links).toHaveCount(3);
+    for (const link of await links.all()) {
+      const box = await link.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(901);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+});
+
+
+test("tour decisions and contact pages share the public design without covering forms", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
+  await expect(page.locator(".detail-conversion").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("href", "https://zalo.me/0989876847");
+  await expect(page.locator(".mobile-booking")).toHaveCount(0);
+  await page.getByRole("navigation", { name: "Hỗ trợ nhanh" }).getByRole("link", { name: "Lịch & giá ↓" }).click();
+  await expect(page).toHaveURL(/#departures$/);
+  await expect(page.locator("#departures .booking-summary")).toBeVisible();
+  for (const width of [320,390,768,1024,1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ["contact", "schools", "companies"]) {
+    await page.goto("http://localhost:3000/" + route);
+    await expect(page.locator(".contact-intro").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("target", "_blank");
+    const submit = page.getByRole("button", { name: "Gửi yêu cầu", exact: true });
+    await submit.scrollIntoViewIfNeeded();
+    const buttonBox = await submit.boundingBox();
+    const supportBox = await page.getByRole("navigation", { name: "Hỗ trợ nhanh" }).boundingBox();
+    expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(supportBox!.y);
+    await page.screenshot({ path: test.info().outputPath("homepage-contact-" + route + ".png"), fullPage: true, animations: "disabled" });
+  }
+});
+
+
+test("contact and tour click measurement honors consent and never blocks navigation", async ({ page }) => {
+  await page.route("**/measurement", route => route.fulfill({ json: { id: "G-DEMO123", debug: true } }));
+  await page.route("https://www.googletagmanager.com/gtag/js?*", route => route.fulfill({ contentType: "application/javascript", body: "" }));
+  await page.route("https://zalo.me/**", route => route.fulfill({ body: "Test destination" }));
+  await page.goto("http://localhost:3000/");
+  // Prevent the external tab in this test only; the link itself remains an ordinary anchor.
+  await page.evaluate(() => document.addEventListener("click", event => {
+    if ((event.target as Element).closest('a[href^="https://zalo.me/"]')) event.preventDefault();
+  }));
+  const events = () => page.evaluate(() => ((window as typeof window & { dataLayer?: Array<ArrayLike<unknown>> }).dataLayer || []).map(e => Array.from(e)));
+  await expect(page.getByRole("button", { name: "Cho phép phân tích" })).toBeVisible();
+  const hero = page.locator(".hero").getByRole("link", { name: /Nhắn Zalo tư vấn/ });
+  await hero.click();
+  expect(await events()).toEqual([]);
+  await page.getByRole("button", { name: "Cho phép phân tích" }).click();
+  await hero.click();
+  await expect.poll(async () => (await events()).filter(e => e[1] === "contact_click").length).toBe(1);
+  const card = page.locator("#journeys .tour-card").first();
+  await card.getByRole("link", { name: /Xem lịch & giá/ }).click();
+  await expect(page).toHaveURL(/\/tours\/[^/]+#departures$/);
+  await expect.poll(async () => (await events()).filter(e => e[1] === "select_item").length).toBe(1);
+  const encoded = JSON.stringify(await events());
+  expect(encoded).not.toContain("0989876847");
+  expect(encoded).not.toContain("zalo.me");
+  await page.getByRole("button", { name: "Tùy chọn phân tích", exact: true }).click();
+  await page.getByRole("button", { name: "Từ chối phân tích" }).click();
+  const before = (await events()).filter(e => e[1] === "contact_click").length;
+  await page.evaluate(() => document.addEventListener("click", event => {
+    if ((event.target as Element).closest('a[href^="https://zalo.me/"]')) event.preventDefault();
+  }));
+  await page.locator(".detail-conversion").getByRole("link", { name: /Nhắn Zalo tư vấn/ }).click();
+  expect((await events()).filter(e => e[1] === "contact_click")).toHaveLength(before);
 });
