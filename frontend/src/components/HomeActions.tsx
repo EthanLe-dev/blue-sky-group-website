@@ -12,7 +12,7 @@ export default function HomeActions({ phoneHref, zaloHref }: { phoneHref: string
     let frame = 0;
     const update = () => {
       cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => setPastIntroduction(end.getBoundingClientRect().bottom <= 0));
+      frame = requestAnimationFrame(() => setPastIntroduction(end.getBoundingClientRect().bottom <= window.innerHeight));
     };
     update();
     window.addEventListener("scroll", update, { passive: true });

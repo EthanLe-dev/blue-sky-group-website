@@ -144,6 +144,7 @@ test("admin tour editor persists edits and verifies poster", async ({
   page,
 }) => {
   await login(page);
+  await expect(page.getByRole("option", { name: /Bài viết|Danh mục bài viết|Thẻ bài viết/ })).toHaveCount(0);
   await page
     .locator(".list-row")
     .filter({ hasText: "Ninh Chữ · Biển và văn hoá Chăm" })

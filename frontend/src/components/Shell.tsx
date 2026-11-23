@@ -8,7 +8,6 @@ const links = [
   ["/tours", "Khám phá tour"],
   ["/schools", "Trường học"],
   ["/companies", "Doanh nghiệp"],
-  ["/blog", "Cẩm nang"],
   ["/lookup", "Tra cứu đơn"],
 ];
 type HomeContact = { hotline: string; phoneHref: string; zaloHref: string } | null;

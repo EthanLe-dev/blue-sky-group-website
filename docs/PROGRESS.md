@@ -14,6 +14,9 @@
 
 ## Làm mới Trang chủ
 
+- T703k trên `feature/remove-travel-guide`: xóa khối Cẩm nang, liên kết header/footer, dữ liệu trình bày và CSS riêng. Admin gỡ ba loại nội dung bài viết, danh mục bài viết và thẻ bài viết. CI kiểm Trang chủ không còn liên kết Cẩm nang và Admin không còn lựa chọn tương ứng. Không xóa dữ liệu cũ.
+- CI phát hiện trang ngắn hơn khiến mốc nút lên đầu trang không đạt được. Chỉnh mốc khi người xem cuộn tới cuối phần giới thiệu trong viewport, giữ ca kiểm tra hiện có.
+
 - T703j trên `feature/contact-pulse`: Zalo, Facebook và hotline có vòng sáng và hiệu ứng opacity nhẹ, chu kỳ 2,4 giây lệch nhịp. Hover/focus ngưng hiệu ứng; reduced motion giữ nút tĩnh. Chỉ sửa CSS và tài liệu.
 
 - T703i trên `feature/contact-actions`: cụm nút Zalo, Facebook, hotline trên Trang chủ. Header bổ sung hotline và Chat Zalo, có hiệu ứng ngắn và hỗ trợ reduced motion. Người dùng xác nhận hotline 0989 876 847, Zalo cùng số, Facebook profile 61561766096180. Các giá trị xác nhận dùng làm mặc định public; cấu hình hotline/Zalo thật trong Admin tiếp tục được ưu tiên.

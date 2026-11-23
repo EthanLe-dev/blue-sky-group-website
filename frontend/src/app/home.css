@@ -263,8 +263,7 @@ body:has(.home-shell) {
 
 .home-banner-grid,
 .home-tour-grid,
-.home-group-grid,
-.home-editorial-grid {
+.home-group-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: clamp(14px, 2vw, 24px);
@@ -508,10 +507,7 @@ body:has(.home-shell) {
 }
 
 #home-about-end { position: absolute; inset: auto 0 0; height: 1px; pointer-events: none; }
-.home-editorial-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.home-editorial-grid article,
 .home-review-grid article { padding: 16px; border: 1px solid var(--home-line); border-radius: 14px; background: #fff; }
-.home-editorial-grid img { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 10px; margin-bottom: 12px; }
 .home-shell .prose :is(img, video, iframe) { max-width: 100%; }
 .home-shell .prose { overflow-wrap: anywhere; }
 
@@ -641,23 +637,6 @@ body:has(.home-shell) {
   .home-tour-grid:has(> :nth-child(5)) { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 
-@media (min-width: 681px) {
-  .home-editorial-grid > article:only-child {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-content: center;
-    column-gap: 24px;
-  }
-  .home-editorial-grid > article:only-child img {
-    grid-row: 1 / span 2;
-    align-self: center;
-    margin: 0;
-  }
-  .home-editorial-grid > article:only-child :is(h3, p) { grid-column: 2; }
-  .home-editorial-grid > article:only-child:not(:has(img)) :is(h3, p) { grid-column: 1 / -1; }
-}
-
 @media (max-width: 950px) {
   .home-shell .wrap { width: calc(100% - 40px); }
   .home-shell .home-header > .wrap > nav,
@@ -701,8 +680,7 @@ body:has(.home-shell) {
   .home-banner-grid,
   .home-tour-grid,
   .home-about,
-  .home-group-grid,
-  .home-editorial-grid { grid-template-columns: minmax(0, 1fr); }
+  .home-group-grid { grid-template-columns: minmax(0, 1fr); }
   .home-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .home-footer-brand { grid-column: 1 / -1; }
   .home-footer { padding-bottom: max(74px, calc(env(safe-area-inset-bottom) + 58px)); }

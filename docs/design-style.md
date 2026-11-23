@@ -57,11 +57,11 @@ Trang chủ và Admin dùng **Nunito Sans Variable**. Các trang public khác d�
 
 ## 4. Luồng và cấu trúc màn hình
 
-Trang chủ: thanh hỗ trợ và điều hướng, ảnh biển với form tìm tour, banner CMS nếu có, lưới tour, dịch vụ theo đoàn, giới thiệu Blue Sky Group, cẩm nang và đánh giá nếu có, footer. Phần ảnh đầu trang nói về thương hiệu, giữ tên, giá, lịch và poster của từng tour ở các phần bên dưới.
+Trang chủ: thanh hỗ trợ và điều hướng, ảnh biển với form tìm tour, banner CMS nếu có, lưới tour, dịch vụ theo đoàn, giới thiệu Blue Sky Group, đánh giá nếu có, footer. Phần ảnh đầu trang nói về thương hiệu, giữ tên, giá, lịch và poster của từng tour ở các phần bên dưới.
 
 | Trang | Nội dung và tương tác cần có |
 | --- | --- |
-| Home | Hero ảnh/search; tour nổi bật; điểm đến; trường/doanh nghiệp; bằng chứng uy tín có nguồn; cẩm nang; CTA tư vấn. Hero không auto-play âm thanh. |
+| Home | Hero ảnh/search; tour nổi bật; điểm đến; trường/doanh nghiệp; bằng chứng uy tín có nguồn; CTA tư vấn. Hero không auto-play âm thanh. |
 | Tour list | Search/filter dễ sửa, số kết quả, sort; filter mobile mở drawer có Apply/Reset; giữ URL và Back. Card có giá từ/ngày/thời lượng, hết chỗ và loading rõ. |
 | Tour detail | Gallery, tóm tắt/giá/lịch, sticky CTA; itinerary theo ngày, gồm/không gồm, policy, map, FAQ, reviews. Link anchor có scroll margin tránh header che. |
 | Checkout | Chọn ngày/số người → liên hệ/hành khách → xác nhận/thanh toán. Desktop summary cạnh form, mobile tổng tiền và nút tiếp tục rõ. Cọc/dư nợ/hạn/expiry hiển thị riêng; step back không mất dữ liệu. |
