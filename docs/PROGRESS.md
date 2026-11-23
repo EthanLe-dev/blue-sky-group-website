@@ -16,7 +16,9 @@
 
 - `feature/remove-blog`: theo yêu cầu người dùng, gỡ API bài viết/danh mục/thẻ, seed, truy vấn home, route và sitemap `/blog`. Migration 000008 xóa cả bốn bảng nội dung cũ; ảnh/tour/pages/audit giữ nguyên. Ready check yêu cầu migration mới.
 - Có ca PostgreSQL nâng cấp từ bảng có dữ liệu và FK, chạy migration hai lần, kiểm tour/media/pages còn nguyên; kiểm API 404 và seed không tạo lại bảng. Playwright kiểm `/blog`, bài viết cũ, URL bộ lọc trả 404 và sitemap không còn blog.
-- Local: frontend lint/types/4 unit PASS (1 warning stylesheet đã có), Admin lint/types/4 unit/build PASS. Frontend build gặp lỗi tiến trình CSS worker của Turbopack trên Windows; chờ build Linux trong CI để xác nhận. Go vet/race đang chạy, PostgreSQL và browser kiểm trên CI. Chưa chạy app hoặc migration trên DB local của người dùng. Phục hồi dữ liệu cần backup trước migration theo database-schema/runbook.
+- Local: frontend lint/types/4 unit PASS (1 warning stylesheet đã có), Admin lint/types/4 unit/build PASS. Frontend build gặp lỗi tiến trình CSS worker của Turbopack trên Windows; chờ build Linux trong CI để xác nhận. Go vet/race PASS (integration local không chạy do TEST_DATABASE_URL không đặt). Chưa chạy app hoặc migration trên DB local của người dùng. Phục hồi dữ liệu cần backup trước migration theo database-schema/runbook.
+
+- T218b DONE trên `15c913b2`: [CI 45113321690](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45113321690) đạt 6/6 jobs, gồm build Linux, Go/race/PostgreSQL và Chromium/Firefox/WebKit, seed/migration và drill backup/restore. PR #20 vào develop; không phát hành main. Dữ liệu local chỉ bị xóa khi người dùng cập nhật app và chạy migration mới.
 
 ## Làm mới Trang chủ
 

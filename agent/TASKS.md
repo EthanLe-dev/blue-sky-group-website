@@ -143,4 +143,4 @@ Ghi bản đầy đủ trong PROGRESS; nếu test fail, task vẫn DOING/BLOCKED
 
 | Task | Thay đổi | Kiểm chứng |
 | --- | --- | --- |
-| T218b · DOING | Xóa Cẩm nang hoàn toàn: route/blog, sitemap, API, seed và migration 000008 xóa dữ liệu cũ | PostgreSQL nâng cấp có dữ liệu/FK và chạy lại, tour/media/pages được giữ; seed idempotent; public/admin API 404; Playwright URL blog 404, sitemap không blog; lint/types/unit/build và CI |
+| T218b · DONE | Xóa Cẩm nang hoàn toàn: route/blog, sitemap, API, seed và migration 000008 xóa dữ liệu cũ | PostgreSQL nâng cấp có dữ liệu/FK và chạy lại, tour/media/pages được giữ; seed idempotent; public/admin API 404; Playwright URL blog 404, sitemap không blog; lint/types/unit/build và CI |

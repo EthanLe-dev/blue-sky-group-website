@@ -6,7 +6,7 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
-- T218b: Người dùng yêu cầu xóa luôn dữ liệu bài viết và `/blog`. Nhánh `feature/remove-blog` gỡ API/seed/sitemap/route, thêm migration 000008 drop bốn bảng bài viết; thay thế phạm vi giữ dữ liệu/API của T703k. Đang kiểm chứng migration nâng cấp, API 404 và browser trên CI; không chạy app/DB local.
+- T218b: Người dùng yêu cầu xóa luôn dữ liệu bài viết và `/blog`. Nhánh `feature/remove-blog` gỡ API/seed/sitemap/route, thêm migration 000008 drop bốn bảng bài viết; thay thế phạm vi giữ dữ liệu/API của T703k. Migration nâng cấp, API 404 và browser đã đạt tại CI 45113321690 (6/6 jobs) trên 15c913b2; không chạy app/DB local.
 - T703k: Theo yêu cầu, gỡ Cẩm nang khỏi Trang chủ, điều hướng public và quản trị bài viết/danh mục/thẻ trong Admin. Phạm vi này là loại bỏ giao diện, giữ dữ liệu cũ và API hiện có.
 
 - T703j: Thêm hiệu ứng nhấp sáng chậm, lệch nhịp cho ba nút liên hệ nổi; giữ trạng thái tĩnh khi bật giảm chuyển động.
