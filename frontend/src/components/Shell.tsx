@@ -3,6 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
+import HomeActions from "./HomeActions";
+import type { ContactLinks } from "@/lib/contact";
 import ContactIcon from "./ContactIcon";
 const links = [
   ["/tours", "Khám phá tour"],
@@ -12,8 +14,14 @@ const links = [
 ];
 type HomeContact = { hotline: string; phoneHref: string; zaloHref: string } | null;
 
-export function SiteHeader() {
-  return usePathname() === "/" ? null : <Header />;
+export function SiteHeader({ contact }: { contact: ContactLinks }) {
+  return usePathname() === "/" ? null : <Header contact={contact} />;
+}
+
+export function SiteSupport({ contact }: { contact: ContactLinks }) {
+  const path = usePathname();
+  if (["/", "/checkout", "/lookup"].includes(path)) return null;
+  return <HomeActions phoneHref={contact.phoneHref} zaloHref={contact.zaloHref} />;
 }
 
 export function SiteFooter() {
@@ -81,6 +89,7 @@ export function Header({ home = false, contact = null }: { home?: boolean; conta
         <Link prefetch={false} className="header-contact" href="/contact">
           {contactLabel}
         </Link>
+        {!home && contact && <a className="header-zalo" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" data-contact-channel="zalo" data-contact-position="header">Nhắn Zalo tư vấn ↗</a>}
         <button
           ref={trigger}
           className="menu-toggle"

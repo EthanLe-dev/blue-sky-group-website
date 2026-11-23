@@ -67,3 +67,123 @@ label { font-weight: 750; }
   .btn, .cta-zalo { transition: none; }
   .btn:is(:hover,:active), .cta-zalo:is(:hover,:active) { transform: none; }
 }
+
+.home-actions {
+  position: fixed;
+  z-index: 10;
+  inset-inline-end: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.contact-float {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 3px 14px #123b5630, 0 0 0 1px #b9d3e3;
+  transition: transform 180ms var(--home-ease), box-shadow 180ms;
+}
+.contact-float-zalo { --contact-ring: #0867ce; color: #0867ce; background: #fff; }
+.contact-float-zalo .contact-zalo-mark { font-size: 20px; }
+.contact-float-facebook { --contact-ring: #0866df; color: #fff; background: #0866df; }
+.contact-float-phone { --contact-ring: #d82e2a; color: #fff; background: #d82e2a; }
+.contact-float::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px solid var(--contact-ring);
+  opacity: 0;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.contact-float:focus-visible { outline: 3px solid #075a91; outline-offset: 5px; }
+.contact-float:hover { text-decoration: none; box-shadow: 0 6px 20px #123b5640; }
+.contact-tooltip {
+  position: absolute;
+  inset-inline-end: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--home-deep);
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  font-size: .9375rem;
+  font-weight: 700;
+}
+.contact-float:hover .contact-tooltip,
+.contact-float:focus-visible .contact-tooltip { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .contact-float {
+    animation: contact-arrive 450ms var(--home-ease) both, contact-pulse 2400ms ease-in-out infinite;
+    animation-delay: 0ms, 450ms;
+  }
+  .contact-float-facebook { animation-delay: 100ms, 850ms; }
+  .contact-float-phone { animation-delay: 200ms, 1250ms; }
+  .contact-float::before { animation: contact-ring 2400ms ease-out infinite; }
+  .contact-float-facebook::before { animation-delay: 400ms; }
+  .contact-float-phone::before { animation-delay: 800ms; }
+  .contact-float:is(:hover, :focus-visible),
+  .contact-float:is(:hover, :focus-visible)::before { animation-play-state: paused; }
+  .home-support-phone svg { animation: contact-nudge 700ms ease-in-out 3; }
+  .home-support-zalo { animation: contact-highlight 1200ms ease-out 3; }
+  .contact-float:hover { transform: translateY(-2px); }
+}
+@keyframes contact-arrive { from { opacity: .3; transform: translateY(8px); } }
+@keyframes contact-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .78; } }
+@keyframes contact-ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+@keyframes contact-nudge { 30% { transform: rotate(-10deg); } 60% { transform: rotate(10deg); } }
+@keyframes contact-highlight { 50% { box-shadow: 0 0 0 4px #bde8ff70; } }
+.home-back-top {
+  display: grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  background: #fff;
+  color: var(--home-sea);
+  border: 1px solid #a9c2d3;
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+
+.contact-zalo-mark { font-size: 16px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.contact-facebook-mark { font: 900 36px/1 Arial, sans-serif; }
+.home-actions { --home-deep: #123b56; --home-sea: #075a91; --home-ease: cubic-bezier(.22,1,.36,1); z-index: 25; }
+.home-actions svg { width: 25px; height: 25px; }
+.contact-float-zalo { width: 64px; height: 64px; border-color: #f4c84c; }
+.contact-mobile-label, .contact-mobile-schedule { display: none; }
+.header-zalo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 850; font-size: .9375rem; color: #075a91; }
+.contact-closing { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); overflow: hidden; border-radius: 24px; background: #123b56; color: white; margin-block: 64px; }
+.contact-closing-photo { min-width: 0; min-height: 300px; }
+.contact-closing-photo img { width: 100%; height: 100%; object-fit: cover; }
+.contact-closing-copy { padding: clamp(24px, 4vw, 56px); }
+.contact-closing .eyebrow { color: #f4c84c; }
+.contact-closing h2 { max-width: 20ch; font-size: clamp(1.7rem, 3vw, 2.7rem); }
+.closing-hotline { display: flex; align-items: center; min-height: 44px; margin-top: 12px; font-weight: 750; }
+@media (max-width: 1100px) { .header-zalo { display: none; } }
+@media (max-width: 680px) {
+  body:has(.home-actions) { padding-bottom: calc(80px + env(safe-area-inset-bottom)); }
+  .home-shell .home-actions, .home-actions { inset: auto 0 0; width: 100%; flex-direction: row; justify-content: center; gap: 8px; padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid #cbdde7; background: #fff; box-shadow: 0 -4px 24px #123b5614; }
+  .home-actions .contact-float { flex: 0 0 44px; width: 44px; height: 44px; border-width: 2px; }
+  .home-actions .contact-float-zalo { display: flex; justify-content: center; gap: 8px; flex: 1 1 auto; width: auto; max-width: 210px; border-radius: 10px; border-color: #f4c84c; background: #f4c84c; }
+  .contact-mobile-label { display: inline; font-size: 1rem; font-weight: 900; color: #123b56; }
+  .home-actions[data-detail] .contact-float-zalo { gap: 4px; }
+  .home-actions[data-detail] .contact-mobile-label { display: none; }
+  .home-actions[data-detail] .contact-mobile-schedule { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 10px; border-radius: 10px; background: #075a91; color: white; font-weight: 800; font-size: .9375rem; white-space: nowrap; }
+  .home-actions .contact-float::before { inset: -2px; }
+  .home-actions .contact-tooltip { display: none; }
+  .home-actions .home-back-top { position: absolute; right: 16px; bottom: calc(100% + 12px); box-shadow: 0 2px 8px #123b5620; }
+  .contact-closing { grid-template-columns: minmax(0,1fr); margin-block: 36px; }
+  .contact-closing-photo { min-height: 0; aspect-ratio: 16/9; }
+  .contact-closing-copy { padding: 24px; }
+}

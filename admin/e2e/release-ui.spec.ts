@@ -189,3 +189,31 @@ test("homepage video loops without controls and pauses outside the viewport", as
   await expect(video).toHaveAttribute("data-frame", "false");
   await expect(page.locator(".hero-photo")).toBeVisible();
 });
+
+
+test("Zalo is one click from hero and mobile support stays inside the viewport", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("http://localhost:3000/");
+  const heroContact = page.locator(".hero").getByRole("link", { name: /Nhắn Zalo tư vấn/ });
+  await expect(heroContact).toHaveAttribute("href", "https://zalo.me/0989876847");
+  await expect(heroContact).toHaveAttribute("target", "_blank");
+  await expect(heroContact).toBeVisible();
+  await expect(page.locator(".contact-closing").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("href", "https://zalo.me/0989876847");
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    const support = page.getByRole("navigation", { name: "Hỗ trợ nhanh" });
+    await expect(support).toBeVisible();
+    const links = support.locator("a.contact-float");
+    await expect(links).toHaveCount(3);
+    for (const link of await links.all()) {
+      const box = await link.boundingBox();
+      expect(box).not.toBeNull();
+      expect(box!.width).toBeGreaterThanOrEqual(44);
+      expect(box!.height).toBeGreaterThanOrEqual(44);
+      expect(box!.x).toBeGreaterThanOrEqual(0);
+      expect(box!.x + box!.width).toBeLessThanOrEqual(width + 1);
+      expect(box!.y + box!.height).toBeLessThanOrEqual(901);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+});

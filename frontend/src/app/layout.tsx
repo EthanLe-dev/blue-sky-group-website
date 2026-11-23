@@ -5,7 +5,10 @@ import "./globals.css";
 import "./conversion.css";
 import Analytics from "@/components/Analytics";
 import Script from "next/script";
-import { SiteHeader, SiteFooter } from "@/components/Shell";
+import { read } from "@/lib/catalog";
+import { resolveContact } from "@/lib/contact";
+import type { CompanyProfile } from "@/components/HomeFooter";
+import { SiteHeader, SiteFooter, SiteSupport } from "@/components/Shell";
 const origin = process.env.SITE_URL || "http://localhost:3000";
 export function generateMetadata(): Metadata {
   const verification = process.env.GSC_VERIFICATION || "";
@@ -27,7 +30,9 @@ export function generateMetadata(): Metadata {
   robots: { index: process.env.APP_ENV === "production", follow: true },
   };
 }
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const contact = resolveContact(settings?.company_profile);
   return (
     <html lang="vi" data-type="service" data-buttons="solid" data-motion="">
       <body>
@@ -37,9 +42,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           src="/assets/motion/motion.js"
           strategy="afterInteractive"
         />
-        <SiteHeader />
+        <SiteHeader contact={contact} />
         {children}
         <SiteFooter />
+        <SiteSupport contact={contact} />
         <Analytics />
       </body>
     </html>

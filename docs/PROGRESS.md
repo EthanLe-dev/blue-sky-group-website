@@ -327,3 +327,5 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - Đang làm T703l trên `feature/public-conversion`, theo kế hoạch người dùng duyệt: phong cách rực rỡ, public + Admin, CTA Zalo chính. Không đổi backend, không chạy app local. Tái dùng Nunito Sans/GSAP/Radix và ảnh có nguồn.
 
 - T703l DONE: Nunito Sans toàn public, màu/nav/form/nút/status chung tại conversion.css; frontend lint/types/4 unit PASS (1 warning stylesheet vendor cũ). Build/browser tiếp tục ở T703m/p. Backend không đổi.
+
+- T703m DONE phần code: hero CTA Zalo, closing photo, contact resolver ưu tiên cấu hình Admin đã xác minh và fallback số đã duyệt; hỗ trợ chung responsive. Frontend lint/types/4 unit và build Webpack PASS. Bổ sung Playwright 320–1440/hero/link channels, chờ CI browser ở T703p.

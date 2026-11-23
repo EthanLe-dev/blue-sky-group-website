@@ -10,8 +10,8 @@ import { Header } from "@/components/Shell";
 import TourCard from "@/components/TourCard";
 import { read, type Content } from "@/lib/catalog";
 import { homeCatalog, type HomeData } from "@/lib/home-catalog";
-import { companyContact } from "@/lib/contact";
-import "@fontsource-variable/nunito-sans/wght.css";
+import ContactClosing from "@/components/ContactClosing";
+import { resolveContact } from "@/lib/contact";
 import "./home.css";
 
 export const dynamic = "force-dynamic";
@@ -32,13 +32,8 @@ export default async function Home() {
   ]);
   const { state, tours, destinations, banners, reviews } = homeCatalog(data);
   const company = settings?.company_profile;
-  const phone = company?.hotline?.replace(/[^+0-9]/g, "") ?? "";
-  const contact = company?.hotline && company.is_demo === false && /^\+?\d{7,15}$/.test(phone)
-    ? { hotline: company.hotline, phoneHref: `tel:${phone}` }
-    : companyContact;
-  const zaloHref = company?.is_demo === false && company.zalo_url && /^https:\/\/zalo\.me\//i.test(company.zalo_url)
-    ? company.zalo_url
-    : companyContact.zaloHref;
+  const contact = resolveContact(company);
+  const zaloHref = contact.zaloHref;
 
   return (
     <div className="home-shell" id="home-top" tabIndex={-1}>
@@ -50,7 +45,7 @@ export default async function Home() {
         .home-shell .home-header .menu-toggle { display: none; }
       `}</style></noscript>
       <main id="main" className="home" tabIndex={-1}>
-        <Hero destinations={destinations.map(({ slug, name }) => ({ slug, name }))} />
+        <Hero zaloHref={zaloHref} destinations={destinations.map(({ slug, name }) => ({ slug, name }))} />
 
         {banners.length > 0 && (
           <section className="wrap home-block" aria-labelledby="campaign-heading">
@@ -135,6 +130,7 @@ export default async function Home() {
             </div>
           </section>
         )}
+        <ContactClosing contact={contact} />
       </main>
       <HomeFooter company={company} contact={contact} />
       <HomeActions phoneHref={contact.phoneHref} zaloHref={zaloHref} />
