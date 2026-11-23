@@ -32,6 +32,7 @@ test("admin login, settings save, reload and logout", async ({ page }) => {
   expect(reportPosition.x + reportPosition.width).toBeLessThan(workspace.x);
   expect(reportPosition.y).toBeLessThan(settingsPosition.y);
   await expect(settings).toHaveAttribute("aria-pressed", "true");
+  await page.mouse.move(900, 0);
   await expect(page.locator(".admin-sidebar")).toHaveCSS("background-color", "rgb(18, 59, 86)");
   await expect(settings).toHaveCSS("background-color", "rgb(244, 200, 76)");
   await settings.hover();
