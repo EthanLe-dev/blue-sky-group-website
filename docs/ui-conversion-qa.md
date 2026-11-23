@@ -23,3 +23,5 @@ Phạm vi đã duyệt: du lịch rực rỡ, Zalo chính, public và Admin. Kh�
 - `contact_click`: `contact_channel` chỉ zalo/facebook/phone, `cta_position` chỉ các vị trí đã định nghĩa; `item_id` tùy chọn phải UUID. `select_item`: list home/catalog, item UUID. Không đưa href, hotline, slug chứa nội dung tự do hoặc nội dung form vào payload. Listener được cleanup, không ngăn link mở trang đích; không có consent thì không đo.
 - Metadata, nhãn và chú thích mới dùng từ 16px; chữ chính 17px, Nunito Sans Vietnamese local. Không thêm dependency hoặc tải font từ CDN.
 - Chỉ tích hợp develop sau CI xanh. Không tự deploy main, không khởi động app local. Người dùng tự chạy `bluesky run` để duyệt. Hiệu quả CTR cần đo sau khi có traffic thật; bản này không cam kết tỷ lệ tăng.
+
+- Đã xem ảnh Admin sidebar/settings và báo cáo mobile của CI tích hợp: màu/menu, metric và nhãn rõ; bổ sung nền workspace cho màn cấu hình không dùng class workspace, và toolbar xếp dọc mobile để nút export không bị ép thành nhiều dòng. Có assertion kích thước nút export.

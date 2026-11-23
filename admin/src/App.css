@@ -567,3 +567,12 @@ button:disabled { cursor: not-allowed; }
 .report-table td { text-align: end; }
 
 .admin-brand small { font-size: 16px; }
+
+.admin-content > section:not(.workspace) { padding: clamp(18px,2.5vw,32px); border: 1px solid #cbdde7; border-radius: 20px; background: white; }
+fieldset { min-width: 0; border: 1px solid #cbdde7; border-radius: 14px; padding: 18px; }
+legend { padding-inline: 8px; font-weight: 800; color: #075a91; }
+@media (max-width:540px) {
+  .workspace .toolbar { flex-direction: column; align-items: stretch; }
+  .workspace .toolbar label { min-width: 0; width: 100%; }
+  .workspace .toolbar button { width: 100%; flex: 0 0 auto; }
+}

@@ -291,6 +291,9 @@ test("counter booking and report Excel/CSV exports", async ({ page }) => {
   await page.screenshot({ path: test.info().outputPath("admin-report-desktop.png"), fullPage: true, animations: "disabled" });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  const exportButton = await page.getByRole("button", { name: "Tải báo cáo doanh thu", exact: true }).boundingBox();
+  expect(exportButton!.width).toBeGreaterThan(200);
+  expect(exportButton!.height).toBeLessThan(96);
   await page.screenshot({ path: test.info().outputPath("admin-report-mobile.png"), fullPage: true, animations: "disabled" });
   await page.setViewportSize({ width: 1280, height: 900 });
 
