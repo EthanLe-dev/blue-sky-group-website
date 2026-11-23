@@ -14,6 +14,8 @@
 
 ## Làm mới Trang chủ
 
+- T703i trên `feature/contact-actions`: cụm nút Zalo, Facebook, hotline trên Trang chủ. Header bổ sung hotline và Chat Zalo, có hiệu ứng ngắn và hỗ trợ reduced motion. Người dùng xác nhận hotline 0989 876 847, Zalo cùng số, Facebook profile 61561766096180. Các giá trị xác nhận dùng làm mặc định public; cấu hình hotline/Zalo thật trong Admin tiếp tục được ưu tiên.
+
 - T703h trên `feature/homepage-video-cleanup`: gỡ nút phát/tạm dừng và giữ video 9 giây tự phát lặp. Playwright kiểm vòng lặp, tạm nghỉ ngoài khung nhìn và ảnh dự phòng.
 
 - T703g trên `feature/homepage-about-gallery`: phần giới thiệu có cụm ảnh Ninh Bình, Hội An, Ninh Chữ với nhãn địa danh. GSAP chạy một lần khi ảnh vào khung nhìn, dùng ảnh tĩnh theo thiết lập giảm chuyển động. Nội dung CMS và liên kết giới thiệu giữ nguyên.

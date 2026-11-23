@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
+import ContactIcon from "./ContactIcon";
 const links = [
   ["/tours", "Khám phá tour"],
   ["/schools", "Trường học"],
@@ -10,7 +11,7 @@ const links = [
   ["/blog", "Cẩm nang"],
   ["/lookup", "Tra cứu đơn"],
 ];
-type HomeContact = { hotline: string; phoneHref: string } | null;
+type HomeContact = { hotline: string; phoneHref: string; zaloHref: string } | null;
 
 export function SiteHeader() {
   return usePathname() === "/" ? null : <Header />;
@@ -41,9 +42,17 @@ export function Header({ home = false, contact = null }: { home?: boolean; conta
       {home && (
         <div className="home-support">
           <div className="wrap">
-            {contact
-              ? <a href={contact.phoneHref}>Hỗ trợ: {contact.hotline}</a>
-              : <Link prefetch={false} href="/contact">Hỗ trợ chuyến đi</Link>}
+            <Link prefetch={false} className="home-support-title" href="/contact">Hỗ trợ chuyến đi</Link>
+            {contact && (
+              <div className="home-support-channels">
+                <a className="home-support-phone" href={contact.phoneHref}>
+                  <ContactIcon channel="phone" />{contact.hotline}
+                </a>
+                <a className="home-support-zalo" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo Blue Sky Group (mở tab mới)">
+                  <ContactIcon channel="zalo" /><span>Chat Zalo</span>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       )}

@@ -12,6 +12,12 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await expect(hero.locator("video")).toHaveCount(0);
     await expect(page.getByRole("banner")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toHaveCount(1);
+    const support = page.getByRole("navigation", { name: "Hỗ trợ nhanh" });
+    await expect(support.getByRole("link", { name: "Gọi hotline 0989876847" })).toHaveAttribute("href", "tel:0989876847");
+    await expect(support.getByRole("link", { name: /Nhắn Zalo/ })).toHaveAttribute("href", "https://zalo.me/0989876847");
+    await expect(support.getByRole("link", { name: /Facebook Blue Sky/ })).toHaveAttribute("href", "https://www.facebook.com/profile.php?id=61561766096180");
+    await expect(page.getByRole("banner").getByRole("link", { name: "0989 876 847" })).toBeVisible();
+    await expect(page.getByRole("banner").getByRole("link", { name: /Nhắn Zalo/ })).toBeVisible();
     await expect(hero).not.toContainText(/Ninh Chữ|Vĩnh Hy|ngày.*đêm/i);
     await expect(hero.getByRole("link", { name: /Ninh Chữ|Vĩnh Hy/i })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Khám phá các tour" })).toBeVisible();

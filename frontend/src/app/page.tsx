@@ -10,6 +10,7 @@ import { Header } from "@/components/Shell";
 import TourCard from "@/components/TourCard";
 import { read, type Content } from "@/lib/catalog";
 import { homeCatalog, type HomeData } from "@/lib/home-catalog";
+import { companyContact } from "@/lib/contact";
 import "@fontsource-variable/nunito-sans/wght.css";
 import "./home.css";
 
@@ -34,11 +35,14 @@ export default async function Home() {
   const phone = company?.hotline?.replace(/[^+0-9]/g, "") ?? "";
   const contact = company?.hotline && company.is_demo === false && /^\+?\d{7,15}$/.test(phone)
     ? { hotline: company.hotline, phoneHref: `tel:${phone}` }
-    : null;
+    : companyContact;
+  const zaloHref = company?.is_demo === false && company.zalo_url && /^https:\/\/zalo\.me\//i.test(company.zalo_url)
+    ? company.zalo_url
+    : companyContact.zaloHref;
 
   return (
     <div className="home-shell" id="home-top" tabIndex={-1}>
-      <Header home contact={contact} />
+      <Header home contact={{ ...contact, zaloHref }} />
       <noscript><style>{`
         .home-shell .home-header { position: relative; }
         .home-shell .home-header > .wrap { flex-wrap: wrap; }
@@ -154,7 +158,7 @@ export default async function Home() {
         )}
       </main>
       <HomeFooter company={company} contact={contact} />
-      <HomeActions phoneHref={contact?.phoneHref} />
+      <HomeActions phoneHref={contact.phoneHref} zaloHref={zaloHref} />
     </div>
   );
 }
