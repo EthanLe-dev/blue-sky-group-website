@@ -341,3 +341,6 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - T703p review SSR: gom settings công ty bằng React.cache theo request, tránh mỗi card tạo một request settings riêng; không cache giá/chỗ hoặc dữ liệu khách. CI đang kiểm.
 
 - Public PR #21 merge develop `25048a57` sau [CI 45208665160](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45208665160) đạt 6/6: Chromium18, Firefox6, WebKit6; mỗi engine phụ skip đúng một ca live video chỉ dành Chromium. Giữ cả tiến độ public và Admin khi tích hợp tài liệu.
+
+- T703o/T703p DONE phần thực hiện và hồi quy tại `8d0f17d4`: [CI 45210903923](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45210903923) đạt 6/6, gồm frontend6/Admin5 unit, Go race/PostgreSQL, Chromium18/Firefox6/WebKit6. Editor grouped/save lỗi giữ input, navigation, report/export và public conversion đều đạt. Live-video chỉ kiểm Chromium, skip có lý do trên engine phụ.
+- QA bằng ảnh phát hiện và sửa CSS di sản khiến card CTA xếp dọc và body dư khoảng trống trên header; thêm assertion hồi quy. Nhãn mới từ16px, body17px; build Webpack local cuối đạt. Commit bàn giao chờ CI lần cuối, không phát hành main/deploy và không chạy app local. Hồ sơ tại docs/ui-conversion-qa.md; taste/perf browser local chưa chạy, không coi là PASS hoặc UAT/CTR thực tế.

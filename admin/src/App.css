@@ -441,7 +441,7 @@ h3 {
 .booking-row-copy span {
   margin-top: 4px;
   color: #466072;
-  font-size: .9375rem;
+  font-size: 16px;
 }
 .booking-row .booking-badge {
   display: inline-flex;
@@ -449,7 +449,7 @@ h3 {
   padding: 4px 10px;
   background: #eaf2f8;
   color: #25445a;
-  font-size: .875rem;
+  font-size: 16px;
 }
 .booking-badge[data-status="confirmed"],
 .booking-badge[data-status="completed"] { background: #def5e9; color: #17543a; }
@@ -497,7 +497,7 @@ h1,h2,h3 { font-weight: 850; letter-spacing: -.025em; }
 .admin-sidebar .admin-nav button[aria-pressed="true"] { background: #f4c84c; color: #123b56; border-inline-start-color: white; }
 .admin-nav button:focus-visible { outline: 3px solid #f4c84c; outline-offset: 3px; }
 .admin-topbar { background: transparent; border: 0; border-radius: 0; padding: 4px 0 20px; border-bottom: 1px solid #cbdde7; }
-.admin-page-label { color: #075a91; font-size: .875rem; font-weight: 850; margin: 0 0 4px; }
+.admin-page-label { color: #075a91; font-size: 16px; font-weight: 850; margin: 0 0 4px; }
 .admin-topbar h1 { font-size: clamp(1.25rem, 2vw, 1.65rem); }
 .admin-topbar > button { border-color: #b7cddc; box-shadow: none; }
 .admin-content > .workspace { border-radius: 20px; border: 1px solid #cbdde7; box-shadow: 0 8px 28px #123b5608; padding: clamp(18px,2.5vw,32px); }
@@ -539,10 +539,10 @@ button:disabled { cursor: not-allowed; }
 .report-metrics span, .report-metrics strong, .report-metrics small { display: block; }
 .report-metrics span { font-size: 1rem; font-weight: 750; }
 .report-metrics strong { font-size: clamp(1.25rem,2vw,1.8rem); font-weight: 900; margin-block: 8px; overflow-wrap: anywhere; color: #075a91; }
-.report-metrics small { font-size: .875rem; color: #496477; }
+.report-metrics small { font-size: 16px; color: #496477; }
 .admin-login { margin-block: clamp(28px,8vh,80px); border-top: 6px solid #f4c84c; box-shadow: 0 16px 60px #123b561a; }
 .admin-login .admin-brand { padding-bottom: 22px; border-bottom: 1px solid #cbdde7; }
-.admin-login .admin-access-note { font-size: .9375rem; color: #496477; padding-left: 14px; border-left: 3px solid #f4c84c; }
+.admin-login .admin-access-note { font-size: 16px; color: #496477; padding-left: 14px; border-left: 3px solid #f4c84c; }
 .admin-login button { background: #075a91; box-shadow: 0 3px 0 #034773; }
 @media (prefers-reduced-motion:no-preference) {
   .admin-content > .workspace { animation: workspace-arrive 180ms ease-out; }
@@ -565,3 +565,5 @@ button:disabled { cursor: not-allowed; }
 
 .editor-save-bar { position: sticky; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 5; }
 .report-table td { text-align: end; }
+
+.admin-brand small { font-size: 16px; }

@@ -41,7 +41,7 @@ body:has(.home-shell) {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  font-size: .9375rem;
+  font-size: 16px;
   font-weight: 700;
   gap: 8px;
 }
@@ -338,7 +338,7 @@ body:has(.home-shell) {
   border-radius: 6px;
   background: #123b56;
   color: white;
-  font-size: .8125rem;
+  font-size: 16px;
   font-weight: 700;
 }
 .home-group-content {
@@ -421,7 +421,7 @@ body:has(.home-shell) {
   border-radius: 6px;
   background: var(--home-deep);
   color: white;
-  font-size: .875rem;
+  font-size: 16px;
   font-weight: 750;
 }
 
@@ -460,7 +460,7 @@ body:has(.home-shell) {
   gap: 8px 24px;
   padding-block: 10px;
   margin-top: 24px;
-  font-size: .9375rem;
+  font-size: 16px;
 }
 .home-footer-bottom a { display: inline-flex; align-items: center; min-height: 44px; }
 
@@ -493,7 +493,7 @@ body:has(.home-shell) {
 @media (max-width: 680px) {
   .home-shell .wrap { width: calc(100% - 32px); }
   .home-shell .home-header > .wrap { min-height: 60px; }
-  .home-header .brand { font-size: .9375rem; gap: 8px; }
+  .home-header .brand { font-size: 16px; gap: 8px; }
   .home-header .brand img { width: 44px; height: 44px; }
   .home-shell #main { scroll-margin-top: 162px; }
   .home-support > .wrap { gap: 0; }
@@ -501,7 +501,7 @@ body:has(.home-shell) {
   .home-support .home-support-title { min-height: 28px; }
   .home-support-channels { gap: 8px; padding-bottom: 4px; }
   .home-support .home-support-phone,
-  .home-support .home-support-zalo { font-size: .875rem; gap: 6px; padding-inline: 10px; }
+  .home-support .home-support-zalo { font-size: 16px; gap: 6px; padding-inline: 10px; }
   .home-support-zalo .contact-zalo-mark { display: none; }
   .contact-float { width: 48px; height: 48px; }
   .home-actions { gap: 10px; }
@@ -526,7 +526,7 @@ body:has(.home-shell) {
 }
 
 /* Conversion emphasis: one yellow action, vivid photography and a distinct closing band. */
-.home-hero-copy .hero-kicker { color: #ffda67; font-size: .875rem; font-weight: 850; letter-spacing: .06em; margin-bottom: 16px; }
+.home-hero-copy .hero-kicker { color: #ffda67; font-size: 16px; font-weight: 850; letter-spacing: .06em; margin-bottom: 16px; }
 .home-hero-copy { padding-top: 60px; }
 .home-hero-copy > p:not(.hero-kicker) { max-width: 48ch; }
 .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px; margin-top: 24px; }

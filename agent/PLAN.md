@@ -6,7 +6,7 @@ Người dùng chốt du lịch rực rỡ, ưu tiên tư vấn Zalo, áp dụng
 
 Palette xanh biển #075a91, navy #123b56, vàng #f4c84c, nền #f4f9fd; Nunito Sans local có tiếng Việt. Ảnh đã cấp quyền trong repo. Hero GSAP, photo moments hiện có; không thêm dependency/shader/scroll hijack. Mobile ba kênh một thanh đáy, detail thêm lịch & giá, checkout hỗ trợ inline. Analytics chỉ sau consent, click không đồng nghĩa đã tư vấn/mua.
 
-Đang thực hiện T703l. Không chạy app/services local; browser và integration trên CI. Nghiệm thu thị giác theo ảnh CI, không gọi là UAT người dùng hoặc cam kết tăng CTR.
+T703l–T703p đã có code và kiểm chứng: public CI 45208665160 và tích hợp Admin CI 45210903923 đều đạt 6/6; commit bàn giao tiếp tục qua CI trước merge. Không chạy app/services local; browser và integration trên CI. Nghiệm thu thị giác theo ảnh CI, không gọi là UAT người dùng hoặc cam kết tăng CTR.
 
 
 Ngày: 22/11/2026. Trạng thái: **M0 hoàn tất cho demo, M1 nền tảng đã triển khai**. Phạm vi hiện tại là MVP; frontend/admin/backend và Docker/migration nền tảng đã có. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
@@ -222,4 +222,4 @@ Vercel, Render và Neon dành cho demo. Deploy thật, khởi động lạnh, pr
 
 ### T703o — Giao diện quản trị 23/11/2026
 
-Theo kế hoạch được duyệt, nâng Admin trên `feature/admin-conversion`: dùng lại sidebar/Radix và API, chỉ đổi layout/style, nhóm field và biểu diễn báo cáo. Lint/types/5 unit/build local đạt, chờ CI browser và merge sau public. Không thêm backend/dependency.
+Theo kế hoạch được duyệt, nâng Admin trên `feature/admin-conversion`: dùng lại sidebar/Radix và API, chỉ đổi layout/style, nhóm field và biểu diễn báo cáo. Lint/types/5 unit/build local đạt, CI browser tích hợp 45210903923 đạt 6/6; PR #22 vào develop sau gate của commit cuối. Không thêm backend/dependency.
