@@ -78,11 +78,11 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
       await page.screenshot({ path: test.info().outputPath("homepage-full-" + width + ".png"), animations: "disabled", fullPage: true });
     }
   }
-  const tour = page.locator('#journeys a[href="/tours/ninh-chu-2-ngay-1-dem"]');
+  const tour = page.locator("#journeys .tour-card").filter({ has: page.locator('a[href="/tours/ninh-chu-2-ngay-1-dem"]') });
   await expect(tour.locator(".card-image").getByText("2 ngày · 1 đêm")).toBeVisible();
   await expect(tour.locator(".card-image").getByText("Tour demo")).toBeVisible();
-  await expect(tour.getByText("Xem chi tiết")).toBeVisible();
-  await tour.click();
+  await expect(tour.getByRole("link", { name: /Xem lịch & giá/ })).toBeVisible();
+  await tour.getByRole("heading").getByRole("link").click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
   await page.getByRole("button", { name: /Xem poster đầy đủ/ }).click();
@@ -215,5 +215,32 @@ test("Zalo is one click from hero and mobile support stays inside the viewport",
       expect(box!.y + box!.height).toBeLessThanOrEqual(901);
     }
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+});
+
+
+test("tour decisions and contact pages share the public design without covering forms", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("http://localhost:3000/tours/ninh-chu-2-ngay-1-dem");
+  await expect(page.locator(".detail-conversion").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("href", "https://zalo.me/0989876847");
+  await expect(page.locator(".mobile-booking")).toHaveCount(0);
+  await page.getByRole("navigation", { name: "Hỗ trợ nhanh" }).getByRole("link", { name: "Lịch & giá ↓" }).click();
+  await expect(page).toHaveURL(/#departures$/);
+  await expect(page.locator("#departures .booking-summary")).toBeVisible();
+  for (const width of [320,390,768,1024,1440]) {
+    await page.setViewportSize({ width, height: 900 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);
+  }
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ["contact", "schools", "companies"]) {
+    await page.goto("http://localhost:3000/" + route);
+    await expect(page.locator(".contact-intro").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("target", "_blank");
+    const submit = page.getByRole("button", { name: "Gửi yêu cầu", exact: true });
+    await submit.scrollIntoViewIfNeeded();
+    const buttonBox = await submit.boundingBox();
+    const supportBox = await page.getByRole("navigation", { name: "Hỗ trợ nhanh" }).boundingBox();
+    expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(supportBox!.y);
+    await page.screenshot({ path: test.info().outputPath("homepage-contact-" + route + ".png"), fullPage: true, animations: "disabled" });
   }
 });

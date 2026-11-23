@@ -187,3 +187,63 @@ label { font-weight: 750; }
   .contact-closing-photo { min-height: 0; aspect-ratio: 16/9; }
   .contact-closing-copy { padding: 24px; }
 }
+
+.conversion-tour-card { display: flex; flex-direction: column; border: 1px solid #cbdde7; border-radius: 20px; background: white; box-shadow: 0 6px 20px #123b560a; min-width: 0; }
+.conversion-tour-card > .tour-card-photo { display: block; height: auto; flex: 0 0 auto; }
+.conversion-tour-card .card-image { position: relative; height: auto; aspect-ratio: 4/3; }
+.conversion-tour-card .card-image img { transition: transform 220ms var(--ease); }
+.tour-cover-empty { display: grid; height: 100%; min-height: 180px; place-items: center; padding: 56px 16px 16px; color: #496477; }
+.tour-card-badges { position: absolute; inset: 12px 12px auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
+.tour-card-badges > span { background: white; color: #123b56; padding: 5px 10px; border-radius: 8px; font-size: .875rem; font-weight: 850; }
+.tour-card-badges .tour-card-demo { background: #ffedb8; }
+.conversion-tour-card .card-body { display: flex; flex: 1; flex-direction: column; padding: clamp(16px,2vw,24px); }
+.conversion-tour-card h3 { font-size: clamp(1.25rem,2vw,1.5rem); margin-bottom: 12px; }
+.conversion-tour-card .card-body p { font-size: 1rem; }
+.conversion-tour-card .tour-card-origin { font-size: .875rem; font-weight: 800; color: #075a91; margin-bottom: 10px; }
+.tour-card-summary { margin-bottom: 20px; }
+.tour-card-price { margin-top: auto; padding-block: 14px; border-top: 1px solid #cbdde7; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 6px; }
+.tour-card-price > span { font-size: .875rem; }
+.tour-card-price > span:first-child { flex-basis: 100%; }
+.tour-card-price strong { color: #075a91; font-size: 1.45rem; font-weight: 900; }
+.tour-card-actions { display: grid; gap: 10px; }
+.tour-card-actions .btn { padding: 10px 14px; }
+.tour-card-zalo { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #b2d0e3; border-radius: 10px; color: #075a91; font-size: .9375rem; font-weight: 800; }
+.tour-card-zalo .contact-zalo-mark { color: #0867ce; }
+.tour-card-zalo:hover { background: #eaf4fb; text-decoration: none; }
+.conversion-tour-card:focus-within { outline: 2px solid #075a91; outline-offset: 3px; }
+.contact-intro { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); overflow: hidden; border-radius: 20px; border: 1px solid #cbdde7; background: #fff8e6; margin-block: 28px; }
+.contact-intro-photo { position: relative; min-width: 0; }
+.contact-intro-photo img { height: 100%; width: 100%; object-fit: cover; }
+.contact-intro-photo > span { position: absolute; bottom: 12px; right: 12px; padding: 3px 8px; background: #123b56; color: white; border-radius: 6px; font-size: .8125rem; }
+.contact-intro-copy { padding: clamp(20px,3vw,32px); }
+.contact-intro-copy h2 { font-size: clamp(1.5rem,2.6vw,2rem); }
+.detail-conversion { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 22px 24px; border-radius: 18px; border: 1px solid #cbdde7; border-inline-start: 5px solid #f4c84c; background: white; margin-block: 24px; }
+.detail-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
+.detail-price strong { font-size: 1.7rem; font-weight: 900; color: #075a91; }
+.detail-price > span { font-size: .9375rem; }
+.detail-schedule-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; color: #075a91; }
+.detail-section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
+.detail-section-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid #cbdde7; background: white; border-radius: 10px; font-weight: 800; }
+.detail-grid { gap: 28px; }
+.booking-panel { position: static; padding: 0; background: white; }
+.booking-summary { position: sticky; top: 100px; z-index: 2; padding: 22px; border-radius: 18px 18px 0 0; background: #eaf4fb; border-top: 5px solid #f4c84c; border-bottom: 1px solid #cbdde7; }
+.booking-summary h2 { font-size: 1.6rem; }
+.booking-summary p { font-size: .9375rem; }
+.booking-summary .cta-zalo { width: 100%; }
+.booking-panel .departure { padding: 22px; margin: 0; }
+.booking-panel .departure p, .booking-panel .departure ul, .booking-panel .departure .btn { font-size: 1rem; }
+.booking-panel > .text-action { margin: 8px 22px; }
+.applied-filters { grid-column: 1/-1; font-size: 1rem; background: #eaf4fb; padding: 10px 14px; border-radius: 10px; margin: 0; }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .conversion-tour-card:hover { transform: translateY(-2px); }
+  .conversion-tour-card:hover .card-image img { transform: scale(1.025); }
+}
+@media (max-width:850px) { .booking-summary { position: static; } }
+@media (max-width:680px) {
+  .contact-intro { grid-template-columns: minmax(0,1fr); }
+  .contact-intro-photo { aspect-ratio: 16/9; }
+  .detail-conversion { padding: 18px; gap: 14px; }
+  .detail-conversion .cta-zalo { width: 100%; }
+  .detail-price strong { font-size: 1.5rem; }
+}
+@media (prefers-reduced-motion:reduce) { .conversion-tour-card .card-image img { transition: none; } }

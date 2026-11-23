@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import ContactIntro from "@/components/ContactIntro";
 import SearchForm from "@/components/SearchForm";
 import TourCard from "@/components/TourCard";
 import { read, type Tour, type Content } from "@/lib/catalog";
@@ -93,6 +94,7 @@ export default async function Tours({
         <div className="state">
           <h2>Chưa có tour phù hợp</h2>
           <p>Thử ngày khác hoặc mở rộng ngân sách.</p>
+          <ContactIntro kind="contact" />
           <Link href="/tours" className="btn">
             Xem tất cả tour
           </Link>

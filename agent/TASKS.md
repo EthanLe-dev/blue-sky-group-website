@@ -152,6 +152,6 @@ Ghi bản đầy đủ trong PROGRESS; nếu test fail, task vẫn DOING/BLOCKED
 | --- | --- | --- |
 | T703l · DONE | Tokens public, Nunito Sans toàn luồng, nút và trạng thái chung | lint/types/unit, không đổi backend |
 | T703m · DONE | Hero, Trang chủ, closing CTA, hỗ trợ responsive | build/types, browser hero/Zalo/mobile/video |
-| T703n · DOING | Cards, danh sách, detail, contact/group, các trang public | tìm tour, lọc, hết chỗ, checkout/form không hồi quy |
+| T703n · DONE | Cards, danh sách, detail, contact/group, các trang public | tìm tour, lọc, hết chỗ, checkout/form không hồi quy |
 | T703o · TODO | Admin sidebar, login, list/editor/report/status | lint/types/unit/build và browser permissions/menu/form/export |
-| T703p · TODO | contact_click/select_item, consent và QA thị giác | consent/PII, 320–1440px, keyboard/reduced motion và CI xanh |
+| T703p · DOING | contact_click/select_item, consent và QA thị giác | consent/PII, 320–1440px, keyboard/reduced motion và CI xanh |

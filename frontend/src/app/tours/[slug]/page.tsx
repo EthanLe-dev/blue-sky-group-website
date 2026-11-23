@@ -1,3 +1,6 @@
+import ContactIcon from "@/components/ContactIcon";
+import { resolveContact } from "@/lib/contact";
+import type { CompanyProfile } from "@/components/HomeFooter";
 import Map from "@/components/Map";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -57,6 +60,8 @@ export default async function Detail({
       is_demo: boolean;
     }[]
   >("/tours/" + encodeURIComponent(slug) + "/reviews");
+  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const contact = resolveContact(settings?.company_profile);
   const schema = {
     "@context": "https://schema.org",
     "@type": "TouristTrip",
@@ -81,8 +86,14 @@ export default async function Detail({
       </p>
       <h1>{t.title}</h1>
       <p className="lead">{t.summary}</p>
+      <div className="detail-conversion">
+        <div className="detail-price"><span>{t.price_from == null ? "" : "Giá từ"}</span><strong>{money(t.price_from)}</strong>{t.price_from != null && <span>/ khách</span>}</div>
+        <a className="cta-zalo" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" data-contact-channel="zalo" data-contact-position="tour_detail" data-contact-tour={t.id}><ContactIcon channel="zalo" />Nhắn Zalo tư vấn ↗</a>
+        <a className="detail-schedule-link" href="#departures">Chọn lịch khởi hành ↓</a>
+      </div>
       <TourTools slug={t.slug} title={t.title} />
       <Gallery pictures={t.gallery || []} poster={t.poster} />
+      <nav className="detail-section-nav" aria-label="Nội dung hành trình"><a href="#tour-itinerary">Lịch trình</a><a href="#departures">Lịch & giá</a><a href="#tour-policy">Chính sách</a></nav>
       <div className="detail-grid">
         <div>
           <section className="detail-section">
@@ -92,7 +103,7 @@ export default async function Detail({
               dangerouslySetInnerHTML={{ __html: t.description }}
             />
           </section>
-          <section className="detail-section">
+          <section className="detail-section" id="tour-itinerary">
             <h2>Lịch trình từng ngày</h2>
             {t.days?.map((d) => (
               <article className="itinerary" key={d.id}>
@@ -117,7 +128,7 @@ export default async function Detail({
               dangerouslySetInnerHTML={{ __html: t.excluded }}
             />
           </section>
-          <section className="detail-section">
+          <section className="detail-section" id="tour-policy">
             <h2>Chính sách huỷ tour</h2>
             <div
               className="prose"
@@ -204,9 +215,12 @@ export default async function Detail({
           </a>
         </div>
         <aside className="booking-panel" id="departures">
-          <p className="eyebrow">CHỌN LỊCH KHỞI HÀNH</p>
-          <h2>Từ {money(t.price_from)}</h2>
-          <p>/ khách người lớn · Dữ liệu demo</p>
+          <div className="booking-summary">
+            <p className="eyebrow">LỊCH KHỞI HÀNH & GIÁ</p>
+            <h2>{t.price_from == null ? "Liên hệ báo giá" : `Từ ${money(t.price_from)}`}</h2>
+            <p>/ khách người lớn {t.is_demo ? "· Dữ liệu demo" : ""}</p>
+            <a className="cta-zalo" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" data-contact-channel="zalo" data-contact-position="booking_panel" data-contact-tour={t.id}>Nhắn Zalo tư vấn ↗</a>
+          </div>
           {departures.length ? (
             departures.map((d) => (
               <article className="departure" key={d.id}>
@@ -260,14 +274,6 @@ export default async function Detail({
             Yêu cầu gọi lại
           </Link>
         </aside>
-      </div>
-      <div className="mobile-booking">
-        <span>
-          Từ <strong>{money(t.price_from)}</strong>
-        </span>
-        <a className="btn" href="#departures">
-          Chọn ngày đi
-        </a>
       </div>
       <script
         type="application/ld+json"
