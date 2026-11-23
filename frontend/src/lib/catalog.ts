@@ -31,9 +31,6 @@ export type Tour = {
 export type Content = {
   seo_title?: string | null;
   seo_description?: string | null;
-  category?: { id: string; slug: string; name: string } | null;
-  tags?: { id: string; slug: string; name: string }[];
-  related_posts?: Content[];
   latitude?: number | null;
   longitude?: number | null;
   id: string;

@@ -21,9 +21,7 @@ type resource struct {
 var resources = []resource{
 	{"destinations", "destinations", "slug,name,description,country_code,latitude,longitude,cover_media_id,seo_title,seo_description,published", "slug,name", "published", true},
 	{"tour-categories", "tour_categories", "slug,name,description,sort_order", "slug,name", "", true},
-	{"posts", "posts", "slug,title,excerpt,body,category_id,cover_media_id,status,seo_title,seo_description", "slug,title", "status='published'", false},
 	{"pages", "pages", "slug,title,body,status,seo_title,seo_description", "slug,title", "status='published'", false},
-	{"post-categories", "post_categories", "slug,name", "slug,name", "", false}, {"tags", "tags", "slug,name", "slug,name", "", false},
 	{"banners", "banners", "title,media_id,target_url,placement,sort_order,starts_at,ends_at,active", "title,media_id,placement", "active AND (starts_at IS NULL OR starts_at<=now()) AND (ends_at IS NULL OR ends_at>now())", false},
 	{"faqs", "faqs", "topic,tour_id,question,answer,sort_order,published", "topic,question,answer", "published AND (tour_id IS NULL OR EXISTS(SELECT 1 FROM tours WHERE id=tour_id AND status='published'))", false},
 	{"reviews", "reviews", "tour_id,group_type,display_name,organization_name,rating,body,media_id,source,is_demo", "display_name,rating,body,source", "status='approved' AND (tour_id IS NULL OR EXISTS(SELECT 1 FROM tours WHERE id=tour_id AND status='published'))", false},
@@ -38,7 +36,7 @@ func (s *Server) registerContent(v, admin *gin.RouterGroup, content, product gin
 		}
 		if r.path != "banners" && r.path != "reviews" {
 			v.GET("/"+r.path, func(c *gin.Context) { s.contentList(c, r, false) })
-			if r.path == "posts" || r.path == "pages" || r.path == "destinations" {
+			if r.path == "pages" || r.path == "destinations" {
 				v.GET("/"+r.path+"/:slug", func(c *gin.Context) { s.contentDetail(c, r, false) })
 			}
 		}
@@ -48,7 +46,7 @@ func (s *Server) registerContent(v, admin *gin.RouterGroup, content, product gin
 		admin.PATCH("/"+r.path+"/:id", guard, func(c *gin.Context) { s.contentSave(c, r, true) })
 		admin.DELETE("/"+r.path+"/:id", guard, func(c *gin.Context) { s.contentDelete(c, r) })
 	}
-	v.GET("/testimonials", func(c *gin.Context) { s.contentList(c, resources[8], false) })
+	v.GET("/testimonials", func(c *gin.Context) { s.contentList(c, resources[5], false) })
 	admin.POST("/reviews/:id/moderation", content, s.moderateReview)
 }
 func (s *Server) contentWhere(c *gin.Context, r resource, admin bool) (string, []any) {
@@ -70,16 +68,6 @@ func (s *Server) contentWhere(c *gin.Context, r resource, admin bool) (string, [
 			clauses = append(clauses, fmt.Sprintf("x.%s=$%d", field, len(args)))
 		}
 	}
-	if r.table == "posts" {
-		if val := c.Query("category"); val != "" {
-			args = append(args, val)
-			clauses = append(clauses, fmt.Sprintf("EXISTS(SELECT 1 FROM post_categories cat WHERE cat.id=x.category_id AND cat.slug=$%d)", len(args)))
-		}
-		if val := c.Query("tag"); val != "" {
-			args = append(args, val)
-			clauses = append(clauses, fmt.Sprintf("EXISTS(SELECT 1 FROM post_tags pt JOIN tags t ON t.id=pt.tag_id WHERE pt.post_id=x.id AND t.slug=$%d)", len(args)))
-		}
-	}
 	return strings.Join(clauses, " AND "), args
 }
 func (s *Server) contentList(c *gin.Context, r resource, admin bool) {
@@ -98,9 +86,6 @@ func (s *Server) contentList(c *gin.Context, r resource, admin bool) {
 	value := "to_jsonb(x)"
 	if !admin {
 		value += "-'author_id'-'reviewed_by'-'reviewed_at'"
-	}
-	if r.table == "posts" {
-		value += `||jsonb_build_object('tags',COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM post_tags pt JOIN tags t ON t.id=pt.tag_id WHERE pt.post_id=x.id),'[]'))`
 	}
 	out, e := httpx.JSONRows(c.Request.Context(), s.DB, "SELECT "+value+" FROM "+r.table+" x WHERE "+where+fmt.Sprintf(" ORDER BY created_at DESC,id LIMIT $%d OFFSET $%d", len(args)-1, len(args)), args...)
 	if e != nil {
@@ -126,12 +111,6 @@ func (s *Server) contentDetail(c *gin.Context, r resource, admin bool) {
 	if !admin {
 		value += "-'author_id'-'reviewed_by'-'reviewed_at'"
 	}
-	if r.table == "posts" {
-		value += `||jsonb_build_object('tag_ids',COALESCE((SELECT jsonb_agg(tag_id) FROM post_tags WHERE post_id=x.id),'[]'),'tags',COALESCE((SELECT jsonb_agg(to_jsonb(t)) FROM post_tags pt JOIN tags t ON t.id=pt.tag_id WHERE pt.post_id=x.id),'[]'))`
-	}
-	if r.table == "posts" && !admin {
-		value += `||jsonb_build_object('category',(SELECT to_jsonb(cat) FROM post_categories cat WHERE cat.id=x.category_id),'related_posts',COALESCE((SELECT jsonb_agg(to_jsonb(rel)) FROM (SELECT p.id,p.slug,p.title,p.excerpt,p.cover_media_id FROM posts p WHERE p.status='published' AND p.id<>x.id AND (p.category_id=x.category_id OR EXISTS(SELECT 1 FROM post_tags a JOIN post_tags b ON a.tag_id=b.tag_id WHERE a.post_id=x.id AND b.post_id=p.id)) ORDER BY p.published_at DESC LIMIT 3) rel),'[]'))`
-	}
 	if s.DB.QueryRow(c.Request.Context(), "SELECT "+value+" FROM "+r.table+" x WHERE "+where, key).Scan(&raw) != nil {
 		httpx.Error(c, 404, "NOT_FOUND")
 		return
@@ -150,22 +129,6 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 	valid := map[string]bool{}
 	for _, f := range allowed {
 		valid[f] = true
-	}
-	var tags []string
-	if r.table == "posts" {
-		if raw, ok := body["tag_ids"]; ok {
-			if json.Unmarshal(raw, &tags) != nil || len(tags) > 100 {
-				httpx.Error(c, 422, "VALIDATION_ERROR")
-				return
-			}
-			for _, id := range tags {
-				if uuid.Validate(id) != nil {
-					httpx.Error(c, 422, "VALIDATION_ERROR")
-					return
-				}
-			}
-			delete(body, "tag_ids")
-		}
 	}
 	if !patch {
 		for _, f := range strings.Split(r.required, ",") {
@@ -247,7 +210,7 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 		fields = append(fields, field)
 		values = append(values, v)
 	}
-	if len(fields) == 0 && tags == nil {
+	if len(fields) == 0 {
 		httpx.Error(c, 422, "VALIDATION_ERROR")
 		return
 	}
@@ -256,12 +219,8 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 		id = uuid.NewString()
 		fields = append(fields, "id")
 		values = append(values, id)
-		if r.table == "posts" {
-			fields = append(fields, "author_id")
-			values = append(values, s.UserID(c))
-		}
 	}
-	if r.table == "posts" || r.table == "pages" {
+	if r.table == "pages" {
 		if raw, ok := body["status"]; ok && string(raw) == `"published"` {
 			fields = append(fields, "published_at")
 			values = append(values, time.Now().UTC())
@@ -299,18 +258,6 @@ func (s *Server) contentSave(c *gin.Context, r resource, patch bool) {
 		httpx.Error(c, 404, "NOT_FOUND")
 		return
 	}
-	if r.table == "posts" && tags != nil {
-		if _, e = tx.Exec(ctx, "DELETE FROM post_tags WHERE post_id=$1", id); e != nil {
-			httpx.Error(c, 500, "INTERNAL_ERROR")
-			return
-		}
-		for _, t := range tags {
-			if _, e = tx.Exec(ctx, "INSERT INTO post_tags(post_id,tag_id) VALUES($1,$2) ON CONFLICT DO NOTHING", id, t); e != nil {
-				httpx.Error(c, 422, "VALIDATION_ERROR")
-				return
-			}
-		}
-	}
 	if s.auditTx(ctx, tx, c, r.table+".save", r.table, id) != nil || tx.Commit(ctx) != nil {
 		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return
@@ -333,7 +280,7 @@ func (s *Server) contentDelete(c *gin.Context, r resource) {
 	}
 	defer tx.Rollback(ctx)
 	q := "DELETE FROM " + r.table + " WHERE id=$1"
-	archive := r.table == "posts" || r.table == "pages"
+	archive := r.table == "pages"
 	if archive {
 		q = "UPDATE " + r.table + " SET status='archived',updated_at=now() WHERE id=$1"
 	}
@@ -378,7 +325,7 @@ func (s *Server) reviews(c *gin.Context) {
 		return
 	}
 	c.Request.URL.RawQuery = "tour_id=" + id + "&page=" + c.DefaultQuery("page", "1") + "&page_size=" + c.DefaultQuery("page_size", "20")
-	s.contentList(c, resources[8], false)
+	s.contentList(c, resources[5], false)
 }
 func (s *Server) home(c *gin.Context) {
 	ctx := c.Request.Context()
@@ -389,9 +336,8 @@ func (s *Server) home(c *gin.Context) {
 	}
 	d, _ := httpx.JSONRows(ctx, s.DB, "SELECT to_jsonb(d) FROM destinations d WHERE published ORDER BY name LIMIT 6")
 	b, _ := httpx.JSONRows(ctx, s.DB, "SELECT to_jsonb(b) FROM banners b WHERE active AND (starts_at IS NULL OR starts_at<=now()) AND (ends_at IS NULL OR ends_at>now()) ORDER BY sort_order LIMIT 6")
-	posts, _ := httpx.JSONRows(ctx, s.DB, "SELECT to_jsonb(p)-'body'-'author_id' FROM posts p WHERE status='published' ORDER BY published_at DESC LIMIT 3")
 	reviews, _ := httpx.JSONRows(ctx, s.DB, "SELECT to_jsonb(r)-'reviewed_by' FROM reviews r WHERE status='approved' ORDER BY created_at DESC LIMIT 4")
-	httpx.OK(c, 200, gin.H{"featured_tours": t, "destinations": d, "banners": b, "latest_posts": posts, "testimonials": reviews, "service_commitments": []string{}})
+	httpx.OK(c, 200, gin.H{"featured_tours": t, "destinations": d, "banners": b, "testimonials": reviews, "service_commitments": []string{}})
 }
 func (s *Server) gallery(c *gin.Context) {
 	p, n, valid := httpx.Page(c)

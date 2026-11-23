@@ -137,3 +137,10 @@ Chỉ tách thành task thực thi khi giai đoạn được giao: P1 real payme
 
 `ID — DONE | ngày | nhánh | commit đã push | file thay đổi | lệnh và kết quả | evidence UI nếu có | hạn chế | task tiếp theo`.
 Ghi bản đầy đủ trong PROGRESS; nếu test fail, task vẫn DOING/BLOCKED. Không sửa lịch sử cũ để che kết quả fail.
+
+
+## Điều chỉnh theo yêu cầu ngày 23/11/2026
+
+| Task | Thay đổi | Kiểm chứng |
+| --- | --- | --- |
+| T218b · DOING | Xóa Cẩm nang hoàn toàn: route/blog, sitemap, API, seed và migration 000008 xóa dữ liệu cũ | PostgreSQL nâng cấp có dữ liệu/FK và chạy lại, tour/media/pages được giữ; seed idempotent; public/admin API 404; Playwright URL blog 404, sitemap không blog; lint/types/unit/build và CI |

@@ -216,7 +216,6 @@ test("responsive menu and public content pages", async ({ page }) => {
     "/contact",
     "/schools",
     "/companies",
-    "/blog",
     "/destinations",
     "/faq",
     "/gallery",
@@ -226,11 +225,18 @@ test("responsive menu and public content pages", async ({ page }) => {
     expect(r?.status(), path).toBe(200);
     await expect(page.locator("main h1")).toBeVisible();
   }
+  for (const path of ["/blog", "/blog/chuan-bi-di-ninh-chu", "/blog?category=cam-nang"]) {
+    const response = await page.goto("http://localhost:3000" + path);
+    expect(response?.status(), path).toBe(404);
+  }
+  const sitemap = await page.request.get("http://localhost:3000/sitemap.xml");
+  expect(sitemap.status()).toBe(200);
+  expect(await sitemap.text()).not.toContain("/blog");
   const r = await page.goto("http://localhost:3000/tours/not-existing");
   expect(r?.status()).toBe(404);
 });
 
-test("home search, blog facets and media filters", async ({ page }) => {
+test("home search and media filters", async ({ page }) => {
   await page.goto("http://localhost:3000/");
   await page.getByLabel("Từ khóa", { exact: true }).fill("Ninh Chữ");
   await page.locator(".hero").getByRole("button", { name: "Tìm tour" }).click();
@@ -240,12 +246,6 @@ test("home search, blog facets and media filters", async ({ page }) => {
   await expect(
     page.getByRole("combobox", { name: "Danh mục tour", exact: true }),
   ).toBeVisible();
-  await page.goto("http://localhost:3000/blog");
-  await expect(
-    page.getByRole("combobox", { name: "Danh mục", exact: true }),
-  ).toBeVisible();
-  await page.getByRole("button", { name: "Lọc bài viết" }).click();
-  await expect(page.locator("main .content-list a").first()).toBeVisible();
   await page.goto("http://localhost:3000/gallery?kind=video");
   await expect(
     page.getByText("Chưa có media phù hợp bộ lọc.", { exact: true }),

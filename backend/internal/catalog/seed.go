@@ -157,13 +157,6 @@ func Seed(ctx context.Context, db *pgxpool.Pool, store *MediaStore, files fs.FS)
 			return e
 		}
 	}
-	cat := DemoID("post-category")
-	if _, e = tx.Exec(ctx, "INSERT INTO post_categories(id,slug,name) VALUES($1,'cam-nang','Cẩm nang du lịch') ON CONFLICT DO NOTHING", cat); e != nil {
-		return e
-	}
-	if _, e = tx.Exec(ctx, "INSERT INTO posts(id,slug,title,excerpt,body,category_id,cover_media_id,author_id,status,published_at) VALUES($1,'chuan-bi-di-ninh-chu','Chuẩn bị cho hai ngày ở Ninh Chữ','Giấy tờ, hành lý và những điều nên kiểm tra trước ngày đi.','<p>Trao đổi giờ đón, kiểm tra giấy tờ và chuẩn bị trang phục phù hợp với hoạt động biển. Thông báo nhu cầu ăn uống và sức khoẻ cho nhân viên trước chuyến đi.</p>',$2,$3,$4,'published',now()) ON CONFLICT DO NOTHING", DemoID("post"), cat, DemoID("ninh-chu.jpg"), staff); e != nil {
-		return e
-	}
 	return tx.Commit(ctx)
 }
 func intPointer(v int) *int { return &v }

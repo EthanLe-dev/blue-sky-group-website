@@ -12,6 +12,12 @@
 - T108b lookup token cần FK booking nên chuyển sang M3 sau T301; T108a guest hoàn tất. T113 default snapshot vào đơn sẽ kiểm ở T302. Công ty upload giấy phép chọn media chờ T215. Turnstile real adapter có, local dùng mock; chưa nghiệm thu siteverify với tài khoản thật.
 - Tiếp theo sau M1: T201/T202 và T203 catalog; dùng poster Ninh Chữ + inventory demo, mọi dữ liệu thiếu chỉnh ở Admin theo kế hoạch. Đọc TASKS/PLAN/API/schema/design/testing trước sửa.
 
+## Xóa chức năng bài viết — T218b
+
+- `feature/remove-blog`: theo yêu cầu người dùng, gỡ API bài viết/danh mục/thẻ, seed, truy vấn home, route và sitemap `/blog`. Migration 000008 xóa cả bốn bảng nội dung cũ; ảnh/tour/pages/audit giữ nguyên. Ready check yêu cầu migration mới.
+- Có ca PostgreSQL nâng cấp từ bảng có dữ liệu và FK, chạy migration hai lần, kiểm tour/media/pages còn nguyên; kiểm API 404 và seed không tạo lại bảng. Playwright kiểm `/blog`, bài viết cũ, URL bộ lọc trả 404 và sitemap không còn blog.
+- Local: frontend lint/types/4 unit PASS (1 warning stylesheet đã có), Admin lint/types/4 unit/build PASS. Frontend build gặp lỗi tiến trình CSS worker của Turbopack trên Windows; chờ build Linux trong CI để xác nhận. Go vet/race đang chạy, PostgreSQL và browser kiểm trên CI. Chưa chạy app hoặc migration trên DB local của người dùng. Phục hồi dữ liệu cần backup trước migration theo database-schema/runbook.
+
 ## Làm mới Trang chủ
 
 - T703k trên `feature/remove-travel-guide`: xóa khối Cẩm nang, liên kết header/footer, dữ liệu trình bày và CSS riêng. Admin gỡ ba loại nội dung bài viết, danh mục bài viết và thẻ bài viết. CI kiểm Trang chủ không còn liên kết Cẩm nang và Admin không còn lựa chọn tương ứng. Không xóa dữ liệu cũ.
