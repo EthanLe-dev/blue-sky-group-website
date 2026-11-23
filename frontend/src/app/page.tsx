@@ -30,7 +30,7 @@ export default async function Home() {
     read<Content>("/pages/home").catch(() => null),
     read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null),
   ]);
-  const { state, tours, destinations, banners, posts, reviews } = homeCatalog(data);
+  const { state, tours, destinations, banners, reviews } = homeCatalog(data);
   const company = settings?.company_profile;
   const phone = company?.hotline?.replace(/[^+0-9]/g, "") ?? "";
   const contact = company?.hotline && company.is_demo === false && /^\+?\d{7,15}$/.test(phone)
@@ -120,27 +120,6 @@ export default async function Home() {
           <PhotoMoment />
           <span id="home-about-end" aria-hidden="true" />
         </section>
-
-        {posts.length > 0 && (
-          <section className="wrap home-block" aria-labelledby="posts-heading">
-            <div className="home-section-heading">
-              <h2 id="posts-heading">Cẩm nang du lịch</h2>
-              <Link prefetch={false} className="home-outline" href="/blog">Xem cẩm nang</Link>
-            </div>
-            <div className="home-editorial-grid">
-              {posts.map((post) => (
-                <article key={post.id}>
-                  {post.cover_media_id && (
-                    <Image src={"/api/v1/media/" + post.cover_media_id} alt="" width={600} height={340}
-                      sizes="(max-width:680px) 100vw, 33vw" loading="lazy" />
-                  )}
-                  <h3><Link prefetch={false} href={"/blog/" + post.slug}>{post.title}</Link></h3>
-                  {post.excerpt && <p>{post.excerpt}</p>}
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
 
         {reviews.length > 0 && (
           <section className="wrap home-block" aria-labelledby="reviews-heading">

@@ -99,22 +99,6 @@ const resources: Record<
     ],
     defaults: { sort_order: 0 },
   },
-  posts: {
-    label: "Bài viết",
-    fields: [
-      f("title", "Tiêu đề"),
-      f("slug", "Slug"),
-      f("excerpt", "Tóm tắt", "long"),
-      f("body", "Nội dung HTML", "long"),
-      f("category_id", "ID danh mục bài viết"),
-      f("tag_ids", "ID thẻ (JSON)", "json"),
-      f("cover_media_id", "ID ảnh bìa"),
-      f("status", "Trạng thái", "text", ["draft", "published", "archived"]),
-      f("seo_title", "Tiêu đề SEO"),
-      f("seo_description", "Mô tả SEO"),
-    ],
-    defaults: { status: "draft", tag_ids: [] },
-  },
   pages: {
     label: "Trang thông tin",
     fields: [
@@ -126,16 +110,6 @@ const resources: Record<
       f("seo_description", "Mô tả SEO"),
     ],
     defaults: { status: "draft" },
-  },
-  "post-categories": {
-    label: "Danh mục bài viết",
-    fields: [f("name", "Tên"), f("slug", "Slug")],
-    defaults: {},
-  },
-  tags: {
-    label: "Thẻ bài viết",
-    fields: [f("name", "Tên"), f("slug", "Slug")],
-    defaults: {},
   },
   banners: {
     label: "Banner",

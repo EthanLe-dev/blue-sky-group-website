@@ -12,6 +12,9 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
     await expect(hero.locator("video")).toHaveCount(0);
     await expect(page.getByRole("banner")).toHaveCount(1);
     await expect(page.getByRole("contentinfo")).toHaveCount(1);
+    await expect(page.getByRole("link", { name: /cẩm nang/i })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: /cẩm nang/i })).toHaveCount(0);
+    await expect(page.locator('a[href="/blog"], a[href^="/blog/"]')).toHaveCount(0);
     const support = page.getByRole("navigation", { name: "Hỗ trợ nhanh" });
     await expect(support.getByRole("link", { name: "Gọi hotline 0989876847" })).toHaveAttribute("href", "tel:0989876847");
     await expect(support.getByRole("link", { name: /Nhắn Zalo/ })).toHaveAttribute("href", "https://zalo.me/0989876847");

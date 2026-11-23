@@ -11,7 +11,7 @@ export type CompanyProfile = {
 };
 
 const footerLinks = [
-  { title: "Khám phá", links: [["/tours", "Danh mục tour"], ["/destinations", "Điểm đến"], ["/schools", "Tour trường học"], ["/companies", "Tour doanh nghiệp"], ["/blog", "Cẩm nang du lịch"]] },
+  { title: "Khám phá", links: [["/tours", "Danh mục tour"], ["/destinations", "Điểm đến"], ["/schools", "Tour trường học"], ["/companies", "Tour doanh nghiệp"]] },
   { title: "Hỗ trợ", links: [["/contact", "Liên hệ"], ["/lookup", "Tra cứu đơn"], ["/faq", "Câu hỏi thường gặp"], ["/about", "Về Blue Sky Group"]] },
   { title: "Chính sách", links: [["/policies/privacy", "Bảo mật thông tin"], ["/policies/terms", "Điều khoản sử dụng"], ["/policies/payment", "Thanh toán"], ["/policies/cancellation", "Hủy tour"], ["/policies/preparation", "Chuẩn bị chuyến đi"]] },
 ];
