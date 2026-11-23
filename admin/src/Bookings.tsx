@@ -252,7 +252,7 @@ export default function Bookings({ write, canPay, canReadNotifications, canExpor
           </details>
           {write && (
             <div className="toolbar">
-              <button
+              <button className="admin-danger"
                 disabled={!["pending", "confirmed"].includes(record.status)}
                 onClick={async () => {
                   const reason = prompt("Lý do huỷ đơn (không tự hoàn tiền)");

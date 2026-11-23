@@ -209,3 +209,8 @@ T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. 
 Nhánh feature/mvp-release, PR #7. Fixture demo có tour quốc tế, chỗ sắp hết và hết chỗ, tiền cọc/toàn bộ và đơn hết hạn. CI bổ sung hành trình mất phản hồi thanh toán, đơn tại quầy, đa trình duyệt, khôi phục DB riêng và kiểm tra SHA demo. Hạ tầng mẫu và bàn giao tại docs/demo-release.md, checklist tại docs/uat-mvp.md.
 
 Vercel, Render và Neon dành cho demo. Deploy thật, khởi động lạnh, private file trên R2, Turnstile cloud, GA4/Search Console, rollback cloud và UAT độc lập chờ quyền tài khoản/URL/người thử. T703 còn duyệt thị giác, không dùng screenshot CI để đánh dấu UAT. Số liệu kiểm tra tại [CI 45025910519](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45025910519).
+
+
+### T703o — Giao diện quản trị 23/11/2026
+
+Theo kế hoạch được duyệt, nâng Admin trên `feature/admin-conversion`: dùng lại sidebar/Radix và API, chỉ đổi layout/style, nhóm field và biểu diễn báo cáo. Lint/types/5 unit/build local đạt, chờ CI browser và merge sau public. Không thêm backend/dependency.

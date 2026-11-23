@@ -320,3 +320,9 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 
 - T703b trên `feature/admin-refresh`: Nunito Sans, sidebar desktop có biểu tượng, menu mobile dạng Sheet, cập nhật màn đăng nhập, tiêu đề và form. Danh sách đơn tách nhãn trạng thái, tên và tổng tiền, hiển thị riêng đang tải, lỗi có nút thử lại và kết quả trống.
 - Ca Playwright hiện có kiểm menu, focus, font tiếng Việt và trạng thái danh sách đơn. Ảnh desktop/mobile được lưu qua CI. App local không được khởi động.
+
+
+## T703o — Làm mới Admin ưu tiên thao tác
+
+- `feature/admin-conversion` từ develop: sidebar navy/active vàng, tiêu đề module, login, nút/lỗi/status/list/media đồng bộ. Editor tour chia 4 fieldset, thanh lưu sticky và giữ input khi lỗi; destructive actions có màu riêng, không sửa xác nhận/service. Báo cáo có 4 tổng hợp từ response hiện có, không API mới.
+- Local lint/types/5 unit/build PASS; unit mới kiểm field grouping và nội dung chưa lưu sau lỗi. Browser mở rộng editor/report và screenshot desktop/mobile chờ CI. Không khởi động app/service local.

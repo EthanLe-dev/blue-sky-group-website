@@ -483,3 +483,85 @@ h3 {
   border-bottom: 1px solid #dce5ef;
   white-space: nowrap;
 }
+
+/* Vivid brand, quiet work surface: the same blue/yellow language as public. */
+body { background: #f1f7fc; --admin-blue: #075a91; --admin-line: #cbdde7; color: #123b56; }
+h1,h2,h3 { font-weight: 850; letter-spacing: -.025em; }
+.admin-sidebar { background: #123b56; border-color: #123b56; color: white; }
+.admin-sidebar .admin-brand { color: white; }
+.admin-sidebar .admin-brand small { color: #c3dbea; }
+.admin-sidebar .admin-brand img { background: white; border: 2px solid white; }
+.admin-nav { gap: 6px; }
+.admin-sidebar .admin-nav button { color: #e3f1fa; font-weight: 750; border-radius: 10px; }
+.admin-sidebar .admin-nav button:not(:disabled):hover { background: #20506c; }
+.admin-sidebar .admin-nav button[aria-pressed="true"] { background: #f4c84c; color: #123b56; border-inline-start-color: white; }
+.admin-nav button:focus-visible { outline: 3px solid #f4c84c; outline-offset: 3px; }
+.admin-topbar { background: transparent; border: 0; border-radius: 0; padding: 4px 0 20px; border-bottom: 1px solid #cbdde7; }
+.admin-page-label { color: #075a91; font-size: .875rem; font-weight: 850; margin: 0 0 4px; }
+.admin-topbar h1 { font-size: clamp(1.25rem, 2vw, 1.65rem); }
+.admin-topbar > button { border-color: #b7cddc; box-shadow: none; }
+.admin-content > .workspace { border-radius: 20px; border: 1px solid #cbdde7; box-shadow: 0 8px 28px #123b5608; padding: clamp(18px,2.5vw,32px); }
+.workspace > h2, .booking-heading h2 { font-size: clamp(1.5rem,2.6vw,2rem); }
+.workspace > p { color: #496477; }
+button { font-weight: 800; border-color: #075a91; border-radius: 10px; }
+button:disabled { cursor: not-allowed; }
+.workspace button[type="submit"], .catalog-form .editor-save-bar > button { box-shadow: 0 3px 0 #034773; }
+.workspace .toolbar { border: 1px solid #cbdde7; border-radius: 14px; background: #f1f7fc; padding: 14px; }
+.workspace .toolbar button { min-height: 46px; }
+.workspace .data-list { gap: 10px; }
+.workspace .list-row { border: 1px solid #cbdde7; border-radius: 12px; padding: 16px; box-shadow: 0 2px 6px #123b5605; color: #123b56; background: white; }
+.workspace .list-row[aria-pressed="true"] { background: #e8f4fc; border-color: #075a91; border-inline-start-width: 4px; }
+.workspace .list-row strong { font-weight: 850; }
+.workspace .booking-total { color: #075a91; font-size: 1.125rem; font-variant-numeric: tabular-nums; }
+.workspace .editor { border-top: 3px solid #f4c84c; padding-top: 24px; }
+.editor-grid label, .media-card label { font-size: 1rem; font-weight: 750; }
+.editor-grid :is(input,select,textarea), .toolbar :is(input,select) { background: #fcfeff; }
+.catalog-form { gap: 24px; }
+.catalog-fieldset { min-width: 0; margin: 0; padding: 20px; border: 1px solid #cbdde7; border-radius: 16px; background: #fcfeff; }
+.catalog-fieldset legend { font-weight: 850; color: #075a91; padding-inline: 8px; }
+.editor-save-bar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px; border-radius: 12px; background: #e8f4fc; border: 1px solid #b7d4e8; }
+.editor-save-bar > button { min-width: 180px; }
+.editor-save-error { color: #9c2626; margin: 0; flex-basis: 100%; }
+.workspace button.admin-danger { background: #fff1f0; border-color: #e7a3a0; color: #972525; box-shadow: none; }
+.workspace button.admin-danger:not(:disabled):hover { background: #fce0df; }
+.workspace [role="alert"] { padding: 14px 16px; background: #fff1f0; border: 1px solid #e7a3a0; border-radius: 12px; color: #972525; }
+.workspace [role="status"]:not(:empty) { background: #eaf4fb; padding: 12px 16px; border-radius: 10px; border-inline-start: 3px solid #075a91; }
+.media-card { border-radius: 16px; background: #fcfeff; }
+.media-card img { border-radius: 10px; background: #eaf4fb; }
+.report-table { border: 1px solid #cbdde7; border-radius: 12px; }
+.report-table table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.report-table th { background: #eaf4fb; color: #123b56; }
+.report-table :is(th,td) { padding: 14px; border-bottom: 1px solid #dbe8f0; text-align: start; }
+.report-table tbody tr:nth-child(even) td { background: #f6fafd; }
+.report-metrics { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 14px; margin-block: 8px 24px; }
+.report-metrics > div { min-width: 0; padding: 20px; border: 1px solid #cbdde7; border-top: 4px solid #075a91; background: #f6fafd; border-radius: 14px; }
+.report-metrics > div:last-child { border-top-color: #f4c84c; background: #fff8e6; }
+.report-metrics span, .report-metrics strong, .report-metrics small { display: block; }
+.report-metrics span { font-size: 1rem; font-weight: 750; }
+.report-metrics strong { font-size: clamp(1.25rem,2vw,1.8rem); font-weight: 900; margin-block: 8px; overflow-wrap: anywhere; color: #075a91; }
+.report-metrics small { font-size: .875rem; color: #496477; }
+.admin-login { margin-block: clamp(28px,8vh,80px); border-top: 6px solid #f4c84c; box-shadow: 0 16px 60px #123b561a; }
+.admin-login .admin-brand { padding-bottom: 22px; border-bottom: 1px solid #cbdde7; }
+.admin-login .admin-access-note { font-size: .9375rem; color: #496477; padding-left: 14px; border-left: 3px solid #f4c84c; }
+.admin-login button { background: #075a91; box-shadow: 0 3px 0 #034773; }
+@media (prefers-reduced-motion:no-preference) {
+  .admin-content > .workspace { animation: workspace-arrive 180ms ease-out; }
+  @keyframes workspace-arrive { from { opacity: .7; transform: translateY(5px); } }
+}
+@media (max-width:800px) {
+  .admin-sidebar { min-height: 0; }
+  .admin-sidebar .admin-menu-toggle { background: #20506c; color: white; border-color: #7ba8c3; }
+  .admin-sidebar .admin-menu-toggle:not(:disabled):hover { background: #2c607e; }
+  .admin-sheet .admin-nav button[aria-pressed="true"] { background: #fff0b8; color: #123b56; border-inline-start-color: #075a91; }
+  .admin-content > .workspace { padding: 18px; }
+  .catalog-fieldset { padding: 14px; }
+}
+@media (max-width:540px) {
+  .report-metrics { grid-template-columns: minmax(0,1fr); }
+  .editor-save-bar > button { width: 100%; }
+}
+
+.admin-sidebar .admin-nav button[aria-pressed="true"]:not(:disabled):hover { background: #ffda67; color: #123b56; }
+
+.editor-save-bar { position: sticky; bottom: max(12px, env(safe-area-inset-bottom)); z-index: 5; }
+.report-table td { text-align: end; }

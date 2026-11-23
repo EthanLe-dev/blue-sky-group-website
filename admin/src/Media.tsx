@@ -161,7 +161,7 @@ export default function Media() {
               >
                 Mở/tải tệp
               </button>
-              <button
+              <button className="admin-danger"
                 onClick={async () => {
                   if (
                     !confirm(

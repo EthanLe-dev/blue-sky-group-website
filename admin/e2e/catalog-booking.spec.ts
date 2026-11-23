@@ -150,6 +150,10 @@ test("admin tour editor persists edits and verifies poster", async ({
     .filter({ hasText: "Ninh Chữ · Biển và văn hoá Chăm" })
     .first()
     .click();
+  for (const title of ["Thông tin hành trình", "Lịch trình và chính sách", "Hình ảnh và phân loại", "Hiển thị tìm kiếm"]) {
+    await expect(page.getByRole("group", { name: title, exact: true })).toBeVisible();
+  }
+  await page.screenshot({ path: test.info().outputPath("admin-catalog-editor.png"), fullPage: true, animations: "disabled" });
   const summary = page.getByRole("textbox", { name: "Tóm tắt", exact: true });
   const old = await summary.inputValue();
   try {
@@ -280,6 +284,16 @@ test("counter booking and report Excel/CSV exports", async ({ page }) => {
   await page.getByLabel("Đến ngày", { exact: true }).fill("2000-01-30");
   await page.getByRole("button", { name: "Xem báo cáo", exact: true }).click();
   await expect(page.getByText("Chưa có giao dịch trong kỳ.")).toBeVisible();
+  const metrics = page.locator(".report-metrics");
+  await expect(metrics).toBeVisible();
+  await expect(metrics.locator(":scope > div")).toHaveCount(4);
+  await expect(metrics).toContainText("0 đơn trong kỳ");
+  await page.screenshot({ path: test.info().outputPath("admin-report-desktop.png"), fullPage: true, animations: "disabled" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+  await page.screenshot({ path: test.info().outputPath("admin-report-mobile.png"), fullPage: true, animations: "disabled" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+
   const xlsxPromise = page.waitForEvent("download");
   await page.getByRole("button", { name: "Tải báo cáo doanh thu", exact: true }).click();
   const xlsx = await xlsxPromise;
