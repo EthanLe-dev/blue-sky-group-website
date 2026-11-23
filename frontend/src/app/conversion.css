@@ -249,3 +249,9 @@ label { font-weight: 750; }
 @media (prefers-reduced-motion:reduce) { .conversion-tour-card .card-image img { transition: none; } }
 
 .conversion-tour-card h3 a { display: flex; align-items: center; min-height: 44px; }
+
+/* Override the retired fixed header and wrapping-card rules from the original theme. */
+body { padding-top: 0; }
+.conversion-tour-card a { flex-direction: row; }
+.conversion-tour-card .card-body > p { flex: 0 0 auto; }
+.leaflet-container { font-family: "Nunito Sans Variable", system-ui, sans-serif; }

@@ -81,7 +81,10 @@ test("MVP shell works with keyboard and reduced motion at mobile, tablet and des
   const tour = page.locator("#journeys .tour-card").filter({ has: page.locator('a[href="/tours/ninh-chu-2-ngay-1-dem"]') });
   await expect(tour.locator(".card-image").getByText("2 ngày · 1 đêm")).toBeVisible();
   await expect(tour.locator(".card-image").getByText("Tour demo")).toBeVisible();
-  await expect(tour.getByRole("link", { name: /Xem lịch & giá/ })).toBeVisible();
+  const scheduleButton = tour.getByRole("link", { name: /Xem lịch & giá/ });
+  await expect(scheduleButton).toBeVisible();
+  await expect(scheduleButton).toHaveCSS("flex-direction", "row");
+  expect((await scheduleButton.boundingBox())!.height).toBeLessThanOrEqual(64);
   await tour.getByRole("heading").getByRole("link").click();
   await expect(page).toHaveURL(/ninh-chu-2-ngay-1-dem$/);
   await expect(page.getByRole("link", { name: "Tải PDF lịch trình" })).toBeVisible();
@@ -235,12 +238,14 @@ test("tour decisions and contact pages share the public design without covering 
   await page.setViewportSize({ width: 390, height: 844 });
   for (const route of ["contact", "schools", "companies"]) {
     await page.goto("http://localhost:3000/" + route);
+    expect((await page.getByRole("banner").boundingBox())!.y).toBe(0);
     await expect(page.locator(".contact-intro").getByRole("link", { name: /Nhắn Zalo tư vấn/ })).toHaveAttribute("target", "_blank");
     const submit = page.getByRole("button", { name: "Gửi yêu cầu", exact: true });
     await submit.scrollIntoViewIfNeeded();
     const buttonBox = await submit.boundingBox();
     const supportBox = await page.getByRole("navigation", { name: "Hỗ trợ nhanh" }).boundingBox();
     expect(buttonBox!.y + buttonBox!.height).toBeLessThanOrEqual(supportBox!.y);
+    await page.evaluate(() => scrollTo(0, 0));
     await page.screenshot({ path: test.info().outputPath("homepage-contact-" + route + ".png"), fullPage: true, animations: "disabled" });
   }
 });

@@ -14,3 +14,5 @@ Phạm vi đã duyệt: du lịch rực rỡ, Zalo chính, public và Admin. Kh�
 - Mở rộng analytics kiểm link hoạt động trước consent, contact_click/select_item sau consent, dừng sau từ chối; không điện thoại/href trong event.
 - PR Admin sẽ kiểm menu dọc/Sheet/focus, trạng thái lỗi/empty/loading, lưu/reload, form grouped, report/export và ảnh desktop/mobile.
 - Ảnh CI dùng dữ liệu demo. Cần người dùng duyệt trực quan; screenshot CI không thay UAT độc lập và không có dữ liệu CTR thực tế.
+
+- Đã xem ảnh Trang chủ 1440/390 và contact từ CI. Phát hiện CSS cũ flex-direction trên mọi link card và body padding của fixed header cũ; T703p sửa ở lượt tích hợp, thêm assertion nút nằm ngang/không phình và header bắt đầu y=0. Không chỉ dựa vào test PASS để nghiệm thu thị giác.
