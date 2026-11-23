@@ -1,11 +1,10 @@
 import Image from "next/image";
-import { read } from "@/lib/catalog";
 import { resolveContact } from "@/lib/contact";
-import type { CompanyProfile } from "./HomeFooter";
+import { readCompanySettings } from "@/lib/company-profile";
 import ContactIcon from "./ContactIcon";
 
 export default async function ContactIntro({ kind }: { kind: "contact" | "schools" | "companies" }) {
-  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const settings = await readCompanySettings();
   const contact = resolveContact(settings?.company_profile);
   const image = kind === "schools" ? "group-school.webp" : kind === "companies" ? "group-company.webp" : "about-ninh-binh.webp";
   const text = kind === "schools" ? "Trao đổi chương trình ngoại khóa theo độ tuổi, số học sinh và lịch của nhà trường."

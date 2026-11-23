@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { read, type Tour, money } from "@/lib/catalog";
+import { type Tour, money } from "@/lib/catalog";
 import { resolveContact } from "@/lib/contact";
-import type { CompanyProfile } from "./HomeFooter";
+import { readCompanySettings } from "@/lib/company-profile";
 import ContactIcon from "./ContactIcon";
 
 export default async function TourCard({ tour, imageSizes, home = false }: { tour: Tour; imageSizes?: string; home?: boolean }) {
-  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const settings = await readCompanySettings();
   const contact = resolveContact(settings?.company_profile);
   const href = "/tours/" + tour.slug;
   const tracking = { "data-select-tour": tour.id, "data-select-position": home ? "home" : "catalog" };

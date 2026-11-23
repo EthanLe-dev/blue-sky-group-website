@@ -3,13 +3,14 @@ import Image from "next/image";
 import Link from "next/link";
 import Hero from "@/components/Hero";
 import HomeActions from "@/components/HomeActions";
-import { HomeFooter, type CompanyProfile } from "@/components/HomeFooter";
+import { HomeFooter } from "@/components/HomeFooter";
 import HomeGroupTours from "@/components/HomeGroupTours";
 import PhotoMoment from "@/components/PhotoMoment";
 import { Header } from "@/components/Shell";
 import TourCard from "@/components/TourCard";
 import { read, type Content } from "@/lib/catalog";
 import { homeCatalog, type HomeData } from "@/lib/home-catalog";
+import { readCompanySettings } from "@/lib/company-profile";
 import ContactClosing from "@/components/ContactClosing";
 import { resolveContact } from "@/lib/contact";
 import "./home.css";
@@ -28,7 +29,7 @@ export default async function Home() {
   const [data, homeCopy, settings] = await Promise.all([
     read<HomeData>("/home").catch(() => null),
     read<Content>("/pages/home").catch(() => null),
-    read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null),
+    readCompanySettings(),
   ]);
   const { state, tours, destinations, banners, reviews } = homeCatalog(data);
   const company = settings?.company_profile;

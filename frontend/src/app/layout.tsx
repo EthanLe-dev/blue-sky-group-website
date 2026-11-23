@@ -5,9 +5,8 @@ import "./globals.css";
 import "./conversion.css";
 import Analytics from "@/components/Analytics";
 import Script from "next/script";
-import { read } from "@/lib/catalog";
 import { resolveContact } from "@/lib/contact";
-import type { CompanyProfile } from "@/components/HomeFooter";
+import { readCompanySettings } from "@/lib/company-profile";
 import { SiteHeader, SiteFooter, SiteSupport } from "@/components/Shell";
 const origin = process.env.SITE_URL || "http://localhost:3000";
 export function generateMetadata(): Metadata {
@@ -31,7 +30,7 @@ export function generateMetadata(): Metadata {
   };
 }
 export default async function RootLayout({ children }: { children: ReactNode }) {
-  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const settings = await readCompanySettings();
   const contact = resolveContact(settings?.company_profile);
   return (
     <html lang="vi" data-type="service" data-buttons="solid" data-motion="">

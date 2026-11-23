@@ -333,3 +333,5 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - T703n DONE phần code: cards dùng chung ảnh/giá/2 link độc lập, bộ lọc có tóm tắt, chi tiết có Zalo/lịch & giá và summary sticky riêng; contact/group có ảnh và lựa chọn liên hệ. Không đổi API/giá/chỗ/form submission. Frontend lint/types/4 unit/build Webpack và Admin types PASS; browser hồi quy mới chạy trong T703p/CI.
 
 - T703p đang làm: contact_click/select_item qua listener có cleanup và consent, payload allowlist channel/position/UUID không href/PII. 6 frontend unit PASS gồm consent, dữ liệu không hợp lệ và fallback contact/Admin; lint/types PASS. Browser/taste/perf chưa nghiệm thu; không khởi động local.
+
+- T703p review SSR: gom settings công ty bằng React.cache theo request, tránh mỗi card tạo một request settings riêng; không cache giá/chỗ hoặc dữ liệu khách. CI đang kiểm.

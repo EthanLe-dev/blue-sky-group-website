@@ -1,6 +1,6 @@
 import ContactIcon from "@/components/ContactIcon";
 import { resolveContact } from "@/lib/contact";
-import type { CompanyProfile } from "@/components/HomeFooter";
+import { readCompanySettings } from "@/lib/company-profile";
 import Map from "@/components/Map";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -60,7 +60,7 @@ export default async function Detail({
       is_demo: boolean;
     }[]
   >("/tours/" + encodeURIComponent(slug) + "/reviews");
-  const settings = await read<{ company_profile?: CompanyProfile }>("/site-settings").catch(() => null);
+  const settings = await readCompanySettings();
   const contact = resolveContact(settings?.company_profile);
   const schema = {
     "@context": "https://schema.org",
