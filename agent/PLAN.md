@@ -6,7 +6,7 @@ Người dùng chốt du lịch rực rỡ, ưu tiên tư vấn Zalo, áp dụng
 
 Palette xanh biển #075a91, navy #123b56, vàng #f4c84c, nền #f4f9fd; Nunito Sans local có tiếng Việt. Ảnh đã cấp quyền trong repo. Hero GSAP, photo moments hiện có; không thêm dependency/shader/scroll hijack. Mobile ba kênh một thanh đáy, detail thêm lịch & giá, checkout hỗ trợ inline. Analytics chỉ sau consent, click không đồng nghĩa đã tư vấn/mua.
 
-Đang thực hiện T703l. Không chạy app/services local; browser và integration trên CI. Nghiệm thu thị giác theo ảnh CI, không gọi là UAT người dùng hoặc cam kết tăng CTR.
+T703l–T703p đã có code và kiểm chứng: public CI 45208665160 và tích hợp Admin CI 45210903923 đều đạt 6/6; commit bàn giao tiếp tục qua CI trước merge. Không chạy app/services local; browser và integration trên CI. Nghiệm thu thị giác theo ảnh CI, không gọi là UAT người dùng hoặc cam kết tăng CTR.
 
 
 Ngày: 22/11/2026. Trạng thái: **M0 hoàn tất cho demo, M1 nền tảng đã triển khai**. Phạm vi hiện tại là MVP; frontend/admin/backend và Docker/migration nền tảng đã có. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
@@ -218,3 +218,8 @@ T601–T605 ở PR #6. Dashboard dùng ledger và cohort theo ngày Việt Nam. 
 Nhánh feature/mvp-release, PR #7. Fixture demo có tour quốc tế, chỗ sắp hết và hết chỗ, tiền cọc/toàn bộ và đơn hết hạn. CI bổ sung hành trình mất phản hồi thanh toán, đơn tại quầy, đa trình duyệt, khôi phục DB riêng và kiểm tra SHA demo. Hạ tầng mẫu và bàn giao tại docs/demo-release.md, checklist tại docs/uat-mvp.md.
 
 Vercel, Render và Neon dành cho demo. Deploy thật, khởi động lạnh, private file trên R2, Turnstile cloud, GA4/Search Console, rollback cloud và UAT độc lập chờ quyền tài khoản/URL/người thử. T703 còn duyệt thị giác, không dùng screenshot CI để đánh dấu UAT. Số liệu kiểm tra tại [CI 45025910519](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45025910519).
+
+
+### T703o — Giao diện quản trị 23/11/2026
+
+Theo kế hoạch được duyệt, nâng Admin trên `feature/admin-conversion`: dùng lại sidebar/Radix và API, chỉ đổi layout/style, nhóm field và biểu diễn báo cáo. Lint/types/5 unit/build local đạt, CI browser tích hợp 45210903923 đạt 6/6; PR #22 vào develop sau gate của commit cuối. Không thêm backend/dependency.

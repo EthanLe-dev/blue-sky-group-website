@@ -366,9 +366,17 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
               {String(record.status || "")}
             </p>
           )}
-          <form onSubmit={save}>
-            <div className="editor-grid">
-              {cfg.fields.map((field) => (
+          <form onSubmit={save} className="catalog-form" aria-busy={busy}>
+            {(current === "tours" ? [
+              { label: "Thông tin hành trình", fields: cfg.fields.filter(field => !["days", "stops", "included", "excluded", "cancellation_policy", "preparation_guide", "cover_media_id", "poster_media_id", "media_ids", "destination_ids", "category_ids", "seo_title", "seo_description"].includes(field.key)) },
+              { label: "Lịch trình và chính sách", fields: cfg.fields.filter(field => ["days", "stops", "included", "excluded", "cancellation_policy", "preparation_guide"].includes(field.key)) },
+              { label: "Hình ảnh và phân loại", fields: cfg.fields.filter(field => ["cover_media_id", "poster_media_id", "media_ids", "destination_ids", "category_ids"].includes(field.key)) },
+              { label: "Hiển thị tìm kiếm", fields: cfg.fields.filter(field => ["seo_title", "seo_description"].includes(field.key)) },
+            ] : [{ label: "Nội dung", fields: cfg.fields }]).map(group => (
+              <fieldset className="catalog-fieldset" key={group.label}>
+                <legend>{group.label}</legend>
+                <div className="editor-grid">
+              {group.fields.map((field) => (
                 <label
                   key={field.key}
                   className={
@@ -423,10 +431,15 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
                   )}
                 </label>
               ))}
-            </div>
+                </div>
+              </fieldset>
+            ))}
+            <div className="editor-save-bar">
+            {error && <p className="editor-save-error">{error}</p>}
             <button disabled={busy}>
               {busy ? "Đang lưu…" : "Lưu nội dung"}
             </button>
+            </div>
           </form>
           {Boolean(record.id) && (
             <>
@@ -441,7 +454,7 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
                     >
                       Xuất bản tour
                     </button>
-                    <button
+                    <button className="admin-danger"
                       disabled={busy}
                       onClick={() =>
                         void action("tours/" + record.id + "/archive")
@@ -469,7 +482,7 @@ export default function Catalog({ permissions }: { permissions: string[] }) {
                     </button>
                   </>
                 ) : (
-                  <button
+                  <button className="admin-danger"
                     onClick={async () => {
                       if (!confirm("Lưu trữ/xoá nội dung này?")) return;
                       try {

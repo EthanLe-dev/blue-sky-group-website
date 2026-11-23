@@ -143,7 +143,7 @@ export default function App() {
       </aside>
       <main className="admin-content" ref={content} tabIndex={-1}>
         <header className="admin-topbar">
-          <h1>Xin chào, {user.full_name}</h1>
+<div><p className="admin-page-label">{tabs.find(entry => entry.id === activeTab)?.label || "Quản trị"}</p><h1>Xin chào, {user.full_name}</h1></div>
           <button
             type="button"
             onClick={async () => {
@@ -181,7 +181,8 @@ export default function App() {
     <main className="admin-login">
       {brand}
       <h1>Đăng nhập quản trị</h1>
-      <p>Chỉ dành cho nhân viên được cấp quyền.</p>
+<p>Quản lý tour, yêu cầu tư vấn và hành trình của khách.</p>
+      <p className="admin-access-note">Chỉ dành cho nhân viên được cấp quyền.</p>
       <form onSubmit={login}>
         <label htmlFor="email">Email</label>
         <input

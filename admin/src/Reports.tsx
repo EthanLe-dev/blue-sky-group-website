@@ -65,7 +65,7 @@ export default function Reports({ canExport }: { canExport: boolean }) {
   }
 
   return (
-    <section className="workspace">
+    <section className="workspace reports-workspace">
       <h2>Báo cáo kinh doanh</h2>
       <p>Múi giờ Việt Nam. Số thu và hoàn là dữ liệu giả lập.</p>
       <form className="editor-grid" onSubmit={submit}>
@@ -85,8 +85,12 @@ export default function Reports({ canExport }: { canExport: boolean }) {
           <h3>Doanh thu</h3>
           {canExport && <ExportButton label="báo cáo doanh thu" filename="bao-cao-doanh-thu"
             path={"/admin/reports/revenue/export?" + new URLSearchParams([...filters].filter(([k]) => k !== "group_type"))} />}
-          <p>Giá trị đơn {money(result.revenue.gross_booking_amount)} · {result.revenue.booking_count} đơn</p>
-          <p>Đã thu {money(result.revenue.cash_received)} · Đã hoàn {money(result.revenue.refund_amount)} · Thu ròng {money(result.revenue.net_received)}</p>
+          <div className="report-metrics" aria-label="Tổng hợp doanh thu trong kỳ">
+            <div><span>Giá trị đơn</span><strong>{money(result.revenue.gross_booking_amount)}</strong><small>{result.revenue.booking_count} đơn trong kỳ</small></div>
+            <div><span>Đã thu</span><strong>{money(result.revenue.cash_received)}</strong><small>Giao dịch giả lập</small></div>
+            <div><span>Đã hoàn</span><strong>{money(result.revenue.refund_amount)}</strong><small>Giao dịch giả lập</small></div>
+            <div><span>Thu ròng</span><strong>{money(result.revenue.net_received)}</strong><small>Đã thu trừ đã hoàn</small></div>
+          </div>
           {result.revenue.series.length === 0 ? <p>Chưa có giao dịch trong kỳ.</p> : (
             <div className="report-table" tabIndex={0} role="region" aria-label="Bảng doanh thu">
               <table><thead><tr><th>Kỳ</th><th>Đơn</th><th>Giá trị đơn</th><th>Đã thu</th><th>Đã hoàn</th><th>Thu ròng</th></tr></thead>

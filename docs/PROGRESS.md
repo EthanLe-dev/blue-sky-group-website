@@ -322,6 +322,10 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - Ca Playwright hiện có kiểm menu, focus, font tiếng Việt và trạng thái danh sách đơn. Ảnh desktop/mobile được lưu qua CI. App local không được khởi động.
 
 
+## T703o — Làm mới Admin ưu tiên thao tác
+
+- `feature/admin-conversion` từ develop: sidebar navy/active vàng, tiêu đề module, login, nút/lỗi/status/list/media đồng bộ. Editor tour chia 4 fieldset, thanh lưu sticky và giữ input khi lỗi; destructive actions có màu riêng, không sửa xác nhận/service. Báo cáo có 4 tổng hợp từ response hiện có, không API mới.
+- Local lint/types/5 unit/build PASS; unit mới kiểm field grouping và nội dung chưa lưu sau lỗi. Browser mở rộng editor/report và screenshot desktop/mobile chờ CI. Không khởi động app/service local.
 ## Nâng cấp giao diện ưu tiên Zalo — 23/11/2026
 
 - Đang làm T703l trên `feature/public-conversion`, theo kế hoạch người dùng duyệt: phong cách rực rỡ, public + Admin, CTA Zalo chính. Không đổi backend, không chạy app local. Tái dùng Nunito Sans/GSAP/Radix và ảnh có nguồn.
@@ -335,3 +339,8 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - T703p đang làm: contact_click/select_item qua listener có cleanup và consent, payload allowlist channel/position/UUID không href/PII. 6 frontend unit PASS gồm consent, dữ liệu không hợp lệ và fallback contact/Admin; lint/types PASS. Browser/taste/perf chưa nghiệm thu; không khởi động local.
 
 - T703p review SSR: gom settings công ty bằng React.cache theo request, tránh mỗi card tạo một request settings riêng; không cache giá/chỗ hoặc dữ liệu khách. CI đang kiểm.
+
+- Public PR #21 merge develop `25048a57` sau [CI 45208665160](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45208665160) đạt 6/6: Chromium18, Firefox6, WebKit6; mỗi engine phụ skip đúng một ca live video chỉ dành Chromium. Giữ cả tiến độ public và Admin khi tích hợp tài liệu.
+
+- T703o/T703p DONE phần thực hiện và hồi quy tại `8d0f17d4`: [CI 45210903923](https://github.com/EthanLe-dev/blue-sky-group-website/actions/runs/45210903923) đạt 6/6, gồm frontend6/Admin5 unit, Go race/PostgreSQL, Chromium18/Firefox6/WebKit6. Editor grouped/save lỗi giữ input, navigation, report/export và public conversion đều đạt. Live-video chỉ kiểm Chromium, skip có lý do trên engine phụ.
+- QA bằng ảnh phát hiện và sửa CSS di sản khiến card CTA xếp dọc và body dư khoảng trống trên header; thêm assertion hồi quy. Nhãn mới từ16px, body17px; build Webpack local cuối đạt. Commit bàn giao chờ CI lần cuối, không phát hành main/deploy và không chạy app local. Hồ sơ tại docs/ui-conversion-qa.md; taste/perf browser local chưa chạy, không coi là PASS hoặc UAT/CTR thực tế.

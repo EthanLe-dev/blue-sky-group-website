@@ -15,7 +15,7 @@ h1, h2, h3 { font-weight: 850; letter-spacing: -.025em; }
 h1 { max-width: 24ch; text-wrap: balance; }
 label, .site-header nav, .text-action { font-size: 1rem; }
 label { font-weight: 750; }
-.eyebrow { font-size: .875rem; font-weight: 800; letter-spacing: .08em; }
+.eyebrow { font-size: 16px; font-weight: 800; letter-spacing: .08em; }
 .btn, .home-button, .header-contact { font-size: 1rem; font-weight: 800; border-radius: 12px; }
 .btn { box-shadow: 0 4px 0 #034773; transition: transform 180ms var(--ease), background-color 180ms var(--ease); }
 .btn:active { transform: translateY(2px); }
@@ -59,7 +59,7 @@ label { font-weight: 750; }
   .page { padding-top: 26px; }
   .filters { padding: 18px; }
   .site-header:not(.home-header) { height: 72px; }
-  .site-header:not(.home-header) .brand { font-size: .875rem; gap: 8px; }
+  .site-header:not(.home-header) .brand { font-size: 16px; gap: 8px; }
   .site-header:not(.home-header) .brand img { width: 44px; height: 44px; }
   .page h1 { font-size: clamp(2rem, 7vw, 3rem); }
 }
@@ -117,7 +117,7 @@ label { font-weight: 750; }
   white-space: nowrap;
   opacity: 0;
   pointer-events: none;
-  font-size: .9375rem;
+  font-size: 16px;
   font-weight: 700;
 }
 .contact-float:hover .contact-tooltip,
@@ -162,7 +162,7 @@ label { font-weight: 750; }
 .home-actions svg { width: 25px; height: 25px; }
 .contact-float-zalo { width: 64px; height: 64px; border-color: #f4c84c; }
 .contact-mobile-label, .contact-mobile-schedule { display: none; }
-.header-zalo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 850; font-size: .9375rem; color: #075a91; }
+.header-zalo { display: inline-flex; align-items: center; min-height: 44px; font-weight: 850; font-size: 16px; color: #075a91; }
 .contact-closing { display: grid; grid-template-columns: minmax(0,.8fr) minmax(0,1.2fr); overflow: hidden; border-radius: 24px; background: #123b56; color: white; margin-block: 64px; }
 .contact-closing-photo { min-width: 0; min-height: 300px; }
 .contact-closing-photo img { width: 100%; height: 100%; object-fit: cover; }
@@ -179,7 +179,7 @@ label { font-weight: 750; }
   .contact-mobile-label { display: inline; font-size: 1rem; font-weight: 900; color: #123b56; }
   .home-actions[data-detail] .contact-float-zalo { gap: 4px; }
   .home-actions[data-detail] .contact-mobile-label { display: none; }
-  .home-actions[data-detail] .contact-mobile-schedule { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 10px; border-radius: 10px; background: #075a91; color: white; font-weight: 800; font-size: .9375rem; white-space: nowrap; }
+  .home-actions[data-detail] .contact-mobile-schedule { display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 6px 10px; border-radius: 10px; background: #075a91; color: white; font-weight: 800; font-size: 16px; white-space: nowrap; }
   .home-actions .contact-float::before { inset: -2px; }
   .home-actions .contact-tooltip { display: none; }
   .home-actions .home-back-top { position: absolute; right: 16px; bottom: calc(100% + 12px); box-shadow: 0 2px 8px #123b5620; }
@@ -194,33 +194,33 @@ label { font-weight: 750; }
 .conversion-tour-card .card-image img { transition: transform 220ms var(--ease); }
 .tour-cover-empty { display: grid; height: 100%; min-height: 180px; place-items: center; padding: 56px 16px 16px; color: #496477; }
 .tour-card-badges { position: absolute; inset: 12px 12px auto; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px; }
-.tour-card-badges > span { background: white; color: #123b56; padding: 5px 10px; border-radius: 8px; font-size: .875rem; font-weight: 850; }
+.tour-card-badges > span { background: white; color: #123b56; padding: 5px 10px; border-radius: 8px; font-size: 16px; font-weight: 850; }
 .tour-card-badges .tour-card-demo { background: #ffedb8; }
 .conversion-tour-card .card-body { display: flex; flex: 1; flex-direction: column; padding: clamp(16px,2vw,24px); }
 .conversion-tour-card h3 { font-size: clamp(1.25rem,2vw,1.5rem); margin-bottom: 12px; }
 .conversion-tour-card .card-body p { font-size: 1rem; }
-.conversion-tour-card .tour-card-origin { font-size: .875rem; font-weight: 800; color: #075a91; margin-bottom: 10px; }
+.conversion-tour-card .tour-card-origin { font-size: 16px; font-weight: 800; color: #075a91; margin-bottom: 10px; }
 .tour-card-summary { margin-bottom: 20px; }
 .tour-card-price { margin-top: auto; padding-block: 14px; border-top: 1px solid #cbdde7; display: flex; align-items: baseline; flex-wrap: wrap; gap: 2px 6px; }
-.tour-card-price > span { font-size: .875rem; }
+.tour-card-price > span { font-size: 16px; }
 .tour-card-price > span:first-child { flex-basis: 100%; }
 .tour-card-price strong { color: #075a91; font-size: 1.45rem; font-weight: 900; }
 .tour-card-actions { display: grid; gap: 10px; }
 .tour-card-actions .btn { padding: 10px 14px; }
-.tour-card-zalo { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #b2d0e3; border-radius: 10px; color: #075a91; font-size: .9375rem; font-weight: 800; }
+.tour-card-zalo { display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; border: 1px solid #b2d0e3; border-radius: 10px; color: #075a91; font-size: 16px; font-weight: 800; }
 .tour-card-zalo .contact-zalo-mark { color: #0867ce; }
 .tour-card-zalo:hover { background: #eaf4fb; text-decoration: none; }
 .conversion-tour-card:focus-within { outline: 2px solid #075a91; outline-offset: 3px; }
 .contact-intro { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.15fr); overflow: hidden; border-radius: 20px; border: 1px solid #cbdde7; background: #fff8e6; margin-block: 28px; }
 .contact-intro-photo { position: relative; min-width: 0; }
 .contact-intro-photo img { height: 100%; width: 100%; object-fit: cover; }
-.contact-intro-photo > span { position: absolute; bottom: 12px; right: 12px; padding: 3px 8px; background: #123b56; color: white; border-radius: 6px; font-size: .8125rem; }
+.contact-intro-photo > span { position: absolute; bottom: 12px; right: 12px; padding: 3px 8px; background: #123b56; color: white; border-radius: 6px; font-size: 16px; }
 .contact-intro-copy { padding: clamp(20px,3vw,32px); }
 .contact-intro-copy h2 { font-size: clamp(1.5rem,2.6vw,2rem); }
 .detail-conversion { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; padding: 22px 24px; border-radius: 18px; border: 1px solid #cbdde7; border-inline-start: 5px solid #f4c84c; background: white; margin-block: 24px; }
 .detail-price { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; }
 .detail-price strong { font-size: 1.7rem; font-weight: 900; color: #075a91; }
-.detail-price > span { font-size: .9375rem; }
+.detail-price > span { font-size: 16px; }
 .detail-schedule-link { display: inline-flex; align-items: center; min-height: 44px; font-weight: 800; color: #075a91; }
 .detail-section-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 28px; }
 .detail-section-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 8px 16px; border: 1px solid #cbdde7; background: white; border-radius: 10px; font-weight: 800; }
@@ -228,7 +228,7 @@ label { font-weight: 750; }
 .booking-panel { position: static; padding: 0; background: white; }
 .booking-summary { position: sticky; top: 100px; z-index: 2; padding: 22px; border-radius: 18px 18px 0 0; background: #eaf4fb; border-top: 5px solid #f4c84c; border-bottom: 1px solid #cbdde7; }
 .booking-summary h2 { font-size: 1.6rem; }
-.booking-summary p { font-size: .9375rem; }
+.booking-summary p { font-size: 16px; }
 .booking-summary .cta-zalo { width: 100%; }
 .booking-panel .departure { padding: 22px; margin: 0; }
 .booking-panel .departure p, .booking-panel .departure ul, .booking-panel .departure .btn { font-size: 1rem; }
@@ -249,3 +249,11 @@ label { font-weight: 750; }
 @media (prefers-reduced-motion:reduce) { .conversion-tour-card .card-image img { transition: none; } }
 
 .conversion-tour-card h3 a { display: flex; align-items: center; min-height: 44px; }
+
+/* Override the retired fixed header and wrapping-card rules from the original theme. */
+body { padding-top: 0; }
+.conversion-tour-card a { flex-direction: row; }
+.conversion-tour-card .card-body > p { flex: 0 0 auto; }
+.leaflet-container { font-family: "Nunito Sans Variable", system-ui, sans-serif; }
+
+small, .breadcrumb, .tools p { font-size: 16px; }

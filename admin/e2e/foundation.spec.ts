@@ -32,6 +32,12 @@ test("admin login, settings save, reload and logout", async ({ page }) => {
   expect(reportPosition.x + reportPosition.width).toBeLessThan(workspace.x);
   expect(reportPosition.y).toBeLessThan(settingsPosition.y);
   await expect(settings).toHaveAttribute("aria-pressed", "true");
+  await page.mouse.move(900, 0);
+  await expect(page.locator(".admin-sidebar")).toHaveCSS("background-color", "rgb(18, 59, 86)");
+  await expect(settings).toHaveCSS("background-color", "rgb(244, 200, 76)");
+  await settings.hover();
+  await expect(settings).toHaveCSS("color", "rgb(18, 59, 86)");
+
   await expect(page.getByRole("main")).toHaveCSS("font-family", /Nunito Sans Variable/);
   expect(await page.evaluate(async () => {
     const faces = await document.fonts.load('700 24px "Nunito Sans Variable"', "Nguyễn Thị Ánh · Ắ Ằ Ẳ Ẵ Ặ · 1.250.000 ₫");
