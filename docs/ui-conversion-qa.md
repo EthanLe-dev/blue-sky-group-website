@@ -1,0 +1,16 @@
+# QA nâng cấp giao diện ưu tiên Zalo — 23/11/2026
+
+Phạm vi đã duyệt: du lịch rực rỡ, Zalo chính, public và Admin. Không backend/database/dependency mới. Không chạy app/service local.
+
+## Kiểm chứng local
+
+- T703l–T703n: frontend lint/types/unit và build Webpack đạt; warning stylesheet kit đã có. T703p thêm 2 unit consent/contact, tổng 6 đạt. Typecheck cả hai app đạt.
+- T703o: Admin lint/types/5 unit/build đạt; ca mới mở đúng fieldset và giữ dữ liệu khi save thất bại. Reports chỉ trình bày response hiện có, không số liệu mới.
+- GATE taste: đã khởi tạo, chưa chạy browser checker/perf local vì không có quyền khởi động app. Không GATE PASS, không tuyên bố 60fps/Core Web Vitals hoặc tăng CTR. Waiver/ngoại lệ dự án theo design-style.md vẫn áp dụng.
+
+## Browser và bằng chứng
+
+- PR public #21: CI Linux build mặc định, PostgreSQL và Chromium/Firefox/WebKit. Kiểm hero không quảng cáo tour cụ thể, video lặp/fallback, font tiếng Việt, keyboard/menu, ba kênh liên hệ, 320–1440px, detail và form không bị thanh đáy che. Đang chờ kết quả cuối.
+- Mở rộng analytics kiểm link hoạt động trước consent, contact_click/select_item sau consent, dừng sau từ chối; không điện thoại/href trong event.
+- PR Admin sẽ kiểm menu dọc/Sheet/focus, trạng thái lỗi/empty/loading, lưu/reload, form grouped, report/export và ảnh desktop/mobile.
+- Ảnh CI dùng dữ liệu demo. Cần người dùng duyệt trực quan; screenshot CI không thay UAT độc lập và không có dữ liệu CTR thực tế.
