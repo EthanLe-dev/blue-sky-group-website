@@ -6,6 +6,7 @@ Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `
 
 ## Đợt làm mới giao diện sau MVP
 
+- T218b: Người dùng yêu cầu xóa luôn dữ liệu bài viết và `/blog`. Nhánh `feature/remove-blog` gỡ API/seed/sitemap/route, thêm migration 000008 drop bốn bảng bài viết; thay thế phạm vi giữ dữ liệu/API của T703k. Migration nâng cấp, API 404 và browser đã đạt tại CI 45113321690 (6/6 jobs) trên 15c913b2; không chạy app/DB local.
 - T703k: Theo yêu cầu, gỡ Cẩm nang khỏi Trang chủ, điều hướng public và quản trị bài viết/danh mục/thẻ trong Admin. Phạm vi này là loại bỏ giao diện, giữ dữ liệu cũ và API hiện có.
 
 - T703j: Thêm hiệu ứng nhấp sáng chậm, lệch nhịp cho ba nút liên hệ nổi; giữ trạng thái tĩnh khi bật giảm chuyển động.
@@ -77,7 +78,7 @@ Chuỗi phụ thuộc chính: M0 → M1 → M2 → M3 → M4 → M6 → M7. M5 c
 - [ ] Migration/catalog API: destination/category/tour, itinerary, gallery, FAQ, route markers, related tours; lịch khởi hành/giá/phụ thu.
 - [ ] Admin CRUD, clone tour không copy booking; tạo hàng loạt departure atomic, đóng/mở bán; archive thay xoá dữ liệu đã tham chiếu (FR-80–82).
 - [ ] Home, list/filter/autocomplete/sort giữ query URL, tour detail, sticky booking, số chỗ thật, PDF itinerary placeholder chờ M6 (FR-01–08).
-- [ ] Blog/categories/tags, destination landing, school/company, about/contact/policies/FAQ/gallery (FR-40–45, 60, 63–64, 66–73).
+- [ ] Destination landing, school/company, about/contact/policies/FAQ/gallery (FR-40–45, 60, 63–64, 66–73).
 - [ ] Admin nội dung, banner, review/testimonial có kiểm duyệt và nguồn; SEO fields, sitemap, canonical, OG/schema; bản đồ route/văn phòng.
 - [ ] Favourite/recent localStorage chỉ ID/slug, share link; UI disabled coupon/newsletter (FR-10–12, 26, 74).
 - Nghiệm thu: responsive, keyboard, loading/empty/error; không lộ draft; tour không đủ policy/giá không publish; bộ lọc cho kết quả đúng.

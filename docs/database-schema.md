@@ -133,10 +133,6 @@ MVP outbox consumer nằm trong Go process, claim batch bằng `FOR UPDATE SKIP 
 | Bảng | Cột | Ràng buộc/index |
 | --- | --- | --- |
 | `media_assets` | `object_key text, original_name text, mime_type text, size_bytes bigint, width int?, height int?, kind text(image/video/document), visibility text(public/private), status text(pending/ready/archived), alt_text text?, caption text?, collection text?, source_credit text?, uploaded_by_staff_id FK?` | UQ object_key; size>0; không lưu signed URL lâu dài; không cho HTML/SVG executable upload MVP |
-| `post_categories` | `slug text, name text` | UQ slug |
-| `posts` | `slug text, title text, excerpt text, body text, category_id FK post_categories, cover_media_id FK?, author_id FK staff_users, status text(draft/published/archived), seo_title text?, seo_description text?, published_at timestamptz?` | UQ slug; index(status,published_at), (category_id,published_at) |
-| `tags` | `slug text, name text` | UQ slug |
-| `post_tags` | `post_id FK, tag_id FK` | PK(post_id,tag_id) |
 | `pages` | `slug text, title text, body text, status text(draft/published/archived), seo_title text?, seo_description text?, published_at timestamptz?` | UQ slug; gồm about, contact, school, company, privacy, terms, payment, cancellation, preparation |
 | `banners` | `title text, media_id FK, target_url text?, placement text, sort_order int, starts_at timestamptz?, ends_at timestamptz?, active bool` | index(placement,active,sort_order); end>start nếu đủ; URL allowlist relative/https |
 | `faqs` | `topic text, tour_id FK?, question text, answer text, sort_order int, published bool` | index(tour_id,published,sort_order); null tour là FAQ chung |
@@ -216,3 +212,10 @@ Không tạo trước schema cho tính năng chưa chốt để tránh ngầm m�
 Migration `000005_payment_notification.sql` bổ sung số tiền hoàn và giờ xác nhận vào đơn. Ledger mock lưu khoản thu, khoản hoàn, event xác nhận, outbox và hai bản xem trước theo kênh. `payment_status` tiếp tục dùng cột từ M3, cập nhật cùng transaction với `paid_amount` và `refunded_amount`. Không có backfill khoản thu vì đơn M3 chưa có luồng thu tiền. Trường hợp cần quay lại ứng dụng M3 sau khi demo đã ghi nhận giao dịch, cần sao lưu và dùng bản dữ liệu trước M4 để tránh giao diện M3 xử lý đơn đã thu tiền như đơn chưa thu.
 
 Outbox chỉ lưu mã tham chiếu đơn và loại sự kiện. Worker tạo email/SMS trong cùng transaction đánh dấu xong, với khóa chống trùng theo event và kênh. Worker lấy lại lease hết hạn sau 30 giây, lần thử cũ mất quyền ghi. Lỗi được thử lại với backoff lũy tiến, tối đa 5 lần. Bản xem trước dùng mã đơn, không sao chép email, số điện thoại hoặc hành khách vào bảng log.
+
+
+### Xóa dữ liệu Cẩm nang — 23/11/2026
+
+Migration `000008_remove_travel_guide.sql` drop lần lượt `post_tags`, `posts`, `post_categories`, `tags`, gồm toàn bộ dữ liệu bài viết/danh mục/thẻ cũ. Không sửa migration lịch sử; không dùng CASCADE. Runner áp dụng trong transaction và ghi version, chạy lại không xóa thêm. Seed không tái tạo bài viết. Media, tour, pages/chính sách và audit lịch sử được giữ nguyên.
+
+Trước khi cập nhật DB cần sao lưu bằng `pg_dump` theo runbook demo. Không có down migration phục hồi nội dung đã xóa; nếu cần quay lại, khôi phục bản sao lưu trước migration vào DB riêng, kiểm tra rồi chuyển app sang DB đó cùng phiên bản code tương ứng. Không chỉ rollback code cũ lên schema đã drop bảng. Agent chưa chạy migration trên DB local/demo của người dùng.

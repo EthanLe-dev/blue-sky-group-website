@@ -9,14 +9,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/contact",
     "/schools",
     "/companies",
-    "/blog",
     "/destinations",
     "/faq",
     "/gallery",
   ];
   for (const [resource, prefix] of [
     ["tours", "tours"],
-    ["posts", "blog"],
     ["destinations", "destinations"],
     ["pages", "policies"],
   ]) {

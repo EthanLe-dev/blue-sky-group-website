@@ -311,7 +311,7 @@ func (s *Server) archiveMedia(c *gin.Context) {
 	if !validID(c, "id") {
 		return
 	}
-	tag, e := s.DB.Exec(c.Request.Context(), `UPDATE media_assets m SET status='archived' WHERE id=$1 AND (visibility='public' OR uploaded_by_staff_id=$2) AND NOT EXISTS(SELECT 1 FROM tours WHERE cover_media_id=m.id OR poster_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM tour_media WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM posts WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM destinations WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM banners WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM reviews WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM group_request_attachments WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM site_settings WHERE key='company_profile' AND value->'document_media_ids' @> jsonb_build_array(m.id::text))`, c.Param("id"), s.UserID(c))
+	tag, e := s.DB.Exec(c.Request.Context(), `UPDATE media_assets m SET status='archived' WHERE id=$1 AND (visibility='public' OR uploaded_by_staff_id=$2) AND NOT EXISTS(SELECT 1 FROM tours WHERE cover_media_id=m.id OR poster_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM tour_media WHERE media_id=m.id)  AND NOT EXISTS(SELECT 1 FROM destinations WHERE cover_media_id=m.id) AND NOT EXISTS(SELECT 1 FROM banners WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM reviews WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM group_request_attachments WHERE media_id=m.id) AND NOT EXISTS(SELECT 1 FROM site_settings WHERE key='company_profile' AND value->'document_media_ids' @> jsonb_build_array(m.id::text))`, c.Param("id"), s.UserID(c))
 	if e != nil {
 		httpx.Error(c, 500, "INTERNAL_ERROR")
 		return

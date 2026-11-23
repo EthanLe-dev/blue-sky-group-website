@@ -11,6 +11,7 @@ import (
 	"image/png"
 	"mime/multipart"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -206,37 +207,33 @@ func TestDemoSeedIdempotentPreservesAdminChanges(t *testing.T) {
 	}
 }
 
-func TestRelatedPostsHideDraftsAndKeepTags(t *testing.T) {
+func TestTravelGuideRemoved(t *testing.T) {
 	a, token, _ := catalogFixture(t)
-	create := func(path, body string) string {
-		w := request(a, "POST", "/api/v1/admin/"+path, body, token, "", nil)
-		if w.Code != 201 {
-			t.Fatal(w.Body)
+	for _, path := range []string{"/posts", "/posts/chuan-bi-di-ninh-chu", "/post-categories", "/tags", "/admin/posts", "/admin/posts/00000000-0000-0000-0000-000000000001", "/admin/post-categories", "/admin/tags"} {
+		for _, method := range []string{"GET", "POST", "PATCH", "DELETE"} {
+			w := request(a, method, "/api/v1"+path, `{}`, token, "", nil)
+			if w.Code != 404 {
+				t.Fatalf("%s %s: got %d", method, path, w.Code)
+			}
 		}
-		return data(t, w)["id"].(string)
 	}
-	tag := create("tags", `{"slug":"bien","name":"Biển"}`)
-	for i, state := range []string{"published", "published", "draft"} {
-		create("posts", fmt.Sprintf(`{"slug":"cam-nang-%d","title":"Cẩm nang %d","body":"Bài viết demo","tag_ids":[%q],"status":%q}`, i, i, tag, state))
-	}
-	w := request(a, "GET", "/api/v1/posts/cam-nang-0", "", "", "", nil)
+	w := request(a, "GET", "/api/v1/home", "", "", "", nil)
 	if w.Code != 200 {
 		t.Fatal(w.Body)
 	}
-	d := data(t, w)
-	if len(d["related_posts"].([]any)) != 1 || len(d["tags"].([]any)) != 1 {
-		t.Fatal("related draft or tags wrong", w.Body)
+	if _, ok := data(t, w)["latest_posts"]; ok {
+		t.Fatal("home still exposes posts")
 	}
-	w = request(a, "GET", "/api/v1/posts?tag=bien", "", "", "", nil)
+	// Reviews remain correctly registered after removing the content resources.
+	w = request(a, "GET", "/api/v1/testimonials", "", "", "", nil)
 	if w.Code != 200 {
 		t.Fatal(w.Body)
 	}
-	var envelope struct {
-		Data []json.RawMessage `json:"data"`
-	}
-	json.Unmarshal(w.Body.Bytes(), &envelope)
-	if len(envelope.Data) != 2 {
-		t.Fatal("tag leaked draft")
+	for _, table := range []string{"posts", "post_categories", "tags", "post_tags"} {
+		var absent bool
+		if err := a.DB.QueryRow(context.Background(), "SELECT to_regclass($1) IS NULL", table).Scan(&absent); err != nil || !absent {
+			t.Fatalf("obsolete table %s remains: %v", table, err)
+		}
 	}
 }
 
@@ -249,15 +246,61 @@ func TestContentCoverRequiresPublicReadyImage(t *testing.T) {
 		if e != nil {
 			t.Fatal(e)
 		}
-		w := request(a, "POST", "/api/v1/admin/posts", fmt.Sprintf(`{"slug":"bad-%d","title":"Nội dung demo","cover_media_id":%q}`, i, id), token, "", nil)
+		w := request(a, "POST", "/api/v1/admin/destinations", fmt.Sprintf(`{"slug":"bad-%d","name":"Điểm đến demo","cover_media_id":%q}`, i, id), token, "", nil)
 		if w.Code != 422 {
 			t.Fatal("nonpublic or nonimage cover accepted", w.Body)
 		}
 	}
 	var cover string
 	a.DB.QueryRow(ctx, "SELECT cover_media_id FROM tours WHERE id=$1", tour).Scan(&cover)
-	w := request(a, "POST", "/api/v1/admin/posts", fmt.Sprintf(`{"slug":"valid-cover","title":"Nội dung demo","cover_media_id":%q}`, cover), token, "", nil)
+	w := request(a, "POST", "/api/v1/admin/destinations", fmt.Sprintf(`{"slug":"valid-cover","name":"Điểm đến demo","cover_media_id":%q}`, cover), token, "", nil)
 	if w.Code != 201 {
 		t.Fatal("public image cover rejected", w.Body)
+	}
+}
+
+func TestRemoveTravelGuideMigrationPreservesCatalog(t *testing.T) {
+	a, _, tour := catalogFixture(t)
+	ctx := context.Background()
+	// Recreate the pre-upgrade tables with real FK dependencies and existing content.
+	legacy, err := migrations.ReadFile("migrations/000003_catalog.sql")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, line := range strings.Split(string(legacy), "\n") {
+		if strings.HasPrefix(line, "CREATE TABLE post") || strings.HasPrefix(line, "CREATE TABLE tags(") {
+			if _, err = a.DB.Exec(ctx, line); err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+	_, err = a.DB.Exec(ctx, `
+ INSERT INTO post_categories(slug,name) VALUES('old','Old category');
+ INSERT INTO tags(slug,name) VALUES('old','Old tag');
+ INSERT INTO posts(slug,title,body,category_id,cover_media_id,author_id,status)
+ SELECT 'old','Old article','Old body',(SELECT id FROM post_categories),cover_media_id,
+ (SELECT id FROM staff_users LIMIT 1),'published' FROM tours LIMIT 1;
+ INSERT INTO post_tags SELECT posts.id,tags.id FROM posts CROSS JOIN tags;
+ INSERT INTO pages(slug,title,body) VALUES('retained-policy','Policy','Retained');
+ DELETE FROM schema_migrations WHERE version='000008_remove_travel_guide.sql';`)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 2; i++ {
+		if err = Migrate(ctx, a.DB); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for _, table := range []string{"posts", "post_categories", "tags", "post_tags"} {
+		var absent bool
+		if err = a.DB.QueryRow(ctx, "SELECT to_regclass($1) IS NULL", table).Scan(&absent); err != nil || !absent {
+			t.Fatalf("%s remains: %v", table, err)
+		}
+	}
+	var retained bool
+	err = a.DB.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM tours t JOIN media_assets m ON m.id=t.cover_media_id WHERE t.id=$1)
+ AND EXISTS(SELECT 1 FROM pages WHERE slug='retained-policy' AND body='Retained')`, tour).Scan(&retained)
+	if err != nil || !retained {
+		t.Fatalf("migration removed unrelated content: %v", err)
 	}
 }

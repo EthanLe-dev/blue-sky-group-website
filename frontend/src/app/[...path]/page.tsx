@@ -18,7 +18,6 @@ const names: Record<string, string> = {
   contact: "Liên hệ",
   schools: "Tour dành cho trường học",
   companies: "Tour dành cho doanh nghiệp",
-  blog: "Cẩm nang du lịch",
   destinations: "Điểm đến",
   faq: "Câu hỏi thường gặp",
   gallery: "Thư viện ảnh",
@@ -38,6 +37,7 @@ export async function generateMetadata({
   params: Promise<{ path: string[] }>;
 }): Promise<Metadata> {
   const { path } = await params;
+  if (path[0] === "blog") notFound();
   let title = names[path[0]];
   let content: Content | null = null;
   if (["about", "contact", "schools", "companies"].includes(path[0])) {
@@ -48,14 +48,9 @@ export async function generateMetadata({
   }
   if (
     path[0] === "policies" ||
-    (["blog", "destinations"].includes(path[0]) && path[1])
+    (path[0] === "destinations" && path[1])
   ) {
-    const type =
-      path[0] === "blog"
-        ? "posts"
-        : path[0] === "destinations"
-          ? "destinations"
-          : "pages";
+    const type = path[0] === "destinations" ? "destinations" : "pages";
     try {
       const p = await read<Content>(
         "/" + type + "/" + encodeURIComponent(path[1]),
@@ -86,10 +81,11 @@ export default async function ContentPage({
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { path } = await params;
+  if (path[0] === "blog") notFound();
   const key = path[0];
   const filter = await searchParams;
   const query = new URLSearchParams();
-  for (const k of ["q", "category", "tag", "kind", "collection", "page"]) {
+  for (const k of ["q", "kind", "collection", "page"]) {
     const v = filter[k];
     if (typeof v === "string" && v) query.set(k, v);
   }
@@ -197,8 +193,8 @@ export default async function ContentPage({
         )}
       </div>
     );
-  } else if (key === "blog" || key === "destinations") {
-    const type = key === "blog" ? "posts" : "destinations";
+  } else if (key === "destinations") {
+    const type = "destinations";
     if (path[1]) {
       let item: Content;
       try {
@@ -225,36 +221,6 @@ export default async function ContentPage({
             className="prose"
             dangerouslySetInnerHTML={{ __html: item.body || item.description }}
           />
-          {key === "blog" && (
-            <>
-              <p>
-                {item.category && (
-                  <Link prefetch={false} href={"/blog?category=" + item.category.slug}>
-                    {item.category.name}
-                  </Link>
-                )}
-              </p>
-              <div className="tools">
-                {item.tags?.map((tag) => (
-                  <Link prefetch={false} href={"/blog?tag=" + tag.slug} key={tag.id}>
-                    #{tag.name}
-                  </Link>
-                ))}
-              </div>
-              {(item.related_posts?.length || 0) > 0 && (
-                <section className="detail-section">
-                  <h2>Bài viết liên quan</h2>
-                  <ul>
-                    {item.related_posts?.map((post) => (
-                      <li key={post.id}>
-                        <Link prefetch={false} href={"/blog/" + post.slug}>{post.title}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              )}
-            </>
-          )}
           {key === "destinations" &&
             item.latitude != null &&
             item.longitude != null && (
@@ -277,49 +243,8 @@ export default async function ContentPage({
       );
     } else {
       const list = await read<Content[]>("/" + type + "?" + query);
-      const categories =
-        key === "blog" ? await read<Content[]>("/post-categories") : [];
-      const tags = key === "blog" ? await read<Content[]>("/tags") : [];
       body = (
         <>
-          {key === "blog" && (
-            <form className="filters" action="/blog">
-              <label>
-                Tìm bài viết
-                <input
-                  name="q"
-                  defaultValue={query.get("q") || ""}
-                  maxLength={100}
-                />
-              </label>
-              <label>
-                Danh mục
-                <select
-                  name="category"
-                  defaultValue={query.get("category") || ""}
-                >
-                  <option value="">Tất cả danh mục</option>
-                  {categories.map((c) => (
-                    <option key={c.id} value={c.slug}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Thẻ
-                <select name="tag" defaultValue={query.get("tag") || ""}>
-                  <option value="">Tất cả thẻ</option>
-                  {tags.map((c) => (
-                    <option key={c.id} value={c.slug}>
-                      {c.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button className="btn">Lọc bài viết</button>
-            </form>
-          )}
           <div className="content-list">
             {list.length ? (
               list.map((i) => (

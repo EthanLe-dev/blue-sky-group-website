@@ -61,7 +61,6 @@ Endpoint admin đọc tài nguyên yêu cầu quyền write tương ứng nếu 
 | `BookingSummary` | `code,status,payment_status,tour_title,starts_at,ends_at,traveller_count,total_amount,paid_amount,balance_amount,currency,contact_email_masked,contact_phone_masked`; không ID nội bộ/passenger/notes/special_requests |
 | `Payment` | `id,booking_id,provider,purpose,amount,currency,status,is_mock,expires_at,paid_at,demo_qr_url?`; QR là hình minh hoạ không có tài khoản nhận tiền thật |
 | `NotificationPreview` | `id,channel,subject,body,status,is_mock,created_at`; recipient che trên list, nội dung chỉ creator hoặc notification.read |
-| `Post` | `id,slug,title,excerpt,body,category,tags[],cover,published_at,seo`; list bỏ body |
 | `LeadReceipt` | `code,status,received_at,response_sla_message,is_demo`; không public tracking link trong MVP |
 
 Rating chỉ tính approved; nếu là dữ liệu seed, frontend hiển thị nhãn demo. `remaining_seats` là snapshot tại `server_time`, không bảo đảm thành công booking tiếp theo. Enum status theo database; không dịch giá trị enum trên wire.
@@ -73,7 +72,7 @@ Không cần auth, chỉ published/approved/ready, không trả internal note. E
 | Method/path | Query/body | `data` |
 | --- | --- | --- |
 | GET `/site-settings` | — | `hotline,email,zalo_url,address,office_coordinates,social_links,company_documents[],response_sla` allowlist, không secret |
-| GET `/home` | — | `banners[],featured_tours[],destinations[],testimonials[],latest_posts[],service_commitments[]` từ CMS; promotions chỉ nội dung marketing, không coupon logic |
+| GET `/home` | — | `banners[],featured_tours[],destinations[],testimonials[],service_commitments[]` từ CMS; promotions chỉ nội dung marketing, không coupon logic |
 | GET `/tours` | `q,destination(slug),category(slug),region,audience,depart_from,depart_to,budget_min,budget_max,duration_min,duration_max,travellers,transport,difficulty,min_rating,sort,page,page_size` | TourCard[] + meta |
 | GET `/tours/suggestions` | `q` tối thiểu 2, `limit` mặc định 5/max10 | `{tours:[{id,slug,title}],destinations:[{slug,name}]}` |
 | GET `/tours/{slug}` | — | TourDetail |
@@ -83,9 +82,6 @@ Không cần auth, chỉ published/approved/ready, không trả internal note. E
 | GET `/destinations` | `q,page,page_size` | `{id,slug,name,description,latitude,longitude,cover,seo}`[] |
 | GET `/destinations/{slug}` | — | Destination + `featured_tours[]` |
 | GET `/tour-categories` | — | `{id,slug,name,description}`[] |
-| GET `/posts` | `q,category,tag,page,page_size` | Post[] + meta |
-| GET `/posts/{slug}` | — | Post + related_posts[] |
-| GET `/post-categories`, `/tags` | — | `{id,slug,name}`[] |
 | GET `/pages/{slug}` | — | `{slug,title,body,seo,updated_at}` |
 | GET `/faqs` | `topic,tour_id?` | `{id,topic,question,answer}`[] |
 | GET `/gallery` | `kind,collection,page,page_size` | Media[] + meta |
@@ -191,11 +187,11 @@ Admin endpoint khác cần Bearer. List có page/page_size/q; lọc cụ thể t
 | `/departures/{id}` | GET,PATCH | Partial DepartureWrite + expected_price_version; tăng price_version khi sửa giá/policy; đổi thời gian có booking active =>409 |
 | `/departures/{id}/sales-status` | POST `{status:"open"|"closed"}` | Check đủ giá, cutoff; không huỷ chuyến bằng endpoint này |
 | `/destinations`, `/tour-categories` | CRUD | Fields schema, không id/timestamps; không xoá tài nguyên đang referenced |
-| `/posts`, `/pages`, `/banners`, `/faqs`, `/post-categories`, `/tags` | CRUD | Fields schema, FK dưới dạng `_id`/`_ids`; post `tag_ids[]`; status/published cho draft/publish, sanitize body; author từ staff hiện tại |
+| `/pages`, `/banners`, `/faqs` | CRUD | Fields schema, FK dưới dạng `_id`/`_ids`; status/published cho draft/publish, sanitize body |
 | `/reviews` | CRUD + POST `/{id}/moderation` | Create `tour_id?,group_type?,display_name,organization_name?,rating,body,media_id?,source,is_demo`; moderation `{status:approved|rejected,reason?}`, reviewer từ JWT |
 | `/site-settings/{key}` | GET, PUT `{value}` | chỉ admin; key allowlist, shape theo settings DTO, không arbitrary HTML/secret |
 
-`catalog.write` cho tours/departures/destinations/categories; `content.write` cho posts/pages/banners/faqs/reviews/tags. CRUD nghĩa GET collection, POST collection, GET/PATCH/DELETE `/{id}`; DELETE archive khi có history, conflict khi vẫn tham chiếu cần giữ. `days[]/stops[]/media_ids[]` PATCH thay toàn bộ collection trong một transaction; không thay từng phần ngầm. DTO list admin gồm id/status/timestamps và fields nội dung, không tự expose toàn DB.
+`catalog.write` cho tours/departures/destinations/categories; `content.write` cho pages/banners/faqs/reviews. CRUD nghĩa GET collection, POST collection, GET/PATCH/DELETE `/{id}`; DELETE archive khi có history, conflict khi vẫn tham chiếu cần giữ. `days[]/stops[]/media_ids[]` PATCH thay toàn bộ collection trong một transaction; không thay từng phần ngầm. DTO list admin gồm id/status/timestamps và fields nội dung, không tự expose toàn DB.
 
 ### 7.2 Booking/payment/khách hàng
 
@@ -323,7 +319,7 @@ OpenAPI `backend/internal/platform/openapi.json` mô tả endpoint đã mount M1
 - Tạo đơn và cancel có Idempotency-Key UUID; cùng principal/route/key/payload trả DTO gốc. Tính hash bỏ Turnstile; retry đã commit không xác minh token một lần lần nữa. Conflict payload409, lock timeout409 REQUEST_IN_PROGRESS. Expiry sweep mỗi30 giây cộng kiểm tra trực tiếp khi đọc/ghi; không cần Redis.
 - Payment/thông báo M4 chưa có endpoint trong runtime. UI ghi rõ chưa thanh toán và không gửi email/SMS thật.
 
-Bổ sung CMS: Post detail có category, tags, related_posts tối đa3 cùng category/tag, chỉ published; cover_media_id/media_id của nội dung công khai phải public-ready-image. Gallery kind/collection có pagination. Public/admin quote cùng nhận surcharge_codes; optional do khách/nhân viên chọn, required do server tự thêm. Lookup limiter scope IP+mã chuẩn hoá, body vẫn qua strict validation sau middleware.
+Bổ sung CMS: cover_media_id/media_id của nội dung công khai phải public-ready-image. Gallery kind/collection có pagination. Public/admin quote cùng nhận surcharge_codes; optional do khách/nhân viên chọn, required do server tự thêm. Lookup limiter scope IP+mã chuẩn hoá, body vẫn qua strict validation sau middleware.
 
 ### Hợp đồng đã triển khai M4
 
@@ -332,3 +328,8 @@ Bổ sung CMS: Post detail có category, tags, related_posts tối đa3 cùng ca
 - Confirm trả `{payment,booking}`. Trả cọc đổi đơn sang `confirmed` và thanh toán sang `partially_paid` nếu còn dư. Số tiền VND đi qua API dưới dạng chuỗi số nguyên. Refund thành công trả 201 và không đổi số ghế.
 - `GET /admin/notifications` trả `{logs,jobs}`. `logs` là bản xem trước theo kênh. `jobs` gồm các lượt tạo bản xem trước còn chờ, đang xử lý hoặc thất bại. Phân trang từng danh sách. Bộ lọc kênh áp dụng cho `logs`.
 - Các endpoint thanh toán chỉ mở khi `PAYMENT_PROVIDER=mock`. Bản xem trước chỉ mở khi `EMAIL_PROVIDER=mock` và `SMS_PROVIDER=mock`. Cả hai nhóm vắng trên production.
+
+
+### Loại bỏ Cẩm nang — 23/11/2026
+
+Theo yêu cầu người dùng, API public/admin `/posts`, `/post-categories`, `/tags` và mọi detail/CRUD tương ứng đã gỡ, trả 404. `/home` không còn `latest_posts`. Public `/blog` cùng mọi URL bài viết trả 404 và không có trong sitemap; không redirect sang tour. Pages/chính sách, điểm đến, gallery và media giữ nguyên.

@@ -6,9 +6,8 @@ let measurement = "";
 let enabled = false;
 
 export function analyticsLocation(pathname: string) {
-  if (["/", "/tours", "/checkout", "/lookup", "/saved", "/school", "/company", "/contact", "/about", "/blog"].includes(pathname)) return pathname;
+  if (["/", "/tours", "/checkout", "/lookup", "/saved", "/school", "/company", "/contact", "/about"].includes(pathname)) return pathname;
   if (pathname.startsWith("/tours/")) return "/tours/detail";
-  if (pathname.startsWith("/blog/")) return "/blog/article";
   return "/info";
 }
 
