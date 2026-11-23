@@ -31,10 +31,10 @@ export function HomeFooter({ company, contact }: {
             </Link>
             {company?.address && <p>{company.address}</p>}
             {company?.is_demo && <p className="home-demo-note">Thông tin công ty dùng cho demo.</p>}
-            {contact && <a href={contact.phoneHref}>Gọi {contact.hotline}</a>}
+            {contact && <a href={contact.phoneHref} data-contact-channel="phone" data-contact-position="footer">Gọi {contact.hotline}</a>}
             {company?.email && company.is_demo === false && <a href={"mailto:" + company.email}>{company.email}</a>}
             {company?.zalo_url && company.is_demo === false && /^https:\/\/zalo\.me\//i.test(company.zalo_url) && (
-              <a href={company.zalo_url}>Liên hệ qua Zalo</a>
+              <a href={company.zalo_url} data-contact-channel="zalo" data-contact-position="footer">Liên hệ qua Zalo</a>
             )}
           </div>
           {footerLinks.map(({ title, links }) => (

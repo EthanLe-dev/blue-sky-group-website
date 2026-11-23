@@ -52,10 +52,10 @@ export function Header({ home = false, contact = null }: { home?: boolean; conta
             <Link prefetch={false} className="home-support-title" href="/contact">Hỗ trợ chuyến đi</Link>
             {contact && (
               <div className="home-support-channels">
-                <a className="home-support-phone" href={contact.phoneHref}>
+                <a className="home-support-phone" data-contact-channel="phone" data-contact-position="header" href={contact.phoneHref}>
                   <ContactIcon channel="phone" />{contact.hotline}
                 </a>
-                <a className="home-support-zalo" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo Blue Sky Group (mở tab mới)">
+                <a className="home-support-zalo" data-contact-channel="zalo" data-contact-position="header" href={contact.zaloHref} target="_blank" rel="noopener noreferrer" aria-label="Nhắn Zalo Blue Sky Group (mở tab mới)">
                   <ContactIcon channel="zalo" /><span>Chat Zalo</span>
                 </a>
               </div>

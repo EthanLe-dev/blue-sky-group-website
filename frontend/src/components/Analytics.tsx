@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { usePathname } from "next/navigation";
-import { pageView, setAnalytics, tourEvent } from "@/lib/analytics";
+import { pageView, setAnalytics, tourEvent, contactEvent, selectTourEvent } from "@/lib/analytics";
 
 const key = "bluesky-analytics-choice";
 let current = "";
@@ -51,6 +51,19 @@ export default function Analytics() {
       if (tour) tourEvent("view_item", tour);
     }
   }, [config, value, pathname]);
+  useEffect(() => {
+    if (!config || value !== "yes") return;
+    const clicked = (event: MouseEvent) => {
+      if (!(event.target instanceof Element)) return;
+      const link = event.target.closest<HTMLElement>("a[data-contact-channel], a[data-select-tour]");
+      if (!link) return;
+      const { contactChannel, contactPosition, contactTour, selectTour, selectPosition } = link.dataset;
+      if (contactChannel && contactPosition) contactEvent(contactChannel, contactPosition, contactTour);
+      else if (selectTour && selectPosition) selectTourEvent(selectTour, selectPosition);
+    };
+    document.addEventListener("click", clicked);
+    return () => document.removeEventListener("click", clicked);
+  }, [config, value]);
   if (!config) return null;
   return (
     <aside className="wrap analytics-preference" aria-label="Tùy chọn phân tích">

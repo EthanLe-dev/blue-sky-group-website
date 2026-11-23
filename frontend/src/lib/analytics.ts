@@ -47,6 +47,18 @@ function send(event: string, data: Record<string, unknown>) {
   });
 }
 
+const tourID = /^[a-f0-9]{8}(-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
+export function contactEvent(channel: string, position: string, tour?: string) {
+  if (!["zalo", "facebook", "phone"].includes(channel) ||
+      !["header", "hero", "closing", "support", "tour_card", "tour_detail", "booking_panel", "contact_page", "footer"].includes(position)) return;
+  send("contact_click", { contact_channel: channel, cta_position: position,
+    ...(tour && tourID.test(tour) ? { item_id: tour } : {}) });
+}
+export function selectTourEvent(tour: string, position: string) {
+  if (!tourID.test(tour) || !["home", "catalog"].includes(position)) return;
+  send("select_item", { item_list_id: position, items: [{ item_id: tour }] });
+}
+
 export function pageView() {
   let source = "direct";
   try {

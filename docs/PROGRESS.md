@@ -331,3 +331,5 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 - T703m DONE phần code: hero CTA Zalo, closing photo, contact resolver ưu tiên cấu hình Admin đã xác minh và fallback số đã duyệt; hỗ trợ chung responsive. Frontend lint/types/4 unit và build Webpack PASS. Bổ sung Playwright 320–1440/hero/link channels, chờ CI browser ở T703p.
 
 - T703n DONE phần code: cards dùng chung ảnh/giá/2 link độc lập, bộ lọc có tóm tắt, chi tiết có Zalo/lịch & giá và summary sticky riêng; contact/group có ảnh và lựa chọn liên hệ. Không đổi API/giá/chỗ/form submission. Frontend lint/types/4 unit/build Webpack và Admin types PASS; browser hồi quy mới chạy trong T703p/CI.
+
+- T703p đang làm: contact_click/select_item qua listener có cleanup và consent, payload allowlist channel/position/UUID không href/PII. 6 frontend unit PASS gồm consent, dữ liệu không hợp lệ và fallback contact/Admin; lint/types PASS. Browser/taste/perf chưa nghiệm thu; không khởi động local.

@@ -244,3 +244,38 @@ test("tour decisions and contact pages share the public design without covering 
     await page.screenshot({ path: test.info().outputPath("homepage-contact-" + route + ".png"), fullPage: true, animations: "disabled" });
   }
 });
+
+
+test("contact and tour click measurement honors consent and never blocks navigation", async ({ page }) => {
+  await page.route("**/measurement", route => route.fulfill({ json: { id: "G-DEMO123", debug: true } }));
+  await page.route("https://www.googletagmanager.com/gtag/js?*", route => route.fulfill({ contentType: "application/javascript", body: "" }));
+  await page.route("https://zalo.me/**", route => route.fulfill({ body: "Test destination" }));
+  await page.goto("http://localhost:3000/");
+  // Prevent the external tab in this test only; the link itself remains an ordinary anchor.
+  await page.evaluate(() => document.addEventListener("click", event => {
+    if ((event.target as Element).closest('a[href^="https://zalo.me/"]')) event.preventDefault();
+  }));
+  const events = () => page.evaluate(() => ((window as typeof window & { dataLayer?: Array<ArrayLike<unknown>> }).dataLayer || []).map(e => Array.from(e)));
+  await expect(page.getByRole("button", { name: "Cho phép phân tích" })).toBeVisible();
+  const hero = page.locator(".hero").getByRole("link", { name: /Nhắn Zalo tư vấn/ });
+  await hero.click();
+  expect(await events()).toEqual([]);
+  await page.getByRole("button", { name: "Cho phép phân tích" }).click();
+  await hero.click();
+  await expect.poll(async () => (await events()).filter(e => e[1] === "contact_click").length).toBe(1);
+  const card = page.locator("#journeys .tour-card").first();
+  await card.getByRole("link", { name: /Xem lịch & giá/ }).click();
+  await expect(page).toHaveURL(/\/tours\/[^/]+#departures$/);
+  await expect.poll(async () => (await events()).filter(e => e[1] === "select_item").length).toBe(1);
+  const encoded = JSON.stringify(await events());
+  expect(encoded).not.toContain("0989876847");
+  expect(encoded).not.toContain("zalo.me");
+  await page.getByRole("button", { name: "Tùy chọn phân tích", exact: true }).click();
+  await page.getByRole("button", { name: "Từ chối phân tích" }).click();
+  const before = (await events()).filter(e => e[1] === "contact_click").length;
+  await page.evaluate(() => document.addEventListener("click", event => {
+    if ((event.target as Element).closest('a[href^="https://zalo.me/"]')) event.preventDefault();
+  }));
+  await page.locator(".detail-conversion").getByRole("link", { name: /Nhắn Zalo tư vấn/ }).click();
+  expect((await events()).filter(e => e[1] === "contact_click")).toHaveLength(before);
+});
