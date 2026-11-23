@@ -1,5 +1,14 @@
 # Kế hoạch triển khai Blue Sky Group
 
+## Nâng cấp giao diện ưu tiên Zalo — 23/11/2026
+
+Người dùng chốt du lịch rực rỡ, ưu tiên tư vấn Zalo, áp dụng public và Admin. T703l–T703p: tokens/font → Trang chủ → chọn tour/liên hệ → Admin → đo click/QA. Hai module dùng `feature/public-conversion` và `feature/admin-conversion`, từ develop; mỗi task commit/push riêng. Chỉ frontend, không backend/API/schema/luật nghiệp vụ. Giữ video lặp, ba kênh liên hệ, nhãn demo, Admin sidebar; không tour riêng ở hero và không Cẩm nang.
+
+Palette xanh biển #075a91, navy #123b56, vàng #f4c84c, nền #f4f9fd; Nunito Sans local có tiếng Việt. Ảnh đã cấp quyền trong repo. Hero GSAP, photo moments hiện có; không thêm dependency/shader/scroll hijack. Mobile ba kênh một thanh đáy, detail thêm lịch & giá, checkout hỗ trợ inline. Analytics chỉ sau consent, click không đồng nghĩa đã tư vấn/mua.
+
+Đang thực hiện T703l. Không chạy app/services local; browser và integration trên CI. Nghiệm thu thị giác theo ảnh CI, không gọi là UAT người dùng hoặc cam kết tăng CTR.
+
+
 Ngày: 22/11/2026. Trạng thái: **M0 hoàn tất cho demo, M1 nền tảng đã triển khai**. Phạm vi hiện tại là MVP; frontend/admin/backend và Docker/migration nền tảng đã có. Git được khởi tạo để đẩy tài liệu và cấu hình. Checkbox chỉ đánh dấu khi có kết quả kiểm chứng.
 
 Quy trình Git: `main` mặc định và chỉ nhận bản đã nghiệm thu; `develop` là nhánh tích hợp code chính. Mỗi module lớn có nhánh `feature/<module>` từ `develop`; task DONE được commit rõ ID và push ngay, module qua CI thì PR vào `develop`, đợt phát hành qua UAT mới PR vào `main`. CI cùng cấu hình cho push/PR hai nhánh; CD demo chỉ chạy trên push `main`. Xem [AGENTS](../AGENTS.md).

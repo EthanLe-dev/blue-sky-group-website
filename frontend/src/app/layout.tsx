@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import "@fontsource/be-vietnam-pro/vietnamese-400.css";
-import "@fontsource/be-vietnam-pro/vietnamese-600.css";
-import "@fontsource/be-vietnam-pro/latin-400.css";
-import "@fontsource/be-vietnam-pro/latin-600.css";
+import "@fontsource-variable/nunito-sans/wght.css";
 import "./globals.css";
+import "./conversion.css";
 import Analytics from "@/components/Analytics";
 import Script from "next/script";
 import { SiteHeader, SiteFooter } from "@/components/Shell";
@@ -15,11 +13,11 @@ export function generateMetadata(): Metadata {
   verification: /^[A-Za-z0-9_-]{1,200}$/.test(verification) ? { google: verification } : undefined,
   metadataBase: new URL(origin),
   title: {
-    default: "Blue Sky Group | Tour Ninh Chữ & Vĩnh Hy",
+    default: "Blue Sky Group | Du lịch & Trải nghiệm",
     template: "%s | Blue Sky Group",
   },
   description:
-    "Khám phá tour Ninh Chữ, Vĩnh Hy và hành trình dành cho trường học, doanh nghiệp. Xem lịch, giá và đặt chỗ trực tuyến.",
+    "Tour du lịch cho gia đình, trường học và doanh nghiệp. Xem lịch, giá và đặt chỗ trực tuyến.",
   openGraph: {
     locale: "vi_VN",
     siteName: "Blue Sky Group",

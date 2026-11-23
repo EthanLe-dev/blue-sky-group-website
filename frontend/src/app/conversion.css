@@ -1,0 +1,69 @@
+/* Shared public language: sea blue, sun yellow, local Vietnamese typography. */
+:root {
+  --bg: #f4f9fd;
+  --surface: #eaf4fb;
+  --ink: #123b56;
+  --muted: #496477;
+  --accent: #075a91;
+  --yellow: #f4c84c;
+  --line: #cbdde7;
+  --radius: 18px;
+  font-family: "Nunito Sans Variable", system-ui, sans-serif;
+  font-size: 17px;
+}
+h1, h2, h3 { font-weight: 850; letter-spacing: -.025em; }
+h1 { max-width: 24ch; text-wrap: balance; }
+label, .site-header nav, .text-action { font-size: 1rem; }
+label { font-weight: 750; }
+.eyebrow { font-size: .875rem; font-weight: 800; letter-spacing: .08em; }
+.btn, .home-button, .header-contact { font-size: 1rem; font-weight: 800; border-radius: 12px; }
+.btn { box-shadow: 0 4px 0 #034773; transition: transform 180ms var(--ease), background-color 180ms var(--ease); }
+.btn:active { transform: translateY(2px); }
+.cta-zalo, .home-shell .cta-zalo {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  min-height: 48px; padding: 12px 20px; border-radius: 12px;
+  border: 1px solid #f4c84c; background: #f4c84c; color: #123b56;
+  font-size: 1rem; font-weight: 900; text-align: center;
+  box-shadow: 0 4px 0 #b78d15; transition: transform 180ms var(--ease), background-color 180ms var(--ease);
+}
+.cta-zalo:hover, .home-shell .cta-zalo:hover { background: #ffda67; color: #123b56; text-decoration: none; }
+.cta-zalo:active { transform: translateY(2px); }
+.cta-zalo .contact-zalo-mark { background: white; color: #0867ce; padding: 5px; border-radius: 6px; }
+.site-header:not(.home-header) { position: sticky; top: 0; height: 84px; box-shadow: 0 3px 20px #123b560b; }
+.site-header:not(.home-header) .brand img { width: 56px; height: 56px; }
+.site-header:not(.home-header) .header-contact { background: #f4c84c; padding: 10px 16px; color: #123b56; }
+.page { padding-block: 40px 72px; }
+.page > .lead { font-size: 1.125rem; }
+.page > h1 { margin-bottom: 20px; }
+.state, .notice { border-radius: 16px; border: 1px solid var(--line); background: white; padding: 22px; }
+.state { border-top: 4px solid var(--yellow); }
+.state h2 { font-size: 1.5rem; }
+.filters { background: white; border: 1px solid var(--line); border-top: 4px solid var(--yellow); border-radius: 20px; padding: 24px; box-shadow: 0 10px 30px #123b5608; }
+:is(input,select,textarea):focus-visible { outline: 3px solid #075a91; outline-offset: 2px; }
+.filter-advanced summary { min-height: 44px; padding: 10px 0; font-weight: 800; color: var(--accent); cursor: pointer; }
+:is(.booking-panel,.detail-section,.content-list > article) { border-radius: 18px; }
+.detail-section { background: white; padding: clamp(18px, 3vw, 32px); border: 1px solid var(--line); margin-block: 24px; }
+.detail-section h2 { font-size: clamp(1.5rem, 2.6vw, 2rem); }
+.itinerary { border-inline-start: 3px solid var(--yellow); padding-inline-start: 20px; }
+.detail-section .itinerary .eyebrow { color: #075a91; }
+.breadcrumb a { display: inline-flex; align-items: center; min-height: 44px; }
+.gallery-grid { border-radius: 20px; overflow: hidden; }
+.prose-page > .prose { background: white; padding: clamp(18px, 3vw, 32px); border-radius: 18px; }
+.page :is(form,section,aside) { scroll-margin-top: 110px; }
+.page :is(button,.btn):disabled { box-shadow: none; }
+@media (hover: hover) and (pointer: fine) {
+  .btn:hover, .cta-zalo:hover { transform: translateY(-1px); }
+}
+@media (max-width: 680px) {
+  .wrap { width: calc(100% - 32px); }
+  .page { padding-top: 26px; }
+  .filters { padding: 18px; }
+  .site-header:not(.home-header) { height: 72px; }
+  .site-header:not(.home-header) .brand { font-size: .875rem; gap: 8px; }
+  .site-header:not(.home-header) .brand img { width: 44px; height: 44px; }
+  .page h1 { font-size: clamp(2rem, 7vw, 3rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn, .cta-zalo { transition: none; }
+  .btn:is(:hover,:active), .cta-zalo:is(:hover,:active) { transform: none; }
+}

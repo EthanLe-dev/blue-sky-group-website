@@ -320,3 +320,10 @@ Nhánh feature/admin-sidebar. Menu chuyển sang cột trái cố định khi cu
 
 - T703b trên `feature/admin-refresh`: Nunito Sans, sidebar desktop có biểu tượng, menu mobile dạng Sheet, cập nhật màn đăng nhập, tiêu đề và form. Danh sách đơn tách nhãn trạng thái, tên và tổng tiền, hiển thị riêng đang tải, lỗi có nút thử lại và kết quả trống.
 - Ca Playwright hiện có kiểm menu, focus, font tiếng Việt và trạng thái danh sách đơn. Ảnh desktop/mobile được lưu qua CI. App local không được khởi động.
+
+
+## Nâng cấp giao diện ưu tiên Zalo — 23/11/2026
+
+- Đang làm T703l trên `feature/public-conversion`, theo kế hoạch người dùng duyệt: phong cách rực rỡ, public + Admin, CTA Zalo chính. Không đổi backend, không chạy app local. Tái dùng Nunito Sans/GSAP/Radix và ảnh có nguồn.
+
+- T703l DONE: Nunito Sans toàn public, màu/nav/form/nút/status chung tại conversion.css; frontend lint/types/4 unit PASS (1 warning stylesheet vendor cũ). Build/browser tiếp tục ở T703m/p. Backend không đổi.
