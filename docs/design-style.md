@@ -89,6 +89,8 @@ Easing mặc định `cubic-bezier(.22,1,.36,1)`, exit `cubic-bezier(.4,0,1,1)`.
 
 Riêng video nền Trang chủ phát lặp không có nút tạm dừng theo yêu cầu. Dùng ảnh tĩnh khi bật giảm chuyển động và tạm nghỉ khi video ra ngoài khung nhìn hoặc tab bị ẩn.
 
+Ba nút liên hệ nổi nhấp sáng nhẹ theo chu kỳ 2,4 giây lệch nhịp theo yêu cầu. Giữ biểu tượng hiện rõ, tạm ngưng hiệu ứng khi hover/focus và dùng trạng thái tĩnh khi bật reduced motion.
+
 ## 6. Media, copy và nghiệm thu
 
 Ảnh responsive có dimensions/aspect-ratio; hero ưu tiên tải, ảnh dưới fold lazy load; WebP/AVIF khi phù hợp. Không upscale ảnh nhỏ. Nếu chưa có ảnh công ty, dùng ảnh được cấp quyền phù hợp điểm đến, ghi nguồn và stand-in trong hồ sơ; không gắn ảnh stock thành khách/đoàn thật. Alt mô tả nội dung hữu ích, ảnh trang trí alt rỗng.

@@ -14,6 +14,8 @@
 
 ## Làm mới Trang chủ
 
+- T703j trên `feature/contact-pulse`: Zalo, Facebook và hotline có vòng sáng và hiệu ứng opacity nhẹ, chu kỳ 2,4 giây lệch nhịp. Hover/focus ngưng hiệu ứng; reduced motion giữ nút tĩnh. Chỉ sửa CSS và tài liệu.
+
 - T703i trên `feature/contact-actions`: cụm nút Zalo, Facebook, hotline trên Trang chủ. Header bổ sung hotline và Chat Zalo, có hiệu ứng ngắn và hỗ trợ reduced motion. Người dùng xác nhận hotline 0989 876 847, Zalo cùng số, Facebook profile 61561766096180. Các giá trị xác nhận dùng làm mặc định public; cấu hình hotline/Zalo thật trong Admin tiếp tục được ưu tiên.
 
 - T703h trên `feature/homepage-video-cleanup`: gỡ nút phát/tạm dừng và giữ video 9 giây tự phát lặp. Playwright kiểm vòng lặp, tạm nghỉ ngoài khung nhìn và ảnh dự phòng.
