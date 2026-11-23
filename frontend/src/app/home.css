@@ -28,13 +28,38 @@ body:has(.home-shell) {
   color: #fff;
 }
 
+.home-support > .wrap,
+.home-support-channels {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+}
+.home-support-channels { gap: 6px 10px; }
+.home-support > .wrap { padding-block: 5px; }
 .home-support a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   font-size: .9375rem;
   font-weight: 700;
+  gap: 8px;
 }
+.home-support .home-support-phone,
+.home-support .home-support-zalo {
+  padding-inline: 12px;
+  border-radius: 999px;
+  background: #fff;
+  color: #07517f;
+  box-shadow: 0 0 0 1px #ffffff80;
+}
+.home-support .home-support-phone { background: #ffedb8; color: #573b00; }
+.home-support .home-support-zalo:hover { background: #e1f2fc; }
+.home-support .home-support-phone:hover { background: #ffe08a; }
+.home-support a:hover { text-decoration: none; }
+.contact-zalo-mark { font-size: 16px; font-weight: 900; letter-spacing: -1px; line-height: 1; }
+.contact-facebook-mark { font: 900 40px/1 Arial, sans-serif; }
+.home-support svg { width: 18px; height: 18px; }
 
 .home-shell .home-header > .wrap {
   min-height: 72px;
@@ -530,9 +555,66 @@ body:has(.home-shell) {
   inset-inline-end: max(16px, env(safe-area-inset-right));
   bottom: max(16px, env(safe-area-inset-bottom));
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
 }
+.contact-float {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 3px 14px #123b5630, 0 0 0 1px #b9d3e3;
+  transition: transform 180ms var(--home-ease), box-shadow 180ms;
+}
+.contact-float-zalo { color: #0867ce; background: #fff; }
+.contact-float-zalo .contact-zalo-mark { font-size: 20px; }
+.contact-float-facebook { color: #fff; background: #0866df; }
+.contact-float-phone { color: #fff; background: #d82e2a; }
+.contact-float-phone::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px solid #d82e2a;
+  border-radius: inherit;
+  pointer-events: none;
+}
+.contact-float:focus-visible { outline: 3px solid #075a91; outline-offset: 5px; }
+.contact-float:hover { text-decoration: none; box-shadow: 0 6px 20px #123b5640; }
+.contact-tooltip {
+  position: absolute;
+  inset-inline-end: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 5px 12px;
+  border-radius: 8px;
+  background: var(--home-deep);
+  color: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  font-size: .9375rem;
+  font-weight: 700;
+}
+.contact-float:hover .contact-tooltip,
+.contact-float:focus-visible .contact-tooltip { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .contact-float { animation: contact-arrive 450ms var(--home-ease) both; }
+  .contact-float-facebook { animation-delay: 100ms; }
+  .contact-float-phone { animation-delay: 200ms; }
+  .contact-float-phone::before { animation: contact-ring 1600ms ease-out 3; }
+  .home-support-phone svg { animation: contact-nudge 700ms ease-in-out 3; }
+  .home-support-zalo { animation: contact-highlight 1200ms ease-out 3; }
+  .contact-float:hover { transform: translateY(-2px); }
+}
+@keyframes contact-arrive { from { opacity: .3; transform: translateY(8px); } }
+@keyframes contact-ring { from { opacity: .7; transform: scale(1); } to { opacity: 0; transform: scale(1.45); } }
+@keyframes contact-nudge { 30% { transform: rotate(-10deg); } 60% { transform: rotate(10deg); } }
+@keyframes contact-highlight { 50% { box-shadow: 0 0 0 4px #bde8ff70; } }
 .home-back-top {
   display: grid;
   place-items: center;
@@ -593,7 +675,16 @@ body:has(.home-shell) {
   .home-shell .home-header > .wrap { min-height: 60px; }
   .home-header .brand { font-size: .9375rem; gap: 8px; }
   .home-header .brand img { width: 44px; height: 44px; }
-  .home-shell #main { scroll-margin-top: 104px; }
+  .home-shell #main { scroll-margin-top: 162px; }
+  .home-support > .wrap { gap: 0; }
+  .home-support-title { width: 100%; }
+  .home-support .home-support-title { min-height: 28px; }
+  .home-support-channels { gap: 8px; padding-bottom: 4px; }
+  .home-support .home-support-phone,
+  .home-support .home-support-zalo { font-size: .875rem; gap: 6px; padding-inline: 10px; }
+  .home-support-zalo .contact-zalo-mark { display: none; }
+  .contact-float { width: 48px; height: 48px; }
+  .home-actions { gap: 10px; }
   .home-hero-scene { min-height: 250px; }
   .home-hero-copy { padding-block: 44px 28px; }
   .home-shell .home-hero > .home-search-panel { margin-top: 14px; padding: 16px; }
